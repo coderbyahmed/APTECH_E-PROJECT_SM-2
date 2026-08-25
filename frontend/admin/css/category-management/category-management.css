@@ -1,0 +1,470 @@
+/* ============================================
+   SOUND Group — Category Management
+   ============================================ */
+
+/* --- Page Header --- */
+.cm-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    gap: 1rem;
+}
+
+.cm-header__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.25rem;
+}
+
+.cm-header__subtitle {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    max-width: 520px;
+    line-height: 1.5;
+}
+
+/* --- Back Link --- */
+.cm-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #7c3aed;
+    text-decoration: none;
+    margin-bottom: 0.75rem;
+    transition: color 0.15s ease;
+}
+
+.cm-back-link:hover {
+    color: #6d28d9;
+}
+
+/* --- Category Cards Grid --- */
+.cm-categories {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}
+
+.cm-category-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cm-category-card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.cm-category-card__icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1rem;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cm-category-card__icon--year {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.cm-category-card__icon--artist {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+.cm-category-card__icon--album {
+    background: rgba(124, 58, 237, 0.1);
+    color: #7c3aed;
+}
+
+.cm-category-card__icon--genre {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+}
+
+.cm-category-card__icon--language {
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+}
+
+.cm-category-card__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.25rem;
+}
+
+.cm-category-card__desc {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+/* --- Card Actions (Button Group) --- */
+.cm-category-card__actions {
+    display: flex;
+    gap: 0.625rem;
+}
+
+.cm-category-card__btn {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.8125rem;
+    padding: 0.55rem 0.75rem;
+}
+
+.cm-category-card__btn--outline {
+    background: #ffffff;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.cm-category-card__btn--outline:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
+}
+
+/* ============================================
+   Table Card — Category Management
+   ============================================ */
+
+.cm-table-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.cm-table-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+    gap: 1rem;
+}
+
+.cm-table-card__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.cm-table-card__search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    min-width: 240px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cm-table-card__search:focus-within {
+    border-color: #7c3aed;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.cm-table-card__search svg {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.cm-search-input {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #111827;
+    width: 100%;
+}
+
+.cm-search-input::placeholder {
+    color: #9ca3af;
+}
+
+/* --- Table --- */
+.cm-table-wrapper {
+    overflow-x: auto;
+}
+
+.cm-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cm-table__th {
+    text-align: left;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.cm-table__th--actions {
+    text-align: right;
+}
+
+.cm-table__row {
+    transition: background 0.1s ease;
+}
+
+.cm-table__row:hover {
+    background: #f9fafb;
+}
+
+.cm-table__cell {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+}
+
+.cm-table__cell--bold {
+    font-weight: 600;
+    color: #111827;
+}
+
+.cm-table__cell--actions {
+    text-align: right;
+}
+
+/* --- Action Buttons --- */
+.cm-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.cm-action-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.cm-action-btn--edit {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7c3aed;
+}
+
+.cm-action-btn--edit:hover {
+    background: rgba(124, 58, 237, 0.18);
+}
+
+.cm-action-btn--delete {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+}
+
+.cm-action-btn--delete:hover {
+    background: rgba(239, 68, 68, 0.18);
+}
+
+/* --- Table Footer --- */
+.cm-table-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1.5rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.cm-table-card__count {
+    font-size: 0.8125rem;
+    color: #6b7280;
+}
+
+/* ============================================
+   Modals — Category Management
+   ============================================ */
+
+.cm-modal {
+    max-width: 420px;
+}
+
+.cm-modal .sg-modal__body {
+    padding-bottom: 1.5rem;
+}
+
+.cm-modal--delete {
+    max-width: 420px;
+}
+
+/* --- Form Layout --- */
+.cm-form__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.cm-btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.cm-btn-cancel:hover {
+    background: #e5e7eb;
+}
+
+/* --- Delete Modal --- */
+.cm-delete-body {
+    text-align: center;
+}
+
+.cm-delete-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1rem;
+    border-radius: 14px;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cm-delete-actions {
+    justify-content: center;
+    border-top: none;
+    padding-top: 0.5rem;
+}
+
+/* --- Danger Button --- */
+.sg-btn--danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+}
+
+.sg-btn--danger:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* ============================================
+   Responsive — Category Management
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .cm-categories {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .cm-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .cm-header__title {
+        font-size: 1.25rem;
+    }
+
+    .cm-categories {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .cm-table-card__header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cm-table-card__search {
+        min-width: 0;
+    }
+
+    .cm-table-card__footer {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .sg-modal.is-open {
+        padding: 1rem;
+    }
+
+    .cm-modal {
+        max-width: 100%;
+    }
+
+    .cm-modal .sg-modal__body {
+        padding: 1.5rem 1.25rem 1.25rem;
+    }
+
+    .cm-form__actions {
+        flex-direction: column-reverse;
+    }
+
+    .cm-form__actions .sg-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .cm-category-card {
+        padding: 1.25rem 1rem;
+    }
+
+    .cm-category-card__icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .cm-category-card__icon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .cm-category-card__actions {
+        flex-direction: column;
+    }
+
+    .cm-actions {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .cm-action-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .cm-table__th,
+    .cm-table__cell {
+        padding: 0.625rem 0.875rem;
+    }
+}

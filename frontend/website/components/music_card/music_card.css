@@ -1,0 +1,211 @@
+/* ============================================
+   MUSIC CARD
+   ============================================ */
+.wg-cards {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.wg-cards--music {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.wg-card--music {
+    background: var(--wg-bg-card);
+    border: 1px solid var(--wg-border-subtle);
+    border-radius: var(--wg-radius-lg);
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.wg-card--music:hover {
+    transform: translateY(-6px);
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15), 0 0 0 1px rgba(139, 92, 246, 0.1);
+}
+
+.wg-card--link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.wg-card__cover {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+
+.wg-card__cover-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s;
+}
+
+.wg-card--music:hover .wg-card__cover-placeholder {
+    transform: scale(1.06);
+}
+
+.wg-card__cover-placeholder--1 {
+    background: linear-gradient(135deg, #1a0a2e 0%, #2d1052 50%, #1e0838 100%);
+}
+
+.wg-card__cover-placeholder--2 {
+    background: linear-gradient(135deg, #0a1628 0%, #1a2d50 50%, #0d1a30 100%);
+}
+
+.wg-card__cover-placeholder--3 {
+    background: linear-gradient(135deg, #1a0a0a 0%, #3d1515 50%, #200a0a 100%);
+}
+
+.wg-card__cover-placeholder--4 {
+    background: linear-gradient(135deg, #0a1a10 0%, #153d20 50%, #0a200f 100%);
+}
+
+.wg-card__cover-placeholder--5 {
+    background: linear-gradient(135deg, #1a1508 0%, #3d2e10 50%, #201a08 100%);
+}
+
+.wg-card__cover-placeholder svg {
+    color: rgba(255, 255, 255, 0.12);
+}
+
+.wg-card__play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.wg-card--music:hover .wg-card__play {
+    opacity: 1;
+}
+
+.wg-card__play svg {
+    color: #fff;
+    width: 28px;
+    height: 28px;
+}
+
+.wg-card__info {
+    padding: 0.875rem 1rem;
+}
+
+.wg-card__title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wg-card__artist {
+    font-size: 0.8125rem;
+    color: var(--wg-text-secondary);
+    margin-bottom: 0.375rem;
+}
+
+.wg-card__meta {
+    font-size: 0.75rem;
+    color: var(--wg-text-muted);
+}
+
+.wg-card__meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 0.625rem;
+    margin-top: 0.375rem;
+    padding-top: 0.375rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.wg-card__meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+}
+
+.wg-card__meta-label {
+    font-size: 0.5625rem;
+    font-weight: 600;
+    color: var(--wg-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+}
+
+.wg-card__meta-value {
+    font-size: 0.6875rem;
+    color: var(--wg-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+}
+
+.wg-card__dots {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    cursor: pointer;
+    border: none;
+}
+
+.wg-card--music:hover .wg-card__dots {
+    opacity: 1;
+}
+
+.wg-card__dots svg {
+    width: 16px;
+    height: 16px;
+    color: #fff;
+}
+
+@media (max-width: 1024px) {
+    .wg-cards--music {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .wg-cards--music {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .wg-cards--music {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .wg-cards--music {
+        grid-template-columns: 1fr;
+    }
+
+    .wg-card__info {
+        padding: 0.75rem;
+    }
+}

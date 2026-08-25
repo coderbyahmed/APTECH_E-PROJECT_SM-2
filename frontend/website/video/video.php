@@ -1,0 +1,170 @@
+<?php
+$baseUrl = '/Aptech_E_Project_02/sound_management';
+$websiteBase = $baseUrl . '/frontend/website';
+$cssBase = $websiteBase . '/css/video';
+$jsBase = $websiteBase . '/js/video';
+$currentPage = 'videos';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Video Library - SOUND Group</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/home/website.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/layout/navbar/navbar.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/layout/footer/footer.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/music_card/music_card.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/video_card/video_card.css">
+    <link rel="stylesheet" href="<?php echo $cssBase; ?>/video.css">
+</head>
+<body class="wg-page--videos">
+
+<?php include __DIR__ . '/../components/layout/navbar/navbar.php'; ?>
+
+<!-- HERO SECTION -->
+<section class="wg-music-hero">
+    <div class="wg-music-hero__inner">
+        <h1 class="wg-music-hero__title">Video Library</h1>
+        <p class="wg-music-hero__subtitle">Watch the latest music videos, live sessions, behind-the-scenes content, and more from Sound Group artists.</p>
+    </div>
+</section>
+
+<!-- FILTERS SECTION -->
+<section class="wg-music-filters" id="filters">
+    <div class="wg-music-filters__inner">
+        <div class="wg-music-filters__search">
+            <span class="wg-music-filters__search-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input type="text" class="wg-music-filters__search-input" id="videoSearch" placeholder="Search videos by title, artist, album...">
+        </div>
+        <div class="wg-music-filters__row">
+            <div class="wg-music-filters__group">
+                <label class="wg-music-filters__label" for="filterArtist">Artist</label>
+                <select class="wg-music-filters__select" id="filterArtist">
+                    <option value="">All Artists</option>
+                    <option value="Hammad Aziz">Hammad Aziz</option>
+                    <option value="Aria Collins">Aria Collins</option>
+                    <option value="Kai Moreno">Kai Moreno</option>
+                    <option value="Luna Park">Luna Park</option>
+                    <option value="Arijit Singh">Arijit Singh</option>
+                    <option value="Hamza Tahir">Hamza Tahir</option>
+                </select>
+            </div>
+            <div class="wg-music-filters__group">
+                <label class="wg-music-filters__label" for="filterAlbum">Album</label>
+                <select class="wg-music-filters__select" id="filterAlbum">
+                    <option value="">All Albums</option>
+                    <option value="Acoustic Sessions">Acoustic Sessions</option>
+                    <option value="Electric Dreams">Electric Dreams</option>
+                    <option value="Lo-fi Nights">Lo-fi Nights</option>
+                    <option value="Chill Vibes">Chill Vibes</option>
+                    <option value="Night Sessions">Night Sessions</option>
+                    <option value="Aashiqui 2">Aashiqui 2</option>
+                    <option value="Sade">Sade</option>
+                </select>
+            </div>
+            <div class="wg-music-filters__group">
+                <label class="wg-music-filters__label" for="filterYear">Year</label>
+                <select class="wg-music-filters__select" id="filterYear">
+                    <option value="">All Years</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                </select>
+            </div>
+            <div class="wg-music-filters__group">
+                <label class="wg-music-filters__label" for="filterGenre">Genre</label>
+                <select class="wg-music-filters__select" id="filterGenre">
+                    <option value="">All Genres</option>
+                    <option value="Acoustic">Acoustic</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Documentary">Documentary</option>
+                    <option value="Lo-fi">Lo-fi</option>
+                    <option value="Vlog">Vlog</option>
+                    <option value="Sufi">Sufi</option>
+                    <option value="Bollywood">Bollywood</option>
+                    <option value="Electronic">Electronic</option>
+                </select>
+            </div>
+            <div class="wg-music-filters__group">
+                <label class="wg-music-filters__label" for="filterLanguage">Language</label>
+                <select class="wg-music-filters__select" id="filterLanguage">
+                    <option value="">All Languages</option>
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Urdu">Urdu</option>
+                </select>
+            </div>
+        </div>
+        <div class="wg-music-filters__actions">
+            <button class="wg-music-filters__clear" id="clearFilters">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Clear Filters
+            </button>
+            <span class="wg-music-filters__count" id="resultCount">12 videos</span>
+        </div>
+    </div>
+</section>
+
+<!-- VIDEO CARDS SECTION -->
+<section class="wg-music-grid-section">
+    <div class="wg-music-grid-section__inner">
+        <div class="wg-cards wg-cards--video wg-music-page__cards" id="videoGrid">
+            <?php
+            $videoCards = [
+                ['vc_id' => 1, 'vc_title' => 'Live Session Vol.1', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Acoustic Sessions', 'vc_year' => '2025', 'vc_genre' => 'Acoustic', 'vc_language' => 'English', 'vc_duration' => '4:12', 'vc_placeholder' => 1],
+                ['vc_id' => 2, 'vc_title' => 'Music Video Premiere', 'vc_artist' => 'Aria Collins', 'vc_album' => 'Electric Dreams', 'vc_year' => '2024', 'vc_genre' => 'Pop', 'vc_language' => 'English', 'vc_duration' => '3:45', 'vc_placeholder' => 2],
+                ['vc_id' => 3, 'vc_title' => 'Behind The Scenes', 'vc_artist' => 'Kai Moreno', 'vc_album' => 'Lo-fi Nights', 'vc_year' => '2025', 'vc_genre' => 'Documentary', 'vc_language' => 'English', 'vc_duration' => '5:30', 'vc_placeholder' => 3],
+                ['vc_id' => 4, 'vc_title' => 'Studio Session', 'vc_artist' => 'Luna Park', 'vc_album' => 'Chill Vibes', 'vc_year' => '2024', 'vc_genre' => 'Lo-fi', 'vc_language' => 'English', 'vc_duration' => '6:18', 'vc_placeholder' => 4],
+                ['vc_id' => 5, 'vc_title' => 'Summer Tour Recap', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Night Sessions', 'vc_year' => '2025', 'vc_genre' => 'Vlog', 'vc_language' => 'English', 'vc_duration' => '3:22', 'vc_placeholder' => 5],
+                ['vc_id' => 6, 'vc_title' => 'Dil Ka Rishta - Official Video', 'vc_artist' => 'Hamza Tahir', 'vc_album' => 'Sade', 'vc_year' => '2026', 'vc_genre' => 'Sufi', 'vc_language' => 'Urdu', 'vc_duration' => '4:55', 'vc_placeholder' => 1],
+                ['vc_id' => 7, 'vc_title' => 'Acoustic Cover - Tum Hi Ho', 'vc_artist' => 'Arijit Singh', 'vc_album' => 'Aashiqui 2', 'vc_year' => '2024', 'vc_genre' => 'Bollywood', 'vc_language' => 'Hindi', 'vc_duration' => '5:10', 'vc_placeholder' => 2],
+                ['vc_id' => 8, 'vc_title' => 'Live at the Rooftop', 'vc_artist' => 'Aria Collins', 'vc_album' => 'Electric Dreams', 'vc_year' => '2025', 'vc_genre' => 'Pop', 'vc_language' => 'English', 'vc_duration' => '38:22', 'vc_placeholder' => 3],
+                ['vc_id' => 9, 'vc_title' => 'Lo-fi Study Session', 'vc_artist' => 'Kai Moreno', 'vc_album' => 'Lo-fi Nights', 'vc_year' => '2025', 'vc_genre' => 'Lo-fi', 'vc_language' => 'English', 'vc_duration' => '1:02:15', 'vc_placeholder' => 4],
+                ['vc_id' => 10, 'vc_title' => 'Chill Vibes Visualizer', 'vc_artist' => 'Luna Park', 'vc_album' => 'Chill Vibes', 'vc_year' => '2024', 'vc_genre' => 'Electronic', 'vc_language' => 'English', 'vc_duration' => '4:30', 'vc_placeholder' => 5],
+                ['vc_id' => 11, 'vc_title' => 'Midnight Dreams - Lyric Video', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Night Sessions', 'vc_year' => '2025', 'vc_genre' => 'Pop', 'vc_language' => 'English', 'vc_duration' => '3:58', 'vc_placeholder' => 1],
+                ['vc_id' => 12, 'vc_title' => 'Noor - Visual Album', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Sade', 'vc_year' => '2026', 'vc_genre' => 'Sufi', 'vc_language' => 'Urdu', 'vc_duration' => '42:10', 'vc_placeholder' => 3],
+            ];
+            foreach ($videoCards as $card) {
+                extract($card);
+                echo '<div class="wg-music-card-wrap" '
+                    . 'data-title="' . htmlspecialchars($vc_title, ENT_QUOTES) . '" '
+                    . 'data-artist="' . htmlspecialchars($vc_artist, ENT_QUOTES) . '" '
+                    . 'data-album="' . htmlspecialchars($vc_album, ENT_QUOTES) . '" '
+                    . 'data-year="' . htmlspecialchars($vc_year, ENT_QUOTES) . '" '
+                    . 'data-genre="' . htmlspecialchars($vc_genre, ENT_QUOTES) . '" '
+                    . 'data-language="' . htmlspecialchars($vc_language, ENT_QUOTES) . '">';
+                include __DIR__ . '/../components/video_card/video_card.php';
+                echo '</div>';
+            }
+            ?>
+        </div>
+
+        <!-- EMPTY STATE (hidden by default) -->
+        <div class="wg-music-empty" id="videoEmpty" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            <p class="wg-music-empty__title">No videos found</p>
+            <p class="wg-music-empty__desc">Try adjusting your filters or search terms.</p>
+        </div>
+
+        <!-- LOAD MORE -->
+        <div class="wg-music-loadmore" id="loadMoreWrap">
+            <button class="wg-btn wg-btn--outline wg-btn--lg" id="loadMoreBtn">
+                Load More
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+        </div>
+    </div>
+</section>
+
+<?php include __DIR__ . '/../components/layout/footer/footer.php'; ?>
+
+<script src="<?php echo $jsBase; ?>/video.js"></script>
+</body>
+</html>

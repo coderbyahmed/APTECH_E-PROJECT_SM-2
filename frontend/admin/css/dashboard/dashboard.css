@@ -1,0 +1,107 @@
+/* ============================================
+   SOUND Group — Admin Dashboard
+   ============================================ */
+
+.dashboard-welcome {
+    margin-bottom: 1.75rem;
+}
+
+.dashboard-welcome__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.25rem;
+}
+
+.dashboard-welcome__subtitle {
+    font-size: 0.9375rem;
+    color: #6b7280;
+}
+
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+.dashboard-stat-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.dashboard-stat-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+}
+
+.dashboard-stat-card__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.dashboard-stat-card__icon--purple {
+    background: rgba(124, 58, 237, 0.1);
+    color: #7c3aed;
+}
+
+.dashboard-stat-card__icon--pink {
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+}
+
+.dashboard-stat-card__icon--blue {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.dashboard-stat-card__icon--green {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.dashboard-stat-card__info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.dashboard-stat-card__label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+
+.dashboard-stat-card__value {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.025em;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-welcome__title {
+        font-size: 1.25rem;
+    }
+}

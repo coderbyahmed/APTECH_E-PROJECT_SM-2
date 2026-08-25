@@ -1,0 +1,33 @@
+/* ============================================
+   SOUND Group — Admin Button Spinner Component
+   Lightweight loading state for buttons
+   ============================================ */
+
+/* --- Spinner Animation --- */
+@keyframes sg-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* --- Spinner Element --- */
+.sg-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: sg-spin 0.6s linear infinite;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+/* --- Button Loading State --- */
+.sg-btn-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.sg-btn-loading .sg-spinner {
+    margin-right: 0.5rem;
+}

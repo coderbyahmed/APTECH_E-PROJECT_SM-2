@@ -1,0 +1,274 @@
+/* ============================================
+   SOUND Group — Shared Admin Modal Component
+   Base styles for change-email / change-password modals
+   ============================================ */
+
+/* --- Modal Shell --- */
+.sg-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+}
+
+.sg-modal.is-open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.sg-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 15, 19, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.sg-modal__dialog {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(15, 15, 19, 0.28);
+    z-index: 1;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: sgModalIn 0.2s ease;
+}
+
+@keyframes sgModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.sg-modal__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 8px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sg-modal__close:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.sg-modal__body {
+    padding: 2rem 1.75rem 1.75rem;
+}
+
+.sg-modal__step[hidden] {
+    display: none;
+}
+
+/* --- Modal Header --- */
+.sg-modal__icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 1rem;
+    border-radius: 12px;
+    background: #f3efff;
+    color: #7c3aed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sg-modal__title {
+    margin: 0 0 0.35rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+    text-align: center;
+    letter-spacing: -0.2px;
+}
+
+.sg-modal__subtitle {
+    margin: 0 0 1.5rem;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: #6b7280;
+    text-align: center;
+}
+
+.sg-modal__subtitle strong {
+    color: #111827;
+    word-break: break-all;
+}
+
+/* --- Forms --- */
+.sg-form-group {
+    margin-bottom: 1.1rem;
+}
+
+.sg-form-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.sg-form-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.sg-form-input-icon {
+    position: absolute;
+    left: 12px;
+    display: flex;
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+.sg-form-input-icon svg {
+    width: 17px;
+    height: 17px;
+}
+
+.sg-form-input {
+    width: 100%;
+    padding: 0.68rem 2.5rem 0.68rem 2.35rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #111827;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.sg-form-input::placeholder {
+    color: #9ca3af;
+}
+
+.sg-form-input:focus {
+    border-color: #7c3aed;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.sg-password-toggle {
+    position: absolute;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: color 0.15s ease;
+}
+
+.sg-password-toggle:hover {
+    color: #6b7280;
+}
+
+.sg-password-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* --- Buttons --- */
+.sg-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.68rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.sg-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.sg-btn--primary {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    color: #ffffff;
+}
+
+.sg-btn--primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+}
+
+.sg-btn--block {
+    width: 100%;
+}
+
+.sg-btn--link {
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #7c3aed;
+    cursor: pointer;
+}
+
+.sg-btn--link:hover:not(:disabled) {
+    text-decoration: underline;
+}
+
+/* --- Modal Footer Actions --- */
+.sg-modal__resend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.sg-modal__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 1.1rem;
+    background: none;
+    border: none;
+    padding: 0.25rem 0;
+    font-size: 0.8rem;
+    font-family: inherit;
+    color: #6b7280;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.sg-modal__back:hover {
+    color: #374151;
+}

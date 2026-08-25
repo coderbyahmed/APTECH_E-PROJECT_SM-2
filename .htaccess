@@ -1,0 +1,10 @@
+Options -Indexes
+
+# Deny access to sensitive files
+<FilesMatch "\.env$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>

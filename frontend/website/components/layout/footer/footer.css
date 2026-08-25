@@ -1,0 +1,206 @@
+/* ============================================
+   FOOTER — Sound Group Website
+   ============================================ */
+.wg-footer {
+    background: #08080f;
+    border-top: 1px solid var(--wg-border-subtle);
+    padding: 4rem 2rem 0;
+}
+
+.wg-footer__inner {
+    max-width: var(--wg-max-width);
+    margin: 0 auto;
+}
+
+/* ============================================
+   TOP — 4 Column Grid
+   ============================================ */
+.wg-footer__top {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 0.7fr 0.9fr;
+    gap: 3rem;
+    padding-bottom: 3rem;
+}
+
+/* Brand */
+.wg-footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.wg-footer__brand .wg-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.wg-footer__desc {
+    font-size: 0.875rem;
+    color: var(--wg-text-muted);
+    line-height: 1.7;
+    max-width: 300px;
+}
+
+/* Columns */
+.wg-footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.wg-footer__heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+}
+
+.wg-footer__link {
+    font-size: 0.875rem;
+    color: var(--wg-text-muted);
+    text-decoration: none;
+    transition: color var(--wg-transition);
+    width: fit-content;
+}
+
+.wg-footer__link:hover {
+    color: var(--wg-accent-purple);
+}
+
+/* Social */
+.wg-footer__social {
+    display: flex;
+    gap: 0.625rem;
+    margin-top: 0.125rem;
+}
+
+.wg-footer__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--wg-border-subtle);
+    color: var(--wg-text-muted);
+    transition: all var(--wg-transition);
+}
+
+.wg-footer__social-link:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: var(--wg-accent-purple);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+}
+
+.wg-footer__social-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================
+   BOTTOM BAR
+   ============================================ */
+.wg-footer__bottom {
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--wg-border-subtle);
+    text-align: center;
+}
+
+.wg-footer__copy {
+    font-size: 0.8125rem;
+    color: var(--wg-text-dim);
+}
+
+/* ============================================
+   RESPONSIVE — LARGE TABLET (1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+    .wg-footer__top {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem 3rem;
+    }
+
+    .wg-footer__brand {
+        grid-column: 1 / -1;
+        max-width: 400px;
+    }
+}
+
+/* ============================================
+   RESPONSIVE — TABLET (768px)
+   ============================================ */
+@media (max-width: 768px) {
+    .wg-footer {
+        padding: 3rem 1.5rem 0;
+    }
+
+    .wg-footer__top {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem 2rem;
+        padding-bottom: 2.5rem;
+    }
+
+    .wg-footer__brand {
+        grid-column: 1 / -1;
+        max-width: 100%;
+    }
+
+    .wg-footer__desc {
+        max-width: 100%;
+    }
+}
+
+/* ============================================
+   RESPONSIVE — MOBILE (480px)
+   ============================================ */
+@media (max-width: 480px) {
+    .wg-footer {
+        padding: 2.5rem 1rem 0;
+    }
+
+    .wg-footer__top {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    .wg-footer__brand {
+        text-align: center;
+        align-items: center;
+    }
+
+    .wg-footer__brand .wg-logo {
+        justify-content: center;
+    }
+
+    .wg-footer__desc {
+        text-align: center;
+    }
+
+    .wg-footer__col {
+        text-align: center;
+        align-items: center;
+    }
+
+    .wg-footer__heading {
+        margin-bottom: 0.25rem;
+    }
+
+    .wg-footer__link {
+        width: auto;
+    }
+
+    .wg-footer__social {
+        justify-content: center;
+    }
+
+    .wg-footer__bottom {
+        padding: 1.25rem 0;
+    }
+}

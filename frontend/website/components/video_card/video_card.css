@@ -1,0 +1,119 @@
+/* ============================================
+   VIDEO CARD
+   ============================================ */
+.wg-cards--video {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.wg-card--video {
+    background: var(--wg-bg-card);
+    border: 1px solid var(--wg-border-subtle);
+    border-radius: var(--wg-radius-lg);
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.wg-card--video:hover {
+    transform: translateY(-6px);
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15), 0 0 0 1px rgba(139, 92, 246, 0.1);
+}
+
+.wg-card__thumb {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+
+.wg-card__thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s;
+}
+
+.wg-card--video:hover .wg-card__thumb-placeholder {
+    transform: scale(1.06);
+}
+
+.wg-card__thumb-placeholder--1 {
+    background: linear-gradient(135deg, #1a0a2e 0%, #3d1560 50%, #1e0838 100%);
+}
+
+.wg-card__thumb-placeholder--2 {
+    background: linear-gradient(135deg, #0a1628 0%, #153060 50%, #0d1a30 100%);
+}
+
+.wg-card__thumb-placeholder--3 {
+    background: linear-gradient(135deg, #1a1508 0%, #3d2e10 50%, #201a08 100%);
+}
+
+.wg-card__thumb-placeholder--4 {
+    background: linear-gradient(135deg, #0a1a10 0%, #154020 50%, #0a200f 100%);
+}
+
+.wg-card__thumb-placeholder--5 {
+    background: linear-gradient(135deg, #1a0a0a 0%, #401515 50%, #200a0a 100%);
+}
+
+.wg-card__thumb-placeholder svg {
+    color: rgba(255, 255, 255, 0.12);
+}
+
+.wg-card__play--video {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.wg-card--video:hover .wg-card__play--video {
+    opacity: 1;
+}
+
+.wg-card__play--video svg {
+    color: #fff;
+}
+
+.wg-card__duration {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+}
+
+@media (max-width: 1024px) {
+    .wg-cards--video {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .wg-cards--video {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .wg-cards--video {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .wg-cards--video {
+        grid-template-columns: 1fr;
+    }
+}

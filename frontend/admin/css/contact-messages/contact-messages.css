@@ -1,0 +1,814 @@
+/* ============================================
+   SOUND Group — Contact Messages Management
+   Card-based listing (mirrors Reviews & Ratings)
+   ============================================ */
+
+/* --- Page Header --- */
+.cm-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    gap: 1rem;
+}
+
+.cm-header__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.25rem;
+}
+
+.cm-header__subtitle {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    max-width: 520px;
+    line-height: 1.5;
+}
+
+/* --- Summary Stats --- */
+.cm-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.cm-stat-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.cm-stat-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+}
+
+.cm-stat-card__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cm-stat-card__icon--purple {
+    background: rgba(124, 58, 237, 0.1);
+    color: #7c3aed;
+}
+
+.cm-stat-card__icon--amber {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+.cm-stat-card__icon--green {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+.cm-stat-card__info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.cm-stat-card__label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+
+.cm-stat-card__value {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.025em;
+}
+
+/* --- Toolbar --- */
+.cm-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    margin-bottom: 1.25rem;
+}
+
+.cm-toolbar__search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.55rem 0.75rem;
+    min-width: 280px;
+    flex: 1;
+    max-width: 420px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cm-toolbar__search:focus-within {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.cm-toolbar__search svg {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.cm-search-input {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #111827;
+    width: 100%;
+    min-width: 0;
+}
+
+.cm-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.cm-toolbar__filter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.55rem 0.75rem;
+}
+
+.cm-toolbar__filter-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.cm-toolbar__filter-select {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #111827;
+    cursor: pointer;
+}
+
+/* --- Grid Section --- */
+.cm-grid-section {
+    margin-bottom: 2rem;
+}
+
+.cm-grid-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.cm-grid-section__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* --- Message Card Grid --- */
+.cm-message-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    align-items: stretch;
+}
+
+/* --- Message Card --- */
+.cm-message-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    min-width: 0;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.25rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cm-message-card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 10px 28px rgba(17, 24, 39, 0.07);
+}
+
+/* --- Card Header --- */
+.cm-message-card__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+}
+
+.cm-avatar--card {
+    width: 48px;
+    height: 48px;
+    font-size: 0.9375rem;
+}
+
+.cm-message-card__user {
+    flex: 1;
+    min-width: 0;
+    align-self: center;
+}
+
+.cm-message-card__user-name {
+    margin: 0 0 0.1rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+}
+
+.cm-message-card__user-email {
+    display: block;
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cm-message-card__header .cm-badge {
+    flex-shrink: 0;
+}
+
+/* --- Card Content --- */
+.cm-message-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+}
+
+.cm-message-card__subject {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #111827;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* --- Message Preview --- */
+.cm-message-card__preview {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #374151;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* --- Dates --- */
+.cm-message-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+}
+
+.cm-message-card__meta-item {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    white-space: nowrap;
+}
+
+.cm-message-card__meta-item strong {
+    color: #374151;
+    font-weight: 600;
+}
+
+/* --- Card Actions --- */
+.cm-message-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.875rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.cm-action-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.cm-action-btn--view {
+    background: rgba(59, 130, 246, 0.08);
+    color: #3b82f6;
+}
+
+.cm-action-btn--view:hover {
+    background: rgba(59, 130, 246, 0.18);
+}
+
+.cm-action-btn--delete {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+}
+
+.cm-action-btn--delete:hover {
+    background: rgba(239, 68, 68, 0.18);
+}
+
+/* --- Badges --- */
+.cm-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.cm-badge--new {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+}
+
+.cm-badge--read {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+}
+
+/* --- Avatars --- */
+.cm-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
+.cm-avatar--large {
+    width: 64px;
+    height: 64px;
+    font-size: 1.1rem;
+}
+
+.cm-avatar--violet {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.cm-avatar--blue {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+}
+
+.cm-avatar--pink {
+    background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+}
+
+.cm-avatar--green {
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+.cm-avatar--amber {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.cm-avatar--rose {
+    background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+}
+
+.cm-avatar--teal {
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+}
+
+.cm-avatar--indigo {
+    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+}
+
+.cm-avatar--cyan {
+    background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+}
+
+.cm-avatar--orange {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+}
+
+/* --- Empty State --- */
+.cm-empty {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    margin: 1rem 0;
+}
+
+.cm-empty__icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    background: #f9fafb;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cm-empty__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.35rem;
+}
+
+.cm-empty__desc {
+    font-size: 0.875rem;
+    color: #6b7280;
+    max-width: 360px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* --- Grid Footer & Pagination --- */
+.cm-grid-section__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.cm-grid-section__count {
+    font-size: 0.8125rem;
+    color: #6b7280;
+}
+
+.cm-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.cm-pagination__pages {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.cm-pagination__btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #6b7280;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.cm-pagination__btn:hover:not(:disabled):not(.cm-pagination__btn--active) {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.cm-pagination__btn--active {
+    background: #7c3aed;
+    border-color: #7c3aed;
+    color: #ffffff;
+}
+
+.cm-pagination__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   Modals — Contact Messages Management
+   ============================================ */
+
+.cm-modal {
+    max-width: 520px;
+}
+
+.cm-modal--wide {
+    max-width: 640px;
+}
+
+.cm-modal--delete {
+    max-width: 420px;
+}
+
+.cm-modal .sg-modal__body {
+    padding-bottom: 1.5rem;
+}
+
+/* --- View Message Modal --- */
+.cm-view-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.cm-view-info {
+    min-width: 0;
+}
+
+.cm-view-info__name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.15rem;
+    letter-spacing: -0.025em;
+}
+
+.cm-view-info__email {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.cm-view-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem 1.25rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #f3f4f6;
+}
+
+.cm-view-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.cm-view-detail__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.cm-view-detail__value {
+    font-size: 0.875rem;
+    color: #111827;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cm-view-subject {
+    margin-bottom: 1rem;
+}
+
+.cm-view-subject__label,
+.cm-view-message__label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+}
+
+.cm-view-subject__value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.01em;
+}
+
+.cm-view-message {
+    padding: 1rem 1.25rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #f3f4f6;
+    margin-bottom: 1.5rem;
+}
+
+.cm-view-message__text {
+    font-size: 0.9375rem;
+    color: #374151;
+    line-height: 1.65;
+    margin: 0;
+    white-space: pre-line;
+}
+
+.cm-view-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* --- Delete Confirmation Modal --- */
+.cm-delete-body {
+    text-align: center;
+}
+
+.cm-delete-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1rem;
+    border-radius: 14px;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cm-form__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.cm-delete-actions {
+    justify-content: center;
+    border-top: none;
+    padding-top: 0.5rem;
+}
+
+.cm-btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.cm-btn-cancel:hover {
+    background: #e5e7eb;
+}
+
+.cm-btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+}
+
+.cm-btn-danger:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* ============================================
+   Responsive — Contact Messages Management
+   ============================================ */
+
+@media (max-width: 1200px) {
+    .cm-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1024px) {
+    .cm-message-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cm-toolbar__search {
+        max-width: 100%;
+        flex-basis: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .cm-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .cm-header__title {
+        font-size: 1.25rem;
+    }
+
+    .cm-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cm-toolbar__search {
+        min-width: 0;
+    }
+
+    .cm-toolbar__filter {
+        justify-content: space-between;
+    }
+
+    .cm-grid-section__footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .cm-view-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .cm-view-info {
+        text-align: center;
+    }
+
+    .cm-view-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .cm-view-actions {
+        flex-direction: column-reverse;
+    }
+
+    .cm-view-actions .sg-btn {
+        width: 100%;
+    }
+
+    .cm-delete-actions {
+        flex-direction: column-reverse;
+    }
+
+    .cm-delete-actions .sg-btn {
+        width: 100%;
+    }
+
+    .sg-modal.is-open {
+        padding: 1rem;
+    }
+
+    .cm-modal,
+    .cm-modal--wide,
+    .cm-modal--delete {
+        max-width: 100%;
+    }
+
+    .cm-modal .sg-modal__body {
+        padding: 1.5rem 1.25rem 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cm-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .cm-pagination__btn {
+        min-width: 28px;
+        height: 28px;
+    }
+}

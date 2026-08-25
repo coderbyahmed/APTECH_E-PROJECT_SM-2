@@ -1,0 +1,779 @@
+/* ============================================
+   SOUND Group — User Management
+   ============================================ */
+
+/* --- Page Header --- */
+.um-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.um-header__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.25rem;
+}
+
+.um-header__subtitle {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    max-width: 520px;
+    line-height: 1.5;
+}
+
+/* --- Toolbar --- */
+.um-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    margin-bottom: 1.25rem;
+}
+
+.um-toolbar__search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.55rem 0.75rem;
+    min-width: 280px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.um-toolbar__search:focus-within {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.um-toolbar__search svg {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.um-search-input {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #111827;
+    width: 100%;
+}
+
+.um-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.um-toolbar__filter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.55rem 0.75rem;
+}
+
+.um-toolbar__filter-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.um-toolbar__filter-select {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #111827;
+    cursor: pointer;
+}
+
+/* --- Grid Section --- */
+.um-grid-section {
+    margin-bottom: 2rem;
+}
+
+.um-grid-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.um-grid-section__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* --- User Card Grid --- */
+.um-user-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+    align-items: stretch;
+}
+
+/* --- User Card --- */
+.um-user-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.25rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.um-user-card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 10px 28px rgba(17, 24, 39, 0.07);
+}
+
+/* --- Card Header --- */
+.um-user-card__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+}
+
+.um-avatar--card {
+    width: 52px;
+    height: 52px;
+    font-size: 1rem;
+}
+
+.um-user-card__identity {
+    flex: 1;
+    min-width: 0;
+    align-self: center;
+}
+
+.um-user-card__name {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+}
+
+.um-user-card__header .um-badge {
+    flex-shrink: 0;
+}
+
+/* --- Card Info --- */
+.um-user-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 0.875rem 1rem;
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+}
+
+.um-user-card__row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.um-user-card__label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.um-user-card__value {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #374151;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.um-user-card__value--email {
+    color: #7c3aed;
+}
+
+.um-user-card__divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 0.125rem 0;
+}
+
+.um-user-card__meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 1rem;
+}
+
+.um-user-card__meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+/* --- Card Actions --- */
+.um-user-card__actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.um-card-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    min-width: 0;
+    padding: 0.55rem 0.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.um-card-action svg {
+    flex-shrink: 0;
+}
+
+.um-card-action:active {
+    transform: translateY(1px);
+}
+
+.um-card-action--view {
+    background: rgba(59, 130, 246, 0.08);
+    color: #3b82f6;
+}
+
+.um-card-action--view:hover {
+    background: rgba(59, 130, 246, 0.18);
+}
+
+.um-card-action--edit {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7c3aed;
+}
+
+.um-card-action--edit:hover {
+    background: rgba(124, 58, 237, 0.18);
+}
+
+.um-card-action--delete {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+}
+
+.um-card-action--delete:hover {
+    background: rgba(239, 68, 68, 0.18);
+}
+
+/* --- Avatars --- */
+.um-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.um-avatar--large {
+    width: 64px;
+    height: 64px;
+    font-size: 1.1rem;
+}
+
+.um-avatar--violet {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.um-avatar--blue {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+}
+
+.um-avatar--pink {
+    background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+}
+
+.um-avatar--green {
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+.um-avatar--amber {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.um-avatar--rose {
+    background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+}
+
+.um-avatar--teal {
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+}
+
+.um-avatar--indigo {
+    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+}
+
+/* --- Badges --- */
+.um-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.um-badge--active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+.um-badge--inactive {
+    background: rgba(107, 114, 128, 0.12);
+    color: #6b7280;
+}
+
+/* --- Empty State --- */
+.um-empty {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    margin: 1rem 0;
+}
+
+.um-empty__icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    background: #f9fafb;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.um-empty__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.35rem;
+}
+
+.um-empty__desc {
+    font-size: 0.875rem;
+    color: #6b7280;
+    max-width: 360px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* --- Grid Footer & Pagination --- */
+.um-grid-section__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.um-grid-section__count {
+    font-size: 0.8125rem;
+    color: #6b7280;
+}
+
+.um-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.um-pagination__pages {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.um-pagination__btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #6b7280;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.um-pagination__btn:hover:not(:disabled):not(.um-pagination__btn--active) {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.um-pagination__btn--active {
+    background: #7c3aed;
+    border-color: #7c3aed;
+    color: #ffffff;
+}
+
+.um-pagination__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   Modals — User Management
+   ============================================ */
+
+.um-modal {
+    max-width: 420px;
+}
+
+.um-modal--wide {
+    max-width: 640px;
+}
+
+.um-modal--delete {
+    max-width: 420px;
+}
+
+.um-modal .sg-modal__body {
+    padding-bottom: 1.5rem;
+}
+
+/* --- View User Modal --- */
+.um-view-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.um-view-info {
+    min-width: 0;
+}
+
+.um-view-info__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.15rem;
+    letter-spacing: -0.025em;
+}
+
+.um-view-info__id {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.um-view-info__id strong {
+    color: #374151;
+}
+
+.um-view-status {
+    margin-bottom: 1.25rem;
+}
+
+.um-view-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.25rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #f3f4f6;
+}
+
+.um-view-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.um-view-detail--full {
+    grid-column: 1 / -1;
+}
+
+.um-view-detail__label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.um-view-detail__value {
+    font-size: 0.875rem;
+    color: #111827;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.um-view-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* --- Edit Form --- */
+.um-form__profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.um-form__profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+}
+
+.um-form__profile-hint {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.um-form__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0rem 1rem;
+}
+
+.um-form__group--full {
+    grid-column: 1 / -1;
+}
+
+.um-btn-outline {
+    background: #ffffff;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    font-size: 0.8125rem;
+    padding: 0.55rem 0.9rem;
+}
+
+.um-btn-outline:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
+}
+
+.um-btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.um-btn-cancel:hover {
+    background: #e5e7eb;
+}
+
+.um-form__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* --- Delete Modal --- */
+.um-delete-body {
+    text-align: center;
+}
+
+.um-delete-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1rem;
+    border-radius: 14px;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.um-delete-actions {
+    justify-content: center;
+    border-top: none;
+    padding-top: 0.5rem;
+}
+
+/* ============================================
+   Responsive — User Management
+   ============================================ */
+
+@media (max-width: 1200px) {
+    .um-user-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1024px) {
+    .um-form__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .um-form__group--full {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .um-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .um-header__title {
+        font-size: 1.25rem;
+    }
+
+    .um-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .um-toolbar__search {
+        min-width: 0;
+    }
+
+    .um-user-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .um-grid-section__footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .um-view-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .um-view-info {
+        text-align: center;
+    }
+
+    .um-view-details {
+        grid-template-columns: 1fr;
+    }
+
+    .um-view-detail--full {
+        grid-column: auto;
+    }
+
+    .um-view-actions {
+        flex-direction: column-reverse;
+    }
+
+    .um-view-actions .sg-btn {
+        width: 100%;
+    }
+
+    .um-form__profile {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .um-form__profile-info {
+        align-items: center;
+    }
+
+    .um-form__actions {
+        flex-direction: column-reverse;
+    }
+
+    .um-form__actions .sg-btn {
+        width: 100%;
+    }
+
+    .um-delete-actions {
+        flex-direction: column-reverse;
+    }
+
+    .um-delete-actions .sg-btn {
+        width: 100%;
+    }
+
+    .sg-modal.is-open {
+        padding: 1rem;
+    }
+
+    .um-modal,
+    .um-modal--wide,
+    .um-modal--delete {
+        max-width: 100%;
+    }
+
+    .um-modal .sg-modal__body {
+        padding: 1.5rem 1.25rem 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .um-user-card__meta {
+        grid-template-columns: 1fr;
+    }
+
+    .um-card-action {
+        gap: 0.25rem;
+        padding: 0.5rem 0.25rem;
+    }
+
+    .um-pagination__btn {
+        min-width: 28px;
+        height: 28px;
+    }
+}

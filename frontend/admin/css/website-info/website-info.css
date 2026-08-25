@@ -1,0 +1,456 @@
+/* ============================================
+   SOUND Group — Website Info Management
+   ============================================ */
+
+/* --- Page Header --- */
+.wi-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.wi-header__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.25rem;
+}
+
+.wi-header__subtitle {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    max-width: 620px;
+    line-height: 1.5;
+}
+
+/* --- Sections Container --- */
+.wi-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+/* --- Section Card --- */
+.wi-section {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.wi-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.wi-section__heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.wi-section__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.wi-section__icon--violet {
+    background: rgba(124, 58, 237, 0.1);
+    color: #7c3aed;
+}
+
+.wi-section__icon--blue {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.wi-section__icon--teal {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+.wi-section__icon--pink {
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+}
+
+.wi-section__icon--amber {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+.wi-section__title-block {
+    min-width: 0;
+}
+
+.wi-section__title {
+    margin: 0 0 0.2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.wi-section__desc {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+/* --- Edit Button --- */
+.wi-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.05rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.08);
+    border: 1px solid rgba(124, 58, 237, 0.18);
+    border-radius: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.wi-edit-btn:hover {
+    background: rgba(124, 58, 237, 0.14);
+    border-color: rgba(124, 58, 237, 0.3);
+}
+
+/* --- Section Body / Field Grid --- */
+.wi-section__body {
+    padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.wi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.wi-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+}
+
+.wi-field--full {
+    grid-column: 1 / -1;
+}
+
+.wi-field__label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.wi-field__value {
+    font-size: 0.9rem;
+    color: #111827;
+    font-weight: 600;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.wi-field__value--empty {
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.wi-field__text {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #374151;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* --- Logo --- */
+.wi-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.wi-logo__badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    flex-shrink: 0;
+}
+
+.wi-logo__name {
+    font-size: 0.8125rem;
+    color: #374151;
+    font-weight: 600;
+    word-break: break-all;
+    min-width: 0;
+}
+
+/* --- Social Display --- */
+.wi-social__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+}
+
+.wi-social__brand {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.wi-social__brand--facebook {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+}
+
+.wi-social__brand--github {
+    background: rgba(17, 24, 39, 0.08);
+    color: #111827;
+}
+
+.wi-social__brand--linkedin {
+    background: rgba(10, 102, 194, 0.12);
+    color: #0a66c2;
+}
+
+.wi-social__brand--tiktok {
+    background: rgba(238, 29, 82, 0.12);
+    color: #ee1d52;
+}
+
+.wi-social__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.wi-social__url {
+    font-size: 0.85rem;
+    color: #374151;
+    font-weight: 500;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+}
+
+/* ============================================
+   Modals — Website Info
+   ============================================ */
+
+.wi-modal {
+    max-width: 560px;
+}
+
+.wi-modal--wide {
+    max-width: 640px;
+}
+
+.wi-modal .sg-modal__body {
+    padding-bottom: 1.5rem;
+}
+
+/* --- Form --- */
+.wi-form__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1rem;
+}
+
+.wi-form__group--full {
+    grid-column: 1 / -1;
+}
+
+.wi-form-input {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.wi-form-textarea {
+    resize: vertical;
+    min-height: 92px;
+    line-height: 1.55;
+}
+
+.wi-form__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.wi-btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.wi-btn-cancel:hover {
+    background: #e5e7eb;
+}
+
+/* --- Logo File Field --- */
+.wi-file-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.wi-file-field__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #7c3aed;
+    background: #f9fafb;
+    border: 1px dashed #c4b5fd;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.wi-file-field__btn:hover {
+    background: #f3efff;
+    border-color: #a78bfa;
+}
+
+.wi-file-field__btn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wi-file-field__hint {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* ============================================
+   Responsive — Website Info
+   ============================================ */
+
+@media (max-width: 768px) {
+    .wi-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .wi-header__title {
+        font-size: 1.25rem;
+    }
+
+    .wi-section__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .wi-edit-btn {
+        width: 100%;
+    }
+
+    .wi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wi-field--full {
+        grid-column: auto;
+    }
+
+    .wi-social__row {
+        flex-direction: column;
+    }
+
+    .wi-form__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wi-form__group--full {
+        grid-column: auto;
+    }
+
+    .wi-form__actions {
+        flex-direction: column-reverse;
+    }
+
+    .wi-form__actions .sg-btn {
+        width: 100%;
+    }
+
+    .sg-modal.is-open {
+        padding: 1rem;
+    }
+
+    .wi-modal,
+    .wi-modal--wide {
+        max-width: 100%;
+    }
+
+    .wi-modal .sg-modal__body {
+        padding: 1.5rem 1.25rem 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .wi-section__icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .wi-section__body {
+        padding: 1rem;
+    }
+
+    .wi-field {
+        padding: 0.8rem 0.9rem;
+    }
+
+    .wi-logo__badge {
+        width: 36px;
+        height: 36px;
+        font-size: 0.75rem;
+    }
+}

@@ -1,0 +1,123 @@
+/* ============================================
+   SOUND Group — Admin Notification Component
+   Lightweight toast notification system
+   ============================================ */
+
+/* --- Notification Container --- */
+.sg-notification {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    max-width: calc(100vw - 2rem);
+    padding: 0.875rem 1.25rem;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.06);
+    font-family: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    line-height: 1.4;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Visible State --- */
+.sg-notification.is-visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* --- Exit State --- */
+.sg-notification.is-exiting {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- Icon --- */
+.sg-notification__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.sg-notification__icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* --- Message --- */
+.sg-notification__message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Type: Success --- */
+.sg-notification--success .sg-notification__icon {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.sg-notification--success {
+    border-color: #d1fae5;
+}
+
+/* --- Type: Error --- */
+.sg-notification--error .sg-notification__icon {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.sg-notification--error {
+    border-color: #fecaca;
+}
+
+/* --- Type: Warning --- */
+.sg-notification--warning .sg-notification__icon {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.sg-notification--warning {
+    border-color: #fde68a;
+}
+
+/* --- Type: Info --- */
+.sg-notification--info .sg-notification__icon {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.sg-notification--info {
+    border-color: #bfdbfe;
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+    .sg-notification {
+        top: 1rem;
+        max-width: calc(100vw - 1.5rem);
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+        border-radius: 10px;
+    }
+
+    .sg-notification__message {
+        white-space: normal;
+    }
+}

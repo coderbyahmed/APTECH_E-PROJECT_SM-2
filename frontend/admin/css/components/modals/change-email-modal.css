@@ -1,0 +1,51 @@
+/* ============================================
+   SOUND Group — Change Email Modal
+   OTP input + countdown styles
+   ============================================ */
+
+/* --- 4-Digit OTP Boxes --- */
+.sg-otp-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 0.25rem 0 0.95rem;
+}
+
+.sg-otp-box {
+    width: 52px;
+    height: 56px;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: inherit;
+    color: #111827;
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.sg-otp-box:focus {
+    border-color: #7c3aed;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+/* --- Countdown --- */
+.sg-otp-countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 0 0 1.1rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.sg-otp-countdown-icon {
+    width: 14px;
+    height: 14px;
+    color: #f59e0b;
+    flex-shrink: 0;
+}

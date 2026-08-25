@@ -1,0 +1,204 @@
+/* ============================================
+   NAVBAR / HEADER
+   ============================================ */
+.wg-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(10, 10, 18, 0.82);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid var(--wg-border-subtle);
+    transition: background var(--wg-transition), box-shadow var(--wg-transition);
+}
+
+.wg-header.is-scrolled {
+    background: rgba(10, 10, 18, 0.96);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+.wg-header__inner {
+    max-width: var(--wg-max-width);
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.wg-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.wg-logo__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--wg-radius-md);
+    background: linear-gradient(135deg, var(--wg-accent-violet), var(--wg-accent-magenta));
+    box-shadow: 0 2px 12px rgba(124, 58, 237, 0.4);
+}
+
+.wg-logo__icon svg {
+    width: 22px;
+    height: 22px;
+    color: #fff;
+}
+
+.wg-logo__text {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+}
+
+.wg-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.wg-nav__link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--wg-text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--wg-radius-sm);
+    transition: color var(--wg-transition), background var(--wg-transition);
+    position: relative;
+}
+
+.wg-nav__link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.wg-nav__link--active {
+    color: var(--wg-accent-purple);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.wg-nav__link--active::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 2px;
+    background: var(--wg-accent-purple);
+    border-radius: 2px;
+}
+
+.wg-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* ============================================
+   MOBILE MENU
+   ============================================ */
+.wg-header__toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.wg-header__toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--wg-text-primary);
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+.wg-header__toggle.is-active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.wg-header__toggle.is-active span:nth-child(2) {
+    opacity: 0;
+}
+
+.wg-header__toggle.is-active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.wg-mobile-menu {
+    display: none;
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 18, 0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--wg-border-subtle);
+    padding: 1rem 2rem 1.5rem;
+}
+
+.wg-mobile-menu.is-open {
+    display: block;
+}
+
+.wg-mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.wg-mobile-nav__link {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--wg-text-secondary);
+    padding: 0.75rem 1rem;
+    border-radius: var(--wg-radius-md);
+    transition: all var(--wg-transition);
+}
+
+.wg-mobile-nav__link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.wg-mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ============================================
+   NAVBAR RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .wg-nav {
+        display: none;
+    }
+
+    .wg-header__actions {
+        display: none;
+    }
+
+    .wg-header__toggle {
+        display: flex;
+    }
+}
+
+@media (max-width: 480px) {
+    .wg-header__inner {
+        padding: 0 1rem;
+    }
+}
