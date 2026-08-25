@@ -1,9 +1,9 @@
 <?php
 /**
  * SOUND Group — Root Router
- * Redirects to admin login page.
+ * Redirects to the public website homepage.
  */
 
-header('Location: /Aptech_E_Project_02/sound_management/frontend/admin/authentication/login.php');
+header('Location: /Aptech_E_Project_02/sound_management/frontend/website/index.php');
 
 exit;

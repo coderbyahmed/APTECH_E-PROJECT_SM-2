@@ -1,0 +1,445 @@
+/* ============================================
+   SIGNUP MODAL — Sound Group Website
+   ============================================ */
+
+/* ============================================
+   OVERLAY
+   ============================================ */
+.wg-signup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wg-signup-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.wg-signup-modal {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    max-height: calc(100vh - 3rem);
+    background: var(--wg-bg-secondary);
+    border: 1px solid var(--wg-border-subtle);
+    border-radius: var(--wg-radius-xl);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.08);
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wg-signup-overlay.is-open .wg-signup-modal {
+    transform: scale(1) translateY(0);
+}
+
+.wg-signup-modal__scroll {
+    overflow-y: auto;
+    max-height: calc(100vh - 3rem);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+}
+
+.wg-signup-modal__scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.wg-signup-modal__scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.wg-signup-modal__scroll::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+}
+
+/* ============================================
+   CLOSE BUTTON
+   ============================================ */
+.wg-signup-modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--wg-border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--wg-text-muted);
+    transition: all var(--wg-transition);
+    padding: 0;
+}
+
+.wg-signup-modal__close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--wg-text-primary);
+    border-color: var(--wg-border-hover);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.wg-signup-modal__header {
+    text-align: center;
+    padding: 2rem 2rem 0;
+}
+
+.wg-signup-modal__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.wg-signup-modal__logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--wg-radius-sm);
+    background: linear-gradient(135deg, var(--wg-accent-violet), var(--wg-accent-magenta));
+    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.35);
+}
+
+.wg-signup-modal__logo-icon svg {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+}
+
+.wg-signup-modal__logo-text {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.wg-signup-modal__title {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+.wg-signup-modal__subtitle {
+    font-size: 0.875rem;
+    color: var(--wg-text-secondary);
+    line-height: 1.6;
+}
+
+/* ============================================
+   FORM
+   ============================================ */
+.wg-signup-form {
+    padding: 1.5rem 2rem 2rem;
+}
+
+/* Avatar */
+.wg-signup-form__avatar-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.wg-signup-form__avatar {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: block;
+}
+
+.wg-signup-form__avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.wg-signup-form__avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.08));
+    border: 2px dashed rgba(139, 92, 246, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--wg-accent-purple);
+    transition: all var(--wg-transition);
+}
+
+.wg-signup-form__avatar:hover .wg-signup-form__avatar-placeholder {
+    border-color: rgba(139, 92, 246, 0.5);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.12));
+}
+
+.wg-signup-form__avatar-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    opacity: 0;
+    transition: opacity var(--wg-transition);
+}
+
+.wg-signup-form__avatar:hover .wg-signup-form__avatar-overlay {
+    opacity: 1;
+}
+
+.wg-signup-form__avatar-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Form Rows */
+.wg-signup-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Fields */
+.wg-signup-form__field {
+    display: flex;
+    flex-direction: column;
+}
+
+.wg-signup-form__label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--wg-text-primary);
+    margin-bottom: 0.375rem;
+}
+
+.wg-signup-form__required {
+    color: var(--wg-accent-magenta);
+}
+
+.wg-signup-form__input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.wg-signup-form__input-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--wg-text-muted);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    transition: color var(--wg-transition);
+    z-index: 2;
+}
+
+.wg-signup-form__input {
+    width: 100%;
+    padding: 0.75rem 0.875rem 0.75rem 2.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--wg-border-subtle);
+    border-radius: var(--wg-radius-sm);
+    color: var(--wg-text-primary);
+    font-size: 0.875rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color var(--wg-transition), background var(--wg-transition), box-shadow var(--wg-transition);
+}
+
+.wg-signup-form__input::placeholder {
+    color: var(--wg-text-muted);
+}
+
+.wg-signup-form__input:focus {
+    border-color: rgba(139, 92, 246, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.wg-signup-form__input:focus ~ .wg-signup-form__input-icon,
+.wg-signup-form__input:focus + .wg-signup-form__toggle-pass + .wg-signup-form__input-icon,
+.wg-signup-form__input-wrap:focus-within .wg-signup-form__input-icon {
+    color: var(--wg-accent-purple);
+}
+
+/* Password toggle */
+.wg-signup-form__toggle-pass {
+    position: absolute;
+    right: 0.625rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--wg-text-muted);
+    display: flex;
+    align-items: center;
+    padding: 0.25rem;
+    transition: color var(--wg-transition);
+    z-index: 2;
+}
+
+.wg-signup-form__toggle-pass:hover {
+    color: var(--wg-text-primary);
+}
+
+/* Messages */
+.wg-signup-form__message {
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--wg-radius-sm);
+    font-size: 0.8125rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.wg-signup-form__message--error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+}
+
+.wg-signup-form__message--success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    color: #86efac;
+}
+
+/* Submit */
+.wg-signup-form__submit {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.wg-signup-form__submit.is-loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* Field error */
+.wg-signup-form__field-error {
+    color: #fca5a5;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Login link */
+.wg-signup-form__login {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--wg-text-secondary);
+}
+
+.wg-signup-form__login-link {
+    color: var(--wg-accent-purple);
+    font-weight: 600;
+    transition: color var(--wg-transition);
+}
+
+.wg-signup-form__login-link:hover {
+    color: #a78bfa;
+}
+
+/* ============================================
+   RESPONSIVE — TABLET (768px)
+   ============================================ */
+@media (max-width: 768px) {
+    .wg-signup-overlay {
+        padding: 1rem;
+        align-items: flex-end;
+    }
+
+    .wg-signup-modal {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: var(--wg-radius-xl) var(--wg-radius-xl) 0 0;
+    }
+
+    .wg-signup-modal__scroll {
+        max-height: 90vh;
+    }
+}
+
+/* ============================================
+   RESPONSIVE — MOBILE (480px)
+   ============================================ */
+@media (max-width: 480px) {
+    .wg-signup-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .wg-signup-modal {
+        max-height: 100vh;
+        border-radius: var(--wg-radius-xl) var(--wg-radius-xl) 0 0;
+        border-bottom: none;
+    }
+
+    .wg-signup-modal__scroll {
+        max-height: 100vh;
+    }
+
+    .wg-signup-modal__header {
+        padding: 1.5rem 1.25rem 0;
+    }
+
+    .wg-signup-form {
+        padding: 1.25rem;
+    }
+
+    .wg-signup-form__row {
+        grid-template-columns: 1fr;
+        gap: 0.875rem;
+    }
+
+    .wg-signup-form__avatar {
+        width: 76px;
+        height: 76px;
+    }
+}
+
+/* ============================================
+   BODY LOCK
+   ============================================ */
+body.wg-signup-open {
+    overflow: hidden;
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+    .wg-signup-overlay,
+    .wg-signup-modal {
+        transition: none;
+    }
+}

@@ -20,6 +20,8 @@ $currentPage = 'music';
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/layout/footer/footer.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/music_card/music_card.css">
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/music.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/signup_modal/signup_modal.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/login_modal/login_modal.css">
 </head>
 <body class="wg-page--music">
 

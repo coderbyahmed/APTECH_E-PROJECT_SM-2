@@ -1,0 +1,347 @@
+/* ============================================
+   LOGIN MODAL — Sound Group Website
+   ============================================ */
+
+/* ============================================
+   OVERLAY
+   ============================================ */
+.wg-login-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wg-login-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.wg-login-modal {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    max-height: calc(100vh - 3rem);
+    background: var(--wg-bg-secondary);
+    border: 1px solid var(--wg-border-subtle);
+    border-radius: var(--wg-radius-xl);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.08);
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wg-login-overlay.is-open .wg-login-modal {
+    transform: scale(1) translateY(0);
+}
+
+.wg-login-modal__scroll {
+    overflow-y: auto;
+    max-height: calc(100vh - 3rem);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+}
+
+.wg-login-modal__scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.wg-login-modal__scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.wg-login-modal__scroll::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+}
+
+/* ============================================
+   CLOSE BUTTON
+   ============================================ */
+.wg-login-modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--wg-border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--wg-text-muted);
+    transition: all var(--wg-transition);
+    padding: 0;
+}
+
+.wg-login-modal__close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--wg-text-primary);
+    border-color: var(--wg-border-hover);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.wg-login-modal__header {
+    text-align: center;
+    padding: 2rem 2rem 0;
+}
+
+.wg-login-modal__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.wg-login-modal__logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--wg-radius-sm);
+    background: linear-gradient(135deg, var(--wg-accent-violet), var(--wg-accent-magenta));
+    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.35);
+}
+
+.wg-login-modal__logo-icon svg {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+}
+
+.wg-login-modal__logo-text {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.wg-login-modal__title {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+.wg-login-modal__subtitle {
+    font-size: 0.875rem;
+    color: var(--wg-text-secondary);
+    line-height: 1.6;
+}
+
+/* ============================================
+   FORM
+   ============================================ */
+.wg-login-form {
+    padding: 1.5rem 2rem 2rem;
+}
+
+/* Fields */
+.wg-login-form__field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.wg-login-form__label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--wg-text-primary);
+    margin-bottom: 0.375rem;
+}
+
+.wg-login-form__required {
+    color: var(--wg-accent-magenta);
+}
+
+.wg-login-form__input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.wg-login-form__input-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--wg-text-muted);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    transition: color var(--wg-transition);
+    z-index: 2;
+}
+
+.wg-login-form__input {
+    width: 100%;
+    padding: 0.75rem 2.75rem 0.75rem 2.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--wg-border-subtle);
+    border-radius: var(--wg-radius-sm);
+    color: var(--wg-text-primary);
+    font-size: 0.875rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color var(--wg-transition), background var(--wg-transition), box-shadow var(--wg-transition);
+}
+
+.wg-login-form__input::placeholder {
+    color: var(--wg-text-muted);
+}
+
+.wg-login-form__input:focus {
+    border-color: rgba(139, 92, 246, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.wg-login-form__input:focus ~ .wg-login-form__input-icon,
+.wg-login-form__input-wrap:focus-within .wg-login-form__input-icon {
+    color: var(--wg-accent-purple);
+}
+
+/* Password toggle */
+.wg-login-form__toggle-pass {
+    position: absolute;
+    right: 0.625rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--wg-text-muted);
+    display: flex;
+    align-items: center;
+    padding: 0.25rem;
+    transition: color var(--wg-transition);
+    z-index: 2;
+}
+
+.wg-login-form__toggle-pass:hover {
+    color: var(--wg-text-primary);
+}
+
+/* Messages */
+.wg-login-form__message {
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--wg-radius-sm);
+    font-size: 0.8125rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.wg-login-form__message--error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+}
+
+.wg-login-form__message--success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    color: #86efac;
+}
+
+/* Submit */
+.wg-login-form__submit {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+/* Signup link */
+.wg-login-form__signup {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--wg-text-secondary);
+}
+
+.wg-login-form__signup-link {
+    color: var(--wg-accent-purple);
+    font-weight: 600;
+    transition: color var(--wg-transition);
+}
+
+.wg-login-form__signup-link:hover {
+    color: #a78bfa;
+}
+
+/* ============================================
+   RESPONSIVE — TABLET (768px)
+   ============================================ */
+@media (max-width: 768px) {
+    .wg-login-overlay {
+        padding: 1rem;
+        align-items: flex-end;
+    }
+
+    .wg-login-modal {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: var(--wg-radius-xl) var(--wg-radius-xl) 0 0;
+    }
+
+    .wg-login-modal__scroll {
+        max-height: 90vh;
+    }
+}
+
+/* ============================================
+   RESPONSIVE — MOBILE (480px)
+   ============================================ */
+@media (max-width: 480px) {
+    .wg-login-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .wg-login-modal {
+        max-height: 100vh;
+        border-radius: var(--wg-radius-xl) var(--wg-radius-xl) 0 0;
+        border-bottom: none;
+    }
+
+    .wg-login-modal__scroll {
+        max-height: 100vh;
+    }
+
+    .wg-login-modal__header {
+        padding: 1.5rem 1.25rem 0;
+    }
+
+    .wg-login-form {
+        padding: 1.25rem;
+    }
+}
+
+/* ============================================
+   BODY LOCK
+   ============================================ */
+body.wg-login-open {
+    overflow: hidden;
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+    .wg-login-overlay,
+    .wg-login-modal {
+        transition: none;
+    }
+}

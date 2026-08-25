@@ -260,6 +260,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="/Aptech_E_Project_02/sound_management/frontend/admin/js/components/notifications/notification.js"></script>
     <script src="/Aptech_E_Project_02/sound_management/frontend/admin/js/components/loaders/button-spinner.js"></script>
-    <?php include __DIR__ . '/../../components/admin/notifications/notification.php'; ?>
+    <?php include __DIR__ . '/../components/notifications/notification.php'; ?>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /**
- * SOUND Group — User Management (UI Only)
+ * SOUND Group — User Management (AJAX-powered)
  * Handles: modal open/close, view/edit/delete, search & status filter,
- *          empty state, profile image preview, mock pagination (6 per page)
+ *          empty state, profile image preview, pagination (6 per page)
  */
 (function () {
     'use strict';
@@ -10,6 +10,12 @@
     var currentUser = null;
     var currentPage = 1;
     var totalPages = 1;
+    var handlerUrl = '/Aptech_E_Project_02/sound_management/backend/handlers/user-handler.php';
+
+    function getCsrfToken() {
+        var grid = document.getElementById('umCardGrid');
+        return grid ? (grid.getAttribute('data-csrf') || '') : '';
+    }
 
     function init() {
         if (!document.getElementById('umCardGrid')) return;
@@ -34,8 +40,9 @@
             return currentUser ? (currentUser.getAttribute(attr) || fallback) : fallback;
         }
 
-        function initials(first, last) {
-            return ((first || '?').charAt(0) + (last || '?').charAt(0)).toUpperCase();
+        function initials(name) {
+            var parts = (name || '?').trim().split(/\s+/);
+            return ((parts[0] || '?').charAt(0) + (parts[1] || '').charAt(0)).toUpperCase();
         }
 
         function setBadge(el, status) {
@@ -57,19 +64,11 @@
             return Array.prototype.slice.call(
                 document.querySelectorAll('#umCardGrid .um-user-card')
             ).filter(function (card) {
-                var first = (card.getAttribute('data-first') || '').toLowerCase();
-                var last = (card.getAttribute('data-last') || '').toLowerCase();
+                var name = (card.getAttribute('data-name') || '').toLowerCase();
                 var userId = (card.getAttribute('data-user-id') || '').toLowerCase();
-                var fullName = (first + ' ' + last).trim();
-
                 var cardStatus = (card.getAttribute('data-status') || '').toLowerCase();
 
-                var matchQuery = !query ||
-                    fullName.indexOf(query) !== -1 ||
-                    first.indexOf(query) !== -1 ||
-                    last.indexOf(query) !== -1 ||
-                    userId.indexOf(query) !== -1;
-
+                var matchQuery = !query || name.indexOf(query) !== -1 || userId.indexOf(query) !== -1;
                 var matchStatus = status === 'all' || cardStatus === status;
 
                 return matchQuery && matchStatus;
@@ -78,9 +77,7 @@
 
         function renderPagination(total) {
             totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-            if (currentPage > totalPages) {
-                currentPage = totalPages;
-            }
+            if (currentPage > totalPages) currentPage = totalPages;
 
             var pagesEl = document.getElementById('umPaginationPages');
             if (pagesEl) {
@@ -89,13 +86,9 @@
                     (function (page) {
                         var btn = document.createElement('button');
                         btn.type = 'button';
-                        btn.className = 'um-pagination__btn' +
-                            (page === currentPage ? ' um-pagination__btn--active' : '');
+                        btn.className = 'um-pagination__btn' + (page === currentPage ? ' um-pagination__btn--active' : '');
                         btn.textContent = page;
-                        btn.addEventListener('click', function () {
-                            currentPage = page;
-                            renderGrid();
-                        });
+                        btn.addEventListener('click', function () { currentPage = page; renderGrid(); });
                         pagesEl.appendChild(btn);
                     })(i);
                 }
@@ -103,7 +96,6 @@
 
             var prevBtn = document.getElementById('umPrevPage');
             if (prevBtn) prevBtn.disabled = currentPage <= 1;
-
             var nextBtn = document.getElementById('umNextPage');
             if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
         }
@@ -112,9 +104,7 @@
             var cards = getFilteredCards();
             var total = cards.length;
             var displayedPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-            if (currentPage > displayedPages) {
-                currentPage = displayedPages;
-            }
+            if (currentPage > displayedPages) currentPage = displayedPages;
 
             var firstIndex = (currentPage - 1) * PAGE_SIZE;
             var lastIndex = firstIndex + PAGE_SIZE;
@@ -136,9 +126,7 @@
             }
 
             var emptyEl = document.getElementById('umEmptyState');
-            if (emptyEl) {
-                emptyEl.hidden = total !== 0;
-            }
+            if (emptyEl) emptyEl.hidden = total !== 0;
 
             renderPagination(total);
         }
@@ -168,11 +156,33 @@
             if (!modal) return;
             var overlay = modal.querySelector('.sg-modal__overlay');
             if (overlay) {
-                overlay.addEventListener('click', function () {
-                    closeModal(id);
-                });
+                overlay.addEventListener('click', function () { closeModal(id); });
             }
         });
+
+        // --- AJAX helper ---
+        function ajaxPost(data, onSuccess, onError) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', handlerUrl, true);
+            xhr.responseType = 'json';
+            xhr.onload = function () {
+                var resp = xhr.response;
+                if (xhr.status === 200 && resp && resp.success) {
+                    onSuccess(resp);
+                } else if (resp && resp.redirect) {
+                    window.location.href = resp.redirect;
+                } else {
+                    onError(resp ? resp.error : 'An unexpected error occurred.');
+                }
+            };
+            xhr.onerror = function () { onError('Network error. Please try again.'); };
+            var fd = new FormData();
+            data.csrf_token = getCsrfToken();
+            Object.keys(data).forEach(function (k) {
+                if (data[k] !== undefined && data[k] !== null) fd.append(k, data[k]);
+            });
+            xhr.send(fd);
+        }
 
         // --- View User ---
         document.querySelectorAll('[data-um-action="view"]').forEach(function (btn) {
@@ -180,35 +190,51 @@
                 currentUser = btn.closest('.um-user-card');
                 if (!currentUser) return;
 
-                var first = textValue('data-first', '');
-                var last = textValue('data-last', '');
-                var name = first + ' ' + last;
-                var status = (textValue('data-status', 'active') || '').toLowerCase();
+                var dbId = textValue('data-db-id', '0');
+                var cardName = textValue('data-name', '');
+                var cardEmail = textValue('data-email', '');
+                var cardPhone = textValue('data-phone', '');
+                var cardAddress = textValue('data-address', '');
+                var cardRegistered = textValue('data-registered', '');
+                var cardLogin = textValue('data-login', '');
+                var cardLogout = textValue('data-logout', '');
+                var cardStatus = (textValue('data-status', 'active') || '').toLowerCase();
+                var cardImage = textValue('data-image', '');
+                var cardUserId = textValue('data-user-id', '');
 
                 var avatarEl = document.getElementById('um-view-avatar');
-                if (avatarEl) avatarEl.textContent = initials(first, last);
+                if (avatarEl) {
+                    if (cardImage) {
+                        avatarEl.textContent = '';
+                        avatarEl.style.backgroundImage = 'url(' + cardImage + ')';
+                        avatarEl.style.backgroundSize = 'cover';
+                        avatarEl.style.backgroundPosition = 'center';
+                        avatarEl.className = 'um-avatar um-avatar--large';
+                    } else {
+                        avatarEl.style.backgroundImage = '';
+                        avatarEl.style.backgroundSize = '';
+                        avatarEl.style.backgroundPosition = '';
+                        avatarEl.textContent = initials(cardName);
+                        avatarEl.className = 'um-avatar um-avatar--large um-avatar--violet';
+                    }
+                }
 
                 var setText = function (id, val) {
                     var el = document.getElementById(id);
-                    if (el) el.textContent = val;
+                    if (el) el.textContent = val || '—';
                 };
 
-                var setName = function (id, val) {
-                    var el = document.getElementById(id);
-                    if (el) el.innerHTML = val;
-                };
+                setText('um-view-name', cardName);
+                setText('um-view-id', cardUserId);
+                setText('um-view-email', cardEmail);
+                setText('um-view-phone', cardPhone);
+                setText('um-view-address', cardAddress || '—');
+                setText('um-view-registered', cardRegistered || '—');
+                setText('um-view-login', cardLogin || 'Never');
+                setText('um-view-logout', cardLogout || '—');
+                setText('um-view-status-text', cardStatus === 'active' ? 'Active' : 'Inactive');
 
-                setName('um-view-name', name);
-                setName('um-view-id', textValue('data-user-id', ''));
-                setText('um-view-email', textValue('data-email', ''));
-                setText('um-view-phone', textValue('data-phone', ''));
-                setText('um-view-address', textValue('data-address', ''));
-                setText('um-view-registered', textValue('data-registered', ''));
-                setText('um-view-login', textValue('data-login', ''));
-                setText('um-view-logout', textValue('data-logout', ''));
-                setText('um-view-status-text', status === 'active' ? 'Active' : 'Inactive');
-
-                setBadge(document.getElementById('um-view-status-badge'), status);
+                setBadge(document.getElementById('um-view-status-badge'), cardStatus);
 
                 openModal('umViewModal');
             });
@@ -220,128 +246,174 @@
                 currentUser = btn.closest('.um-user-card');
                 if (!currentUser) return;
 
-                var first = textValue('data-first', '');
-                var last = textValue('data-last', '');
-                var name = first + ' ' + last;
-                var status = (textValue('data-status', 'active') || '').toLowerCase();
-
-                var setValue = function (id, val) {
-                    var el = document.getElementById(id);
-                    if (el) el.value = val;
-                };
-
-                setValue('um-edit-first', first);
-                setValue('um-edit-last', last);
-                setValue('um-edit-email', textValue('data-email', ''));
-                setValue('um-edit-phone', textValue('data-phone', ''));
-                setValue('um-edit-address', textValue('data-address', ''));
-                setValue('um-edit-status', status);
-
-                var nameEl = document.getElementById('um-edit-user-name');
-                if (nameEl) nameEl.textContent = name;
-
-                var titleEl = document.getElementById('umEditTitle');
-                if (titleEl) titleEl.textContent = 'Edit User';
-
-                var avatarEl = document.getElementById('um-edit-avatar');
-                if (avatarEl) {
-                    avatarEl.textContent = initials(first, last);
-                    avatarEl.style.background = '';
-                    avatarEl.className = 'um-avatar um-avatar--large';
-                }
-
+                populateEditForm();
                 openModal('umEditModal');
             });
         });
+
+        function populateEditForm() {
+            if (!currentUser) return;
+
+            var cardName = textValue('data-name', '');
+            var cardImage = textValue('data-image', '');
+
+            var setValue = function (id, val) {
+                var el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+
+            setValue('um-edit-db-id', textValue('data-db-id', ''));
+            setValue('um-edit-name', cardName);
+            setValue('um-edit-email', textValue('data-email', ''));
+            setValue('um-edit-phone', textValue('data-phone', ''));
+            setValue('um-edit-address', textValue('data-address', ''));
+            setValue('um-edit-status', (textValue('data-status', 'active') || '').toLowerCase());
+
+            var nameEl = document.getElementById('um-edit-user-name');
+            if (nameEl) nameEl.textContent = cardName;
+
+            var titleEl = document.getElementById('umEditTitle');
+            if (titleEl) titleEl.textContent = 'Edit User';
+
+            var avatarEl = document.getElementById('um-edit-avatar');
+            if (avatarEl) {
+                if (cardImage) {
+                    avatarEl.textContent = '';
+                    avatarEl.style.backgroundImage = 'url(' + cardImage + ')';
+                    avatarEl.style.backgroundSize = 'cover';
+                    avatarEl.style.backgroundPosition = 'center';
+                    avatarEl.className = 'um-avatar um-avatar--large';
+                } else {
+                    avatarEl.textContent = initials(cardName);
+                    avatarEl.style.backgroundImage = '';
+                    avatarEl.style.backgroundSize = '';
+                    avatarEl.style.backgroundPosition = '';
+                    avatarEl.className = 'um-avatar um-avatar--large um-avatar--violet';
+                }
+            }
+
+            // Reset file input
+            var fileInput = document.getElementById('umEditImageInput');
+            if (fileInput) fileInput.value = '';
+        }
 
         // --- View -> Edit button ---
         var viewEditBtn = document.getElementById('umViewEditBtn');
         if (viewEditBtn) {
             viewEditBtn.addEventListener('click', function () {
                 closeModal('umViewModal');
-                if (!currentUser) return;
-
-                var first = textValue('data-first', '');
-                var last = textValue('data-last', '');
-                var name = first + ' ' + last;
-                var status = (textValue('data-status', 'active') || '').toLowerCase();
-
-                var setValue = function (id, val) {
-                    var el = document.getElementById(id);
-                    if (el) el.value = val;
-                };
-
-                setValue('um-edit-first', first);
-                setValue('um-edit-last', last);
-                setValue('um-edit-email', textValue('data-email', ''));
-                setValue('um-edit-phone', textValue('data-phone', ''));
-                setValue('um-edit-address', textValue('data-address', ''));
-                setValue('um-edit-status', status);
-
-                var nameEl = document.getElementById('um-edit-user-name');
-                if (nameEl) nameEl.textContent = name;
-
-                var avatarEl = document.getElementById('um-edit-avatar');
-                if (avatarEl) {
-                    avatarEl.textContent = initials(first, last);
-                    avatarEl.style.backgroundImage = '';
-                    avatarEl.style.backgroundSize = '';
-                    avatarEl.style.backgroundPosition = '';
-                    avatarEl.className = 'um-avatar um-avatar--large';
-                }
-
+                populateEditForm();
                 openModal('umEditModal');
             });
         }
 
-        // --- Update User (UI Only, updates the card) ---
-        var updateBtn = document.getElementById('umUpdateUserBtn');
-        if (updateBtn) {
-            updateBtn.addEventListener('click', function () {
+        // --- Update User (AJAX) ---
+        var editForm = document.getElementById('umEditForm');
+        if (editForm) {
+            editForm.addEventListener('submit', function (e) {
+                e.preventDefault();
                 if (!currentUser) return;
 
-                var first = document.getElementById('um-edit-first').value.trim();
-                var last = document.getElementById('um-edit-last').value.trim();
+                var dbId = document.getElementById('um-edit-db-id').value;
+                var fullName = document.getElementById('um-edit-name').value.trim();
                 var email = document.getElementById('um-edit-email').value.trim();
                 var phone = document.getElementById('um-edit-phone').value.trim();
                 var address = document.getElementById('um-edit-address').value.trim();
-                var status = document.getElementById('um-edit-status').value.toLowerCase();
+                var status = document.getElementById('um-edit-status').value;
 
-                if (!first || !last) return;
+                if (!fullName || !email || !phone) return;
 
-                // Update card data attributes
-                currentUser.setAttribute('data-first', first);
-                currentUser.setAttribute('data-last', last);
-                currentUser.setAttribute('data-email', email);
-                currentUser.setAttribute('data-phone', phone);
-                currentUser.setAttribute('data-address', address);
-                currentUser.setAttribute('data-status', status);
+                var updateBtn = document.getElementById('umUpdateUserBtn');
+                if (updateBtn) updateBtn.disabled = true;
 
-                // Update displayed card content
-                var nameEl = currentUser.querySelector('.um-user-card__name');
-                if (nameEl) nameEl.textContent = first + ' ' + last;
+                var fd = new FormData();
+                fd.append('action', 'edit');
+                fd.append('csrf_token', getCsrfToken());
+                fd.append('id', dbId);
+                fd.append('full_name', fullName);
+                fd.append('email', email);
+                fd.append('phone', phone);
+                fd.append('address', address);
+                fd.append('status', status);
 
-                var emailEl = currentUser.querySelector('.um-user-card__value--email');
-                if (emailEl) emailEl.textContent = email;
-
-                var phoneEl = currentUser.querySelector('.um-user-card__value--phone');
-                if (phoneEl) phoneEl.textContent = phone;
-
-                var addressEl = currentUser.querySelector('.um-user-card__value--address');
-                if (addressEl) addressEl.textContent = address;
-
-                var avatar = currentUser.querySelector('.um-avatar');
-                if (avatar) avatar.textContent = initials(first, last);
-
-                var badge = currentUser.querySelector('.um-badge');
-                setBadge(badge, status);
-
-                closeModal('umEditModal');
-                renderGrid();
-
-                if (typeof showSuccess === 'function') {
-                    showSuccess('User updated successfully.', 2000);
+                var fileInput = document.getElementById('umEditImageInput');
+                if (fileInput && fileInput.files.length > 0) {
+                    fd.append('profile_image', fileInput.files[0]);
                 }
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', handlerUrl, true);
+                xhr.responseType = 'json';
+                xhr.onload = function () {
+                    var resp = xhr.response;
+                    if (updateBtn) updateBtn.disabled = false;
+
+                    if (xhr.status === 200 && resp && resp.success && resp.record) {
+                        // Update the card
+                        var rec = resp.record;
+                        currentUser.setAttribute('data-name', rec.full_name);
+                        currentUser.setAttribute('data-email', rec.email);
+                        currentUser.setAttribute('data-phone', rec.phone);
+                        currentUser.setAttribute('data-address', rec.address || '');
+                        currentUser.setAttribute('data-status', rec.status);
+
+                        if (rec.profile_image) {
+                            currentUser.setAttribute('data-image', '/' + rec.profile_image.replace(/^\//, ''));
+                        }
+
+                        // Update card display
+                        var nameEl = currentUser.querySelector('.um-user-card__name');
+                        if (nameEl) nameEl.textContent = rec.full_name;
+
+                        var emailEl = currentUser.querySelector('.um-user-card__value--email');
+                        if (emailEl) emailEl.textContent = rec.email;
+
+                        var phoneEl = currentUser.querySelector('.um-user-card__value--phone');
+                        if (phoneEl) phoneEl.textContent = rec.phone;
+
+                        var addressEl = currentUser.querySelector('.um-user-card__value--address');
+                        if (addressEl) addressEl.textContent = rec.address || '—';
+
+                        var avatar = currentUser.querySelector('.um-avatar');
+                        if (avatar) {
+                            if (rec.profile_image) {
+                                avatar.textContent = '';
+                                avatar.style.backgroundImage = 'url(/' + rec.profile_image.replace(/^\//, '') + ')';
+                                avatar.style.backgroundSize = 'cover';
+                                avatar.style.backgroundPosition = 'center';
+                                avatar.className = 'um-avatar um-avatar--card';
+                            } else {
+                                avatar.textContent = initials(rec.full_name);
+                                avatar.style.backgroundImage = '';
+                                avatar.className = 'um-avatar um-avatar--card um-avatar--violet';
+                            }
+                        }
+
+                        var badge = currentUser.querySelector('.um-badge');
+                        setBadge(badge, rec.status);
+
+                        closeModal('umEditModal');
+                        renderGrid();
+
+                        if (typeof showSuccess === 'function') {
+                            showSuccess(resp.message || 'User updated successfully.', 2000);
+                        }
+                    } else if (resp && resp.redirect) {
+                        window.location.href = resp.redirect;
+                    } else {
+                        var errMsg = resp ? (resp.error || 'Update failed.') : 'An unexpected error occurred.';
+                        if (typeof showError === 'function') {
+                            showError(errMsg, 3000);
+                        }
+                    }
+                };
+                xhr.onerror = function () {
+                    if (updateBtn) updateBtn.disabled = false;
+                    if (typeof showError === 'function') {
+                        showError('Network error. Please try again.', 3000);
+                    }
+                };
+                xhr.send(fd);
             });
         }
 
@@ -351,10 +423,7 @@
                 currentUser = btn.closest('.um-user-card');
                 if (!currentUser) return;
 
-                var first = textValue('data-first', '');
-                var last = textValue('data-last', '');
-                var name = (first + ' ' + last).trim() || textValue('data-user-id', '');
-
+                var name = textValue('data-name', textValue('data-user-id', ''));
                 var deleteName = document.getElementById('um-delete-name');
                 if (deleteName) deleteName.textContent = name;
 
@@ -362,78 +431,68 @@
             });
         });
 
-        // --- Confirm Delete (UI Only, removes the card) ---
+        // --- Confirm Delete (AJAX) ---
         var confirmDeleteBtn = document.getElementById('umConfirmDeleteBtn');
         if (confirmDeleteBtn) {
             confirmDeleteBtn.addEventListener('click', function () {
-                if (currentUser && currentUser.parentNode) {
-                    currentUser.parentNode.removeChild(currentUser);
-                }
-                currentUser = null;
-                closeModal('umDeleteModal');
-                renderGrid();
+                if (!currentUser) return;
 
-                if (typeof showSuccess === 'function') {
-                    showSuccess('User deleted successfully.', 2000);
-                }
+                var dbId = textValue('data-db-id', '0');
+                confirmDeleteBtn.disabled = true;
+
+                ajaxPost({ action: 'delete', id: dbId }, function (resp) {
+                    if (currentUser && currentUser.parentNode) {
+                        currentUser.parentNode.removeChild(currentUser);
+                    }
+                    currentUser = null;
+                    confirmDeleteBtn.disabled = false;
+                    closeModal('umDeleteModal');
+                    renderGrid();
+
+                    if (typeof showSuccess === 'function') {
+                        showSuccess(resp.message || 'User deleted successfully.', 2000);
+                    }
+                }, function (errMsg) {
+                    confirmDeleteBtn.disabled = false;
+                    if (typeof showError === 'function') {
+                        showError(errMsg, 3000);
+                    }
+                });
             });
         }
 
         // --- Search + Status Filter ---
         var searchInput = document.getElementById('umSearchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', renderGrid);
-        }
+        if (searchInput) searchInput.addEventListener('input', renderGrid);
 
         var statusFilter = document.getElementById('umStatusFilter');
-        if (statusFilter) {
-            statusFilter.addEventListener('change', renderGrid);
-        }
+        if (statusFilter) statusFilter.addEventListener('change', renderGrid);
 
         // --- Pagination Prev / Next ---
         var prevBtn = document.getElementById('umPrevPage');
         if (prevBtn) {
             prevBtn.addEventListener('click', function () {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderGrid();
-                }
+                if (currentPage > 1) { currentPage--; renderGrid(); }
             });
         }
-
         var nextBtn = document.getElementById('umNextPage');
         if (nextBtn) {
             nextBtn.addEventListener('click', function () {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderGrid();
-                }
+                if (currentPage < totalPages) { currentPage++; renderGrid(); }
             });
         }
 
-        // --- Edit form submit prevention ---
-        var editForm = document.getElementById('umEditForm');
-        if (editForm) {
-            editForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-            });
-        }
-
-        // --- Profile image preview (UI Only) ---
+        // --- Profile image preview (Edit modal) ---
         var imageInput = document.getElementById('umEditImageInput');
         var imageBtn = document.getElementById('umEditImageBtn');
         var editAvatar = document.getElementById('um-edit-avatar');
 
         if (imageBtn && imageInput) {
-            imageBtn.addEventListener('click', function () {
-                imageInput.click();
-            });
+            imageBtn.addEventListener('click', function () { imageInput.click(); });
         }
-
         if (imageInput) {
             imageInput.addEventListener('change', function () {
                 if (imageInput.files && imageInput.files.length > 0) {
-                    var file = imageInput.files[0];
                     var reader = new FileReader();
                     reader.onload = function (e) {
                         if (editAvatar) {
@@ -443,7 +502,7 @@
                             editAvatar.style.backgroundPosition = 'center';
                         }
                     };
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(imageInput.files[0]);
                 }
             });
         }
@@ -452,7 +511,6 @@
         renderGrid();
     }
 
-    // --- Initialize when DOM is ready ---
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {

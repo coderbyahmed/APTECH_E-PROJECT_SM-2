@@ -1,0 +1,553 @@
+/* ============================================
+   CONTACT PAGE — Sound Group Website
+   ============================================ */
+
+/* ============================================
+   NAVBAR ACTIVE STATE (mobile)
+   ============================================ */
+.wg-mobile-nav__link--active {
+    color: var(--wg-accent-purple);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+/* ============================================
+   CONTACT HERO
+   ============================================ */
+.wg-contact-hero {
+    padding: 9rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    background:
+        radial-gradient(ellipse at 50% 30%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+        var(--wg-bg-primary);
+}
+
+.wg-contact-hero__inner {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.wg-contact-hero__label {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--wg-accent-purple);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.wg-contact-hero__title {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+}
+
+.wg-contact-hero__title-accent {
+    background: linear-gradient(135deg, var(--wg-accent-purple) 0%, var(--wg-accent-magenta) 50%, #f472b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.wg-contact-hero__desc {
+    font-size: 1.0625rem;
+    color: var(--wg-text-secondary);
+    line-height: 1.7;
+}
+
+/* ============================================
+   MAIN CONTACT SECTION
+   ============================================ */
+.wg-contact-main {
+    padding: 3rem 2rem 5rem;
+}
+
+.wg-contact-main__inner {
+    max-width: var(--wg-max-width);
+    margin: 0 auto;
+}
+
+.wg-contact-main__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+/* ============================================
+   CONTACT FORM CARD
+   ============================================ */
+.wg-contact-form-card {
+    background: var(--wg-bg-card);
+    border: 1px solid var(--wg-border-subtle);
+    border-radius: var(--wg-radius-xl);
+    padding: 2.5rem;
+}
+
+.wg-contact-form-card__title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.wg-contact-form-card__desc {
+    font-size: 0.9375rem;
+    color: var(--wg-text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* ============================================
+   FORM FIELDS
+   ============================================ */
+.wg-contact-form__field {
+    margin-bottom: 1.25rem;
+}
+
+.wg-contact-form__label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--wg-text-primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.01em;
+}
+
+.wg-contact-form__required {
+    color: var(--wg-accent-magenta);
+}
+
+.wg-contact-form__optional {
+    color: var(--wg-text-muted);
+    font-weight: 400;
+}
+
+.wg-contact-form__input-wrap {
+    position: relative;
+}
+
+.wg-contact-form__input-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--wg-text-muted);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    transition: color var(--wg-transition);
+    z-index: 2;
+}
+
+.wg-contact-form__input-icon--top {
+    top: 0.875rem;
+    transform: none;
+}
+
+.wg-contact-form__input-wrap--textarea {
+    position: relative;
+}
+
+.wg-contact-form__input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 2.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--wg-border-subtle);
+    border-radius: var(--wg-radius-md);
+    color: var(--wg-text-primary);
+    font-size: 0.9375rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color var(--wg-transition), background var(--wg-transition), box-shadow var(--wg-transition);
+}
+
+.wg-contact-form__input::placeholder {
+    color: var(--wg-text-muted);
+}
+
+.wg-contact-form__input:focus {
+    border-color: rgba(139, 92, 246, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.wg-contact-form__input:focus ~ .wg-contact-form__input-icon {
+    color: var(--wg-accent-purple);
+}
+
+.wg-contact-form__select {
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.875rem center;
+    background-size: 16px;
+    padding-right: 2.5rem;
+}
+
+.wg-contact-form__select option {
+    background: var(--wg-bg-secondary);
+    color: var(--wg-text-primary);
+}
+
+.wg-contact-form__textarea {
+    min-height: 130px;
+    resize: vertical;
+    padding-left: 2.75rem;
+}
+
+/* Form Messages */
+.wg-contact-form__message {
+    padding: 0.75rem 1rem;
+    border-radius: var(--wg-radius-sm);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.wg-contact-form__message--error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+}
+
+.wg-contact-form__message--success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    color: #86efac;
+}
+
+/* Submit Button */
+.wg-contact-form__submit {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.wg-contact-form__submit svg {
+    flex-shrink: 0;
+}
+
+/* ============================================
+   GET IN TOUCH — INFO CARDS
+   ============================================ */
+.wg-contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.wg-contact-info__card {
+    background: var(--wg-bg-card);
+    border: 1px solid var(--wg-border-subtle);
+    border-radius: var(--wg-radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    transition: all var(--wg-transition);
+}
+
+.wg-contact-info__card:hover {
+    border-color: var(--wg-border-hover);
+    background: var(--wg-bg-card-hover);
+}
+
+.wg-contact-info__card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--wg-radius-md);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(139, 92, 246, 0.06));
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--wg-accent-purple);
+}
+
+.wg-contact-info__card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.wg-contact-info__card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.375rem;
+}
+
+.wg-contact-info__card-text {
+    font-size: 0.875rem;
+    color: var(--wg-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.wg-contact-info__card-link {
+    display: inline-block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--wg-accent-purple);
+    transition: color var(--wg-transition);
+}
+
+.wg-contact-info__card-link:hover {
+    color: #a78bfa;
+}
+
+.wg-contact-info__card-btn {
+    display: inline-flex;
+}
+
+/* WhatsApp Card */
+.wg-contact-info__card--whatsapp .wg-contact-info__card-icon {
+    background: linear-gradient(135deg, rgba(37, 211, 102, 0.12), rgba(37, 211, 102, 0.06));
+    border-color: rgba(37, 211, 102, 0.2);
+    color: #25d366;
+}
+
+/* Collaboration CTA Card */
+.wg-contact-info__card--cta {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(236, 72, 153, 0.05));
+    border-color: rgba(139, 92, 246, 0.15);
+    padding: 2rem 1.5rem;
+}
+
+.wg-contact-info__card--cta:hover {
+    border-color: rgba(139, 92, 246, 0.3);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(236, 72, 153, 0.08));
+}
+
+.wg-contact-info__card--cta .wg-contact-info__card-text {
+    margin-bottom: 1.25rem;
+}
+
+/* Social Links */
+.wg-contact-info__social {
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+}
+
+.wg-contact-info__social-link {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--wg-border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--wg-text-secondary);
+    transition: all var(--wg-transition);
+}
+
+.wg-contact-info__social-link:hover {
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: var(--wg-accent-purple);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   WHATSAPP PREFER CTA
+   ============================================ */
+.wg-contact-whatsapp {
+    padding: 4rem 2rem;
+    background:
+        radial-gradient(ellipse at 50% 50%, rgba(37, 211, 102, 0.06) 0%, transparent 50%),
+        var(--wg-bg-secondary);
+}
+
+.wg-contact-whatsapp__inner {
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.wg-contact-whatsapp__content {
+    text-align: center;
+}
+
+.wg-contact-whatsapp__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(37, 211, 102, 0.15), rgba(37, 211, 102, 0.08));
+    border: 1px solid rgba(37, 211, 102, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    color: #25d366;
+}
+
+.wg-contact-whatsapp__title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+}
+
+.wg-contact-whatsapp__desc {
+    font-size: 1rem;
+    color: var(--wg-text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.75rem;
+}
+
+/* ============================================
+   SCROLL ANIMATIONS
+   ============================================ */
+[data-animate] {
+    opacity: 0;
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-animate="fade-up"] {
+    transform: translateY(30px);
+}
+
+[data-animate="fade-left"] {
+    transform: translateX(-30px);
+}
+
+[data-animate="fade-right"] {
+    transform: translateX(30px);
+}
+
+[data-animate].is-visible {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+/* ============================================
+   RESPONSIVE — LARGE TABLET (1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+    .wg-contact-main__grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+}
+
+/* ============================================
+   RESPONSIVE — TABLET (768px)
+   ============================================ */
+@media (max-width: 768px) {
+    .wg-contact-hero {
+        padding: 7.5rem 1.5rem 3rem;
+    }
+
+    .wg-contact-main {
+        padding: 2rem 1.5rem 4rem;
+    }
+
+    .wg-contact-main__grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .wg-contact-form-card {
+        padding: 2rem;
+    }
+
+    .wg-contact-whatsapp {
+        padding: 3rem 1.5rem;
+    }
+}
+
+/* ============================================
+   RESPONSIVE — MOBILE (480px)
+   ============================================ */
+@media (max-width: 480px) {
+    .wg-contact-hero {
+        padding: 6.5rem 1rem 2.5rem;
+    }
+
+    .wg-contact-hero__title {
+        font-size: 1.625rem;
+    }
+
+    .wg-contact-hero__desc {
+        font-size: 0.9375rem;
+    }
+
+    .wg-contact-main {
+        padding: 1.5rem 1rem 3rem;
+    }
+
+    .wg-contact-form-card {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .wg-contact-form__input {
+        padding: 0.8125rem 0.875rem 0.8125rem 2.5rem;
+        font-size: 0.875rem;
+    }
+
+    .wg-contact-form__textarea {
+        min-height: 110px;
+    }
+
+    .wg-contact-form__select {
+        padding-right: 2.25rem;
+    }
+
+    .wg-contact-info__card {
+        padding: 1.25rem;
+    }
+
+    .wg-contact-info__card--cta {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .wg-contact-whatsapp {
+        padding: 2.5rem 1rem;
+    }
+
+    .wg-contact-whatsapp .wg-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ============================================
+   RESPONSIVE — MOBILE SMALL (400px)
+   ============================================ */
+@media (max-width: 400px) {
+    .wg-contact-form-card {
+        padding: 1.25rem 1rem;
+    }
+
+    .wg-contact-info__card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .wg-contact-info__social {
+        justify-content: center;
+    }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+    [data-animate] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}

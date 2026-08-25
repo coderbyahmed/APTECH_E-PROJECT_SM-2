@@ -74,6 +74,28 @@ VALUES (
     NOW()
 );
 
+-- -------------------------------------------
+-- Users Table (Website Registered Users)
+-- -------------------------------------------
+CREATE TABLE IF NOT EXISTS `users` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `user_id` VARCHAR(10) NOT NULL,
+    `profile_image` VARCHAR(500) DEFAULT NULL,
+    `full_name` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `phone` VARCHAR(20) NOT NULL,
+    `address` VARCHAR(500) DEFAULT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `status` ENUM('active','inactive') NOT NULL DEFAULT 'active',
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    `last_login` TIMESTAMP NULL DEFAULT NULL,
+    `last_logout` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `users_user_id_unique` (`user_id`),
+    UNIQUE KEY `users_email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================================
 -- Category Management Tables
 -- ============================================

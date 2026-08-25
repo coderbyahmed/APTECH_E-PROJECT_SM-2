@@ -7,10 +7,10 @@ if (!isset($websiteBase)) {
 }
 $footerHomeHref = ($currentPage === 'home') ? '#hero' : $websiteBase . '/index.php';
 $footerMusicHref = $websiteBase . '/music/music.php';
-$footerVideosHref = ($currentPage === 'home') ? '#videos' : $websiteBase . '/video/video.php';
+$footerVideosHref = $websiteBase . '/video/video.php';
 ?>
 <!-- FOOTER -->
-<footer class="wg-footer" id="contact">
+<footer class="wg-footer">
     <div class="wg-footer__inner">
         <div class="wg-footer__top">
             <!-- Brand -->
@@ -32,14 +32,14 @@ $footerVideosHref = ($currentPage === 'home') ? '#videos' : $websiteBase . '/vid
                 <a href="<?php echo $footerVideosHref; ?>" class="wg-footer__link">Videos</a>
                 <a href="<?php echo $websiteBase; ?>/search/search.php" class="wg-footer__link">Search</a>
                 <a href="<?php echo $websiteBase; ?>/about/about.php" class="wg-footer__link">About</a>
-                <a href="#contact" class="wg-footer__link">Contact</a>
+                <a href="<?php echo $websiteBase; ?>/contact/contact.php" class="wg-footer__link">Contact</a>
             </div>
 
             <!-- Account -->
             <div class="wg-footer__col">
                 <h4 class="wg-footer__heading">Account</h4>
-                <a href="<?php echo $websiteBase; ?>/login/login.php" class="wg-footer__link">Login</a>
-                <a href="<?php echo $websiteBase; ?>/register/register.php" class="wg-footer__link">Sign Up</a>
+                <a href="#" class="wg-footer__link wg-login-trigger">Login</a>
+                <a href="#" class="wg-footer__link wg-signup-trigger">Sign Up</a>
             </div>
 
             <!-- Social -->
