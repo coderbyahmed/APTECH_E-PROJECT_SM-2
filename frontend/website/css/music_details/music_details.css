@@ -85,27 +85,15 @@
     justify-content: center;
 }
 
+.wg-details__cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 .wg-details__cover-placeholder svg {
     color: rgba(255, 255, 255, 0.06);
-}
-
-.wg-details__cover-play {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.wg-details__cover:hover .wg-details__cover-play {
-    opacity: 1;
-}
-
-.wg-details__cover-play svg {
-    color: #fff;
 }
 
 .wg-details__info {
@@ -136,6 +124,12 @@
     background: rgba(234, 179, 8, 0.1);
     color: #eab308;
     border: 1px solid rgba(234, 179, 8, 0.15);
+}
+
+.wg-details__status-badge--inactive {
+    background: rgba(248, 113, 113, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.15);
 }
 
 .wg-details__title {
@@ -265,6 +259,16 @@
 
 .wg-player.is-playing .wg-player__play svg--pause {
     display: block;
+}
+
+.wg-player--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.wg-player--disabled .wg-player__play {
+    background: var(--wg-text-muted);
+    cursor: not-allowed;
 }
 
 .wg-player__progress-wrap {
@@ -681,6 +685,14 @@
     font-weight: 700;
     color: #fff;
     flex-shrink: 0;
+    overflow: hidden;
+}
+
+.wg-review-card__avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 .wg-review-card__info {

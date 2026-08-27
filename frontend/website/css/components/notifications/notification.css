@@ -1,0 +1,138 @@
+/* ============================================
+   SOUND Group — Website Notification Component
+   Dark theme toast notification system
+   ============================================ */
+
+/* --- Notification Container --- */
+.wg-notification {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    max-width: calc(100vw - 2rem);
+    padding: 0.875rem 1.25rem;
+    border-radius: 12px;
+    background: rgba(18, 18, 30, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #f1f5f9;
+    line-height: 1.4;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Visible State --- */
+.wg-notification.is-visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* --- Exit State --- */
+.wg-notification.is-exiting {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- Icon --- */
+.wg-notification__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.wg-notification__icon svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* --- Message --- */
+.wg-notification__message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Type: Success --- */
+.wg-notification--success .wg-notification__icon {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.wg-notification--success {
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* --- Type: Error --- */
+.wg-notification--error .wg-notification__icon {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.wg-notification--error {
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* --- Type: Warning --- */
+.wg-notification--warning .wg-notification__icon {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+.wg-notification--warning {
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+/* --- Type: Info --- */
+.wg-notification--info .wg-notification__icon {
+    background: rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+}
+
+.wg-notification--info {
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+    .wg-notification {
+        top: 1rem;
+        max-width: calc(100vw - 1.5rem);
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+        border-radius: 10px;
+    }
+
+    .wg-notification__message {
+        white-space: normal;
+    }
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+    .wg-notification {
+        transition: opacity 0.15s ease;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .wg-notification.is-visible,
+    .wg-notification.is-exiting {
+        transform: translateX(-50%) translateY(0);
+    }
+}

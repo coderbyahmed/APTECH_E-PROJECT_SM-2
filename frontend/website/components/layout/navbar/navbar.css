@@ -265,7 +265,7 @@
     transform: translateY(0);
 }
 
-.wg-user-menu__item--logout {
+.wg-user-menu__item {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -280,6 +280,11 @@
     cursor: pointer;
     transition: color var(--wg-transition), background var(--wg-transition);
     text-align: left;
+}
+
+.wg-user-menu__item:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .wg-user-menu__item--logout:hover {

@@ -1,6 +1,10 @@
 (function () {
     'use strict';
 
+    var body = document.body;
+    var musicId = parseInt(body.getAttribute('data-music-id'), 10) || 0;
+    var handlerUrl = body.getAttribute('data-handler-url') || '/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php';
+
     /* ============================================
        AUDIO PLAYER
        ============================================ */
@@ -85,15 +89,10 @@
     }
 
     /* ============================================
-       STAR RATING — PAGE FORM
+       STAR RATING — REUSABLE
        ============================================ */
-    var starSelect = document.getElementById('starSelect');
-    var textarea = document.querySelector('.wg-reviews__textarea');
-    var submitBtn = document.getElementById('submitReview');
-    var selectedRating = 0;
-
     function setupStarRating(container, onRate) {
-        if (!container) return;
+        if (!container) return null;
         var picks = container.querySelectorAll('.wg-reviews__star-pick');
         var rating = 0;
 
@@ -129,22 +128,262 @@
         };
     }
 
-    var pageStars = setupStarRating(starSelect, function (r) { selectedRating = r; });
+    /* ============================================
+       REVIEW SUBMISSION — SHARED LOGIC
+       ============================================ */
+    function showFieldError(el, msg) {
+        if (!el) return;
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+
+    function clearFieldError(el) {
+        if (!el) return;
+        el.textContent = '';
+        el.style.display = 'none';
+    }
+
+    function relativeTime(ts) {
+        if (!ts) return '';
+        var diff = Math.floor(Date.now() / 1000) - Math.floor(new Date(ts + 'Z').getTime() / 1000);
+        if (diff < 0) diff = 0;
+        if (diff < 60) return 'Just now';
+        if (diff < 3600) { var m = Math.floor(diff / 60); return m + ' minute' + (m > 1 ? 's' : '') + ' ago'; }
+        if (diff < 86400) { var h = Math.floor(diff / 3600); return h + ' hour' + (h > 1 ? 's' : '') + ' ago'; }
+        if (diff < 2592000) { var d = Math.floor(diff / 86400); return d + ' day' + (d > 1 ? 's' : '') + ' ago'; }
+        if (diff < 31536000) { var w = Math.floor(diff / 604800); return w + ' week' + (w > 1 ? 's' : '') + ' ago'; }
+        var y = Math.floor(diff / 31536000);
+        return y + ' year' + (y > 1 ? 's' : '') + ' ago';
+    }
+
+    function userInitials(name) {
+        var parts = (name || '').trim().split(/\s+/);
+        if (parts.length >= 2) {
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+        return (name || 'A').substring(0, 2).toUpperCase();
+    }
+
+    function buildReviewCardHtml(review) {
+        var avatarHtml = '';
+        var initials = userInitials(review.user_name);
+        if (review.user_image) {
+            var src = '/Aptech_E_Project_02/sound_management/' + review.user_image.replace(/^\//, '');
+            avatarHtml = '<div class="wg-review-card__avatar"><img src="' + src + '" alt="" class="wg-review-card__avatar-img" loading="lazy" onerror="this.style.display=\'none\';this.parentNode.textContent=\'' + initials + '\'"></div>';
+        } else {
+            avatarHtml = '<div class="wg-review-card__avatar">' + initials + '</div>';
+        }
+
+        var stars = '';
+        for (var i = 1; i <= 5; i++) {
+            stars += i <= review.rating ? '&#9733;' : '&#9734;';
+        }
+
+        return '<div class="wg-review-card">' +
+            '<div class="wg-review-card__row">' +
+            avatarHtml +
+            '<div class="wg-review-card__info">' +
+            '<span class="wg-review-card__name">' + escapeHtml(review.user_name || 'Anonymous') + '</span>' +
+            '<span class="wg-review-card__stars">' + stars + '</span>' +
+            '</div>' +
+            '<span class="wg-review-card__date" data-ts="' + (review.created_at || '') + '">' + relativeTime(review.created_at) + '</span>' +
+            '</div>' +
+            '<p class="wg-review-card__text">"' + escapeHtml(review.review_text) + '"</p>' +
+            '</div>';
+    }
+
+    function buildDrawerReviewHtml(review) {
+        var avatarHtml = '';
+        if (review.user_image) {
+            var src = '/Aptech_E_Project_02/sound_management/' + review.user_image.replace(/^\//, '');
+            avatarHtml = '<div class="wg-drawer__review-avatar"><img src="' + src + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent=\'' + userInitials(review.user_name) + '\'"></div>';
+        } else {
+            avatarHtml = '<div class="wg-drawer__review-avatar">' + userInitials(review.user_name) + '</div>';
+        }
+
+        var stars = '';
+        for (var i = 1; i <= 5; i++) {
+            stars += i <= review.rating ? '&#9733;' : '&#9734;';
+        }
+
+        return '<div class="wg-drawer__review">' +
+            '<div class="wg-drawer__review-row">' +
+            avatarHtml +
+            '<div class="wg-drawer__review-info">' +
+            '<span class="wg-drawer__review-name">' + escapeHtml(review.user_name || 'Anonymous') + '</span>' +
+            '<span class="wg-drawer__review-stars">' + stars + '</span>' +
+            '</div>' +
+            '<span class="wg-drawer__review-date" data-ts="' + (review.created_at || '') + '">' + relativeTime(review.created_at) + '</span>' +
+            '</div>' +
+            '<p class="wg-drawer__review-text">"' + escapeHtml(review.review_text) + '"</p>' +
+            '</div>';
+    }
+
+    function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(text));
+        return div.innerHTML;
+    }
+
+    function submitReview(rating, reviewText, ratingErrorEl, reviewErrorEl, submitBtn, callback) {
+        clearFieldError(ratingErrorEl);
+        clearFieldError(reviewErrorEl);
+
+        var hasError = false;
+        if (rating === 0) {
+            showFieldError(ratingErrorEl, 'Please select a rating.');
+            hasError = true;
+        }
+        if (!reviewText) {
+            showFieldError(reviewErrorEl, 'Please write your review.');
+            hasError = true;
+        }
+        if (hasError) return;
+
+        var fd = new FormData();
+        fd.append('action', 'add');
+        fd.append('music_id', musicId);
+        fd.append('rating', rating);
+        fd.append('review_text', reviewText);
+
+        if (submitBtn) submitBtn.disabled = true;
+
+        fetch(handlerUrl, { method: 'POST', body: fd })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (submitBtn) submitBtn.disabled = false;
+                if (data.success) {
+                    if (typeof showSuccess === 'function') {
+                        showSuccess(data.message || 'Review submitted successfully.', 3000);
+                    }
+                    if (callback) callback();
+                    refreshReviews();
+                } else if (data.login_required) {
+                    if (typeof showWarning === 'function') {
+                        showWarning('Please log in to submit a review.', 3000);
+                    }
+                    var loginModal = document.getElementById('wgLoginModal');
+                    if (loginModal) {
+                        setTimeout(function () { loginModal.classList.add('is-open'); }, 500);
+                    }
+                } else {
+                    var errs = data.errors || {};
+                    if (errs.rating) showFieldError(ratingErrorEl, errs.rating);
+                    if (errs.review_text) showFieldError(reviewErrorEl, errs.review_text);
+                    if (!errs.rating && !errs.review_text && data.error) {
+                        showFieldError(reviewErrorEl, data.error);
+                    }
+                }
+            })
+            .catch(function () {
+                if (submitBtn) submitBtn.disabled = false;
+                showFieldError(reviewErrorEl, 'Something went wrong. Please try again.');
+            });
+    }
+
+    function refreshReviews() {
+        var fd = new FormData();
+        fd.append('action', 'get-for-music');
+        fd.append('music_id', musicId);
+
+        fetch(handlerUrl, { method: 'POST', body: fd })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.success) return;
+                var reviews = data.reviews || [];
+
+                // Update grid (max 6)
+                var grid = document.getElementById('reviewsGrid');
+                if (grid) {
+                    var gridHtml = '';
+                    var count = Math.min(reviews.length, 6);
+                    for (var i = 0; i < count; i++) {
+                        gridHtml += buildReviewCardHtml(reviews[i]);
+                    }
+                    if (reviews.length === 0) {
+                        gridHtml = '<div class="wg-reviews__empty" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--wg-text-muted);">No reviews yet. Be the first to review!</div>';
+                    }
+                    grid.innerHTML = gridHtml;
+                }
+
+                // Update drawer list
+                var drawerList = document.getElementById('drawerList');
+                if (drawerList) {
+                    var drawerHtml = '';
+                    for (var j = 0; j < reviews.length; j++) {
+                        drawerHtml += buildDrawerReviewHtml(reviews[j]);
+                    }
+                    drawerList.innerHTML = drawerHtml;
+                }
+
+                // Update drawer count
+                var countEl = document.querySelector('.wg-drawer__count');
+                if (countEl) {
+                    countEl.textContent = reviews.length + ' Review' + (reviews.length !== 1 ? 's' : '');
+                }
+
+                // Update "All Reviews" button visibility
+                var allBtn = document.getElementById('openDrawer');
+                if (allBtn) {
+                    allBtn.style.display = reviews.length > 0 ? '' : 'none';
+                }
+
+                // Refresh stats
+                refreshStats();
+            })
+            .catch(function () {});
+    }
+
+    function refreshStats() {
+        var fd = new FormData();
+        fd.append('action', 'get-stats');
+        fd.append('music_id', musicId);
+
+        fetch(handlerUrl, { method: 'POST', body: fd })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.success) return;
+                var scoreEl = document.querySelector('.wg-reviews__score-number');
+                if (scoreEl) scoreEl.textContent = data.avg_rating;
+
+                var basedEl = document.querySelector('.wg-reviews__based');
+                if (basedEl) basedEl.textContent = 'Based on ' + data.total + ' review' + (data.total !== 1 ? 's' : '');
+
+                // Update distribution bars
+                var distRows = document.querySelectorAll('.wg-reviews__dist-row');
+                var keys = [5, 4, 3, 2, 1];
+                distRows.forEach(function (row, idx) {
+                    var star = keys[idx];
+                    var count = data.distribution[star] || 0;
+                    var pct = data.total > 0 ? Math.round(count / data.total * 100) : 0;
+                    var fill = row.querySelector('.wg-reviews__dist-fill');
+                    var pctLabel = row.querySelector('.wg-reviews__dist-pct');
+                    if (fill) fill.style.width = pct + '%';
+                    if (pctLabel) pctLabel.textContent = pct + '%';
+                });
+            })
+            .catch(function () {});
+    }
+
+    /* ============================================
+       PAGE FORM — Star Rating + Submit
+       ============================================ */
+    var starSelect = document.getElementById('starSelect');
+    var reviewTextEl = document.getElementById('reviewText');
+    var submitBtn = document.getElementById('submitReview');
+    var ratingErrorEl = document.getElementById('ratingError');
+    var reviewErrorEl = document.getElementById('reviewError');
+
+    var pageStars = setupStarRating(starSelect, function () {});
 
     if (submitBtn) {
         submitBtn.addEventListener('click', function () {
-            if (selectedRating === 0) {
-                alert('Please select a star rating.');
-                return;
-            }
-            if (!textarea || !textarea.value.trim()) {
-                alert('Please write a review.');
-                return;
-            }
-            alert('Thank you for your review! (Backend integration pending)');
-            selectedRating = 0;
-            textarea.value = '';
-            if (pageStars) pageStars.reset();
+            var rating = pageStars ? pageStars.getRating() : 0;
+            var text = reviewTextEl ? reviewTextEl.value.trim() : '';
+            submitReview(rating, text, ratingErrorEl, reviewErrorEl, submitBtn, function () {
+                if (pageStars) pageStars.reset();
+                if (reviewTextEl) reviewTextEl.value = '';
+            });
         });
     }
 
@@ -200,23 +439,31 @@
     /* Drawer star rating + form */
     var drawerStarSelect = document.querySelector('.wg-drawer__star-select');
     var drawerStars = setupStarRating(drawerStarSelect, function () {});
-    var drawerSubmitBtn = document.querySelector('.wg-drawer__submit-btn');
-    var drawerTextarea = document.querySelector('.wg-drawer__form .wg-reviews__textarea');
+    var drawerSubmitBtn = document.getElementById('drawerSubmitReview');
+    var drawerReviewText = document.getElementById('drawerReviewText');
+    var drawerRatingError = document.getElementById('drawerRatingError');
+    var drawerReviewError = document.getElementById('drawerReviewError');
 
     if (drawerSubmitBtn) {
         drawerSubmitBtn.addEventListener('click', function () {
             var r = drawerStars ? drawerStars.getRating() : 0;
-            if (r === 0) {
-                alert('Please select a star rating.');
-                return;
-            }
-            if (!drawerTextarea || !drawerTextarea.value.trim()) {
-                alert('Please write a review.');
-                return;
-            }
-            alert('Thank you for your review! (Backend integration pending)');
-            drawerTextarea.value = '';
-            if (drawerStars) drawerStars.reset();
+            var text = drawerReviewText ? drawerReviewText.value.trim() : '';
+            submitReview(r, text, drawerRatingError, drawerReviewError, drawerSubmitBtn, function () {
+                if (drawerStars) drawerStars.reset();
+                if (drawerReviewText) drawerReviewText.value = '';
+            });
         });
     }
+
+    /* ============================================
+       LIVE TIMESTAMP UPDATER
+       ============================================ */
+    function updateAllTimestamps() {
+        document.querySelectorAll('[data-ts]').forEach(function (el) {
+            var ts = el.getAttribute('data-ts');
+            if (ts) el.textContent = relativeTime(ts);
+        });
+    }
+
+    setInterval(updateAllTimestamps, 30000);
 })();

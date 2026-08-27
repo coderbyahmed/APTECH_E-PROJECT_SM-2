@@ -4,6 +4,10 @@ $websiteBase = $baseUrl . '/frontend/website';
 $cssBase = $websiteBase . '/css/music';
 $jsBase = $websiteBase . '/js/music';
 $currentPage = 'music';
+
+require_once dirname(__DIR__, 1) . '/includes/music-data.php';
+$allMusic = wgGetAllMusic(0, 'published');
+$musicCount = count($allMusic);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +26,9 @@ $currentPage = 'music';
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/music.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/signup_modal/signup_modal.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/login_modal/login_modal.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/profile_modal/profile_modal.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/notifications/notification.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/loaders/button-spinner.css">
 </head>
 <body class="wg-page--music">
 
@@ -110,7 +117,7 @@ $currentPage = 'music';
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 Clear Filters
             </button>
-            <span class="wg-music-filters__count" id="resultCount">12 songs</span>
+            <span class="wg-music-filters__count" id="resultCount"><?php echo $musicCount; ?> songs</span>
         </div>
     </div>
 </section>
@@ -120,22 +127,18 @@ $currentPage = 'music';
     <div class="wg-music-grid-section__inner">
         <div class="wg-cards wg-cards--music wg-music-page__cards" id="musicGrid">
             <?php
-            $musicCards = [
-                ['mc_id' => 1, 'mc_title' => 'Midnight Dreams', 'mc_artist' => 'Hammad Aziz', 'mc_album' => 'Night Sessions', 'mc_year' => '2025', 'mc_genre' => 'Pop', 'mc_language' => 'English', 'mc_placeholder' => 1],
-                ['mc_id' => 2, 'mc_title' => 'Tum Hi Ho', 'mc_artist' => 'Arijit Singh', 'mc_album' => 'Aashiqui 2', 'mc_year' => '2013', 'mc_genre' => 'Bollywood', 'mc_language' => 'Hindi', 'mc_placeholder' => 2],
-                ['mc_id' => 3, 'mc_title' => 'Neon Lights', 'mc_artist' => 'Aria Collins', 'mc_album' => 'Electric Dreams', 'mc_year' => '2024', 'mc_genre' => 'Electronic', 'mc_language' => 'English', 'mc_placeholder' => 3],
-                ['mc_id' => 4, 'mc_title' => 'City Rain', 'mc_artist' => 'Kai Moreno', 'mc_album' => 'Lo-fi Nights', 'mc_year' => '2025', 'mc_genre' => 'Lo-fi', 'mc_language' => 'English', 'mc_placeholder' => 4],
-                ['mc_id' => 5, 'mc_title' => 'Summer Breeze', 'mc_artist' => 'Luna Park', 'mc_album' => 'Chill Vibes', 'mc_year' => '2024', 'mc_genre' => 'Chill', 'mc_language' => 'English', 'mc_placeholder' => 5],
-                ['mc_id' => 6, 'mc_title' => 'Dil Ka Rishta', 'mc_artist' => 'Hamza Tahir', 'mc_album' => 'Sade', 'mc_year' => '2026', 'mc_genre' => 'Sufi', 'mc_language' => 'Urdu', 'mc_placeholder' => 1],
-                ['mc_id' => 7, 'mc_title' => 'Electric Soul', 'mc_artist' => 'Aria Collins', 'mc_album' => 'Electric Dreams', 'mc_year' => '2024', 'mc_genre' => 'Electronic', 'mc_language' => 'English', 'mc_placeholder' => 3],
-                ['mc_id' => 8, 'mc_title' => 'Raaste Bhool Gaye', 'mc_artist' => 'Ahmed Raza', 'mc_album' => 'Aashiqui 2', 'mc_year' => '2013', 'mc_genre' => 'Bollywood', 'mc_language' => 'Hindi', 'mc_placeholder' => 2],
-                ['mc_id' => 9, 'mc_title' => 'Ocean Waves', 'mc_artist' => 'Kai Moreno', 'mc_album' => 'Lo-fi Nights', 'mc_year' => '2025', 'mc_genre' => 'Lo-fi', 'mc_language' => 'English', 'mc_placeholder' => 4],
-                ['mc_id' => 10, 'mc_title' => 'Starlight', 'mc_artist' => 'Luna Park', 'mc_album' => 'Chill Vibes', 'mc_year' => '2024', 'mc_genre' => 'R&B', 'mc_language' => 'English', 'mc_placeholder' => 5],
-                ['mc_id' => 11, 'mc_title' => 'Noor', 'mc_artist' => 'Hammad Aziz', 'mc_album' => 'Sade', 'mc_year' => '2026', 'mc_genre' => 'Sufi', 'mc_language' => 'Urdu', 'mc_placeholder' => 1],
-                ['mc_id' => 12, 'mc_title' => 'Acoustic Glow', 'mc_artist' => 'Arijit Singh', 'mc_album' => 'Acoustic Sessions', 'mc_year' => '2025', 'mc_genre' => 'Acoustic', 'mc_language' => 'Hindi', 'mc_placeholder' => 3],
-            ];
-            foreach ($musicCards as $card) {
-                extract($card);
+            $placeholderCounter = 1;
+            foreach ($allMusic as $m):
+                $mc_id = (int)$m['id'];
+                $mc_title = $m['song_title'];
+                $mc_artist = $m['artist_name'] ?: 'Unknown Artist';
+                $mc_album = $m['album_name'] ?: '';
+                $mc_year = $m['year_name'] ?: '';
+                $mc_genre = $m['genre_name'] ?: '';
+                $mc_language = $m['language_name'] ?: '';
+                $mc_placeholder = $placeholderCounter;
+                $mc_cover_image = $m['cover_image'] ?: '';
+                $placeholderCounter = ($placeholderCounter % 5) + 1;
                 echo '<div class="wg-music-card-wrap" '
                     . 'data-title="' . htmlspecialchars($mc_title, ENT_QUOTES) . '" '
                     . 'data-artist="' . htmlspecialchars($mc_artist, ENT_QUOTES) . '" '
@@ -145,8 +148,15 @@ $currentPage = 'music';
                     . 'data-language="' . htmlspecialchars($mc_language, ENT_QUOTES) . '">';
                 include __DIR__ . '/../components/music_card/music_card.php';
                 echo '</div>';
-            }
+            endforeach;
+            if (empty($allMusic)):
             ?>
+                <div class="wg-music-empty" style="display:block;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    <p class="wg-music-empty__title">No music available yet</p>
+                    <p class="wg-music-empty__desc">Check back later for new releases.</p>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- EMPTY STATE (hidden by default) -->

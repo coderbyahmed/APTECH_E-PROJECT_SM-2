@@ -36,6 +36,18 @@
     overflow: hidden;
 }
 
+.wg-card__cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s;
+}
+
+.wg-card--music:hover .wg-card__cover-img {
+    transform: scale(1.06);
+}
+
 .wg-card__cover-placeholder {
     width: 100%;
     height: 100%;
@@ -71,27 +83,6 @@
 
 .wg-card__cover-placeholder svg {
     color: rgba(255, 255, 255, 0.12);
-}
-
-.wg-card__play {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.55);
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.wg-card--music:hover .wg-card__play {
-    opacity: 1;
-}
-
-.wg-card__play svg {
-    color: #fff;
-    width: 28px;
-    height: 28px;
 }
 
 .wg-card__info {
@@ -151,34 +142,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.4;
-}
-
-.wg-card__dots {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s;
-    cursor: pointer;
-    border: none;
-}
-
-.wg-card--music:hover .wg-card__dots {
-    opacity: 1;
-}
-
-.wg-card__dots svg {
-    width: 16px;
-    height: 16px;
-    color: #fff;
 }
 
 @media (max-width: 1024px) {

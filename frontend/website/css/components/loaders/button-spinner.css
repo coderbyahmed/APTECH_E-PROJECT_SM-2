@@ -1,0 +1,40 @@
+/* ============================================
+   SOUND Group — Website Button Spinner Component
+   Lightweight loading state for buttons
+   ============================================ */
+
+/* --- Spinner Animation --- */
+@keyframes wg-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* --- Spinner Element --- */
+.wg-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: wg-spin 0.6s linear infinite;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+/* --- Button Loading State --- */
+.wg-btn-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.wg-btn-loading .wg-spinner {
+    margin-right: 0.5rem;
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+    .wg-spinner {
+        animation-duration: 1.2s;
+    }
+}

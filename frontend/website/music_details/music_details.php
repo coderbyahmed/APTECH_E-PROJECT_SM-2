@@ -5,24 +5,138 @@ $cssBase = $websiteBase . '/css/music_details';
 $jsBase = $websiteBase . '/js/music_details';
 $currentPage = 'music';
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+require_once dirname(__DIR__, 1) . '/includes/music-data.php';
 
-$allMusic = [
-    1  => ['title' => 'Midnight Dreams', 'artist' => 'Hammad Aziz', 'album' => 'Night Sessions', 'year' => '2025', 'genre' => 'Pop', 'language' => 'English', 'placeholder' => 1, 'status' => 'Active', 'description' => 'A dreamy pop anthem that captures the essence of late-night creativity. Built with layered synths and atmospheric production, Midnight Dreams takes listeners on a sonic journey through urban landscapes and quiet introspection.'],
-    2  => ['title' => 'Tum Hi Ho', 'artist' => 'Arijit Singh', 'album' => 'Aashiqui 2', 'year' => '2013', 'genre' => 'Bollywood', 'language' => 'Hindi', 'placeholder' => 2, 'status' => 'Active', 'description' => 'An iconic Bollywood romantic ballad that became a cultural phenomenon. With its soulful melody and deeply emotional lyrics, Tum Hi Ho defined a generation of Indian love songs and remains one of the most streamed Hindi tracks of all time.'],
-    3  => ['title' => 'Neon Lights', 'artist' => 'Aria Collins', 'album' => 'Electric Dreams', 'year' => '2024', 'genre' => 'Electronic', 'language' => 'English', 'placeholder' => 3, 'status' => 'Active', 'description' => 'An electrifying electronic track pulsing with energy. Neon Lights combines driving basslines with shimmering synth leads, creating a vibrant soundscape perfect for late-night drives and festival stages alike.'],
-    4  => ['title' => 'City Rain', 'artist' => 'Kai Moreno', 'album' => 'Lo-fi Nights', 'year' => '2025', 'genre' => 'Lo-fi', 'language' => 'English', 'placeholder' => 4, 'status' => 'Active', 'description' => 'A mellow lo-fi track inspired by rainy evenings in the city. Soft piano chords, gentle vinyl crackle, and ambient rain textures create the perfect backdrop for studying, relaxing, or simply watching the world go by.'],
-    5  => ['title' => 'Summer Breeze', 'artist' => 'Luna Park', 'album' => 'Chill Vibes', 'year' => '2024', 'genre' => 'Chill', 'language' => 'English', 'placeholder' => 5, 'status' => 'Active', 'description' => 'A laid-back chill track that embodies the warmth of a summer afternoon. Gentle guitar strums, soft pads, and a breezy rhythm make this the ideal companion for lazy weekends and outdoor gatherings.'],
-    6  => ['title' => 'Dil Ka Rishta', 'artist' => 'Hamza Tahir', 'album' => 'Sade', 'year' => '2026', 'genre' => 'Sufi', 'language' => 'Urdu', 'placeholder' => 1, 'status' => 'Active', 'description' => 'A soulful Sufi-inspired composition that bridges traditional Eastern spirituality with modern production. Dil Ka Rishta explores themes of divine love and inner peace through haunting vocals and organic instrumentation.'],
-    7  => ['title' => 'Electric Soul', 'artist' => 'Aria Collins', 'album' => 'Electric Dreams', 'year' => '2024', 'genre' => 'Electronic', 'language' => 'English', 'placeholder' => 3, 'status' => 'Active', 'description' => 'A powerful electronic anthem about finding humanity in a digital world. Electric Soul merges pulsating beats with emotive melodies, delivering a track that resonates on both the dancefloor and in quiet reflection.'],
-    8  => ['title' => 'Raaste Bhool Gaye', 'artist' => 'Ahmed Raza', 'album' => 'Aashiqui 2', 'year' => '2013', 'genre' => 'Bollywood', 'language' => 'Hindi', 'placeholder' => 2, 'status' => 'Active', 'description' => 'A poignant Bollywood track about lost love and the paths we forget. With its melancholic melody and heartfelt vocals, this song captures the bittersweet feeling of looking back at moments that shaped us.'],
-    9  => ['title' => 'Ocean Waves', 'artist' => 'Kai Moreno', 'album' => 'Lo-fi Nights', 'year' => '2025', 'genre' => 'Lo-fi', 'language' => 'English', 'placeholder' => 4, 'status' => 'Active', 'description' => 'Ambient lo-fi textures meet oceanic field recordings in this serene composition. Ocean Waves is designed to calm the mind and create a peaceful atmosphere, blending natural sounds with gentle electronic elements.'],
-    10 => ['title' => 'Starlight', 'artist' => 'Luna Park', 'album' => 'Chill Vibes', 'year' => '2024', 'genre' => 'R&B', 'language' => 'English', 'placeholder' => 5, 'status' => 'Active', 'description' => 'A smooth R&B-infused chill track that glows with warmth. Starlight features velvety vocals, lush harmonies, and a groovy bassline that together create an intimate and enchanting listening experience.'],
-    11 => ['title' => 'Noor', 'artist' => 'Hammad Aziz', 'album' => 'Sade', 'year' => '2026', 'genre' => 'Sufi', 'language' => 'Urdu', 'placeholder' => 1, 'status' => 'Draft', 'description' => 'An ethereal Sufi composition whose name means light. Noor weaves together classical instrumentation with contemporary arrangements, creating a transcendent musical experience that speaks to the soul.'],
-    12 => ['title' => 'Acoustic Glow', 'artist' => 'Arijit Singh', 'album' => 'Acoustic Sessions', 'year' => '2025', 'genre' => 'Acoustic', 'language' => 'Hindi', 'placeholder' => 3, 'status' => 'Active', 'description' => 'A stripped-down acoustic reimagining that reveals the raw beauty of the original composition. Acoustic Glow showcases the power of simplicity, with nothing but an acoustic guitar and an emotive voice carrying the melody.'],
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$track = $id > 0 ? wgGetMusicById($id, true) : null;
+
+if (!$track) {
+    http_response_code(404);
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Music Not Found - SOUND Group</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/home/website.css">
+        <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/layout/navbar/navbar.css">
+        <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/layout/footer/footer.css">
+    </head>
+    <body>
+    <?php include __DIR__ . '/../components/layout/navbar/navbar.php'; ?>
+    <main style="min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:4rem 1.5rem;">
+        <div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64" style="color:var(--wg-text-muted);margin-bottom:1rem;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <h1 style="font-size:1.5rem;color:var(--wg-text-primary);margin-bottom:0.5rem;">Music Not Found</h1>
+            <p style="color:var(--wg-text-secondary);margin-bottom:1.5rem;">The track you're looking for doesn't exist or has been removed.</p>
+            <a href="<?php echo $websiteBase; ?>/music/music.php" class="wg-btn wg-btn--primary">Browse Music</a>
+        </div>
+    </main>
+    <?php include __DIR__ . '/../components/layout/footer/footer.php'; ?>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
+$trackCoverUrl = wgResolveCoverUrl($track['cover_image'], $baseUrl);
+$isInactive = ($track['status'] === 'inactive');
+$trackAudioUrl = $isInactive ? '' : wgResolveMusicUrl($track['music_file'], $baseUrl);
+$trackStatus = ucfirst($track['status']);
+$trackPlaceholder = ($track['id'] % 5) + 1;
+
+$artistName = $track['artist_name'] ?: '';
+$artistCards = $artistName ? wgGetMusicByArtist($artistName, $track['id'], 6) : [];
+if (count($artistCards) < 6) {
+    $extraCards = wgGetAllMusic(6 - count($artistCards));
+    $existingIds = array_column($artistCards, 'id');
+    $existingIds[] = $track['id'];
+    foreach ($extraCards as $extra) {
+        if (!in_array($extra['id'], $existingIds) && count($artistCards) < 6) {
+            $artistCards[] = $extra;
+        }
+    }
+}
+
+/* ---- Review data for this music ---- */
+require_once dirname(__DIR__, 3) . '/backend/includes/db.php';
+$reviewDb = getDb();
+
+// Rating stats
+$rStmt = $reviewDb->prepare("SELECT COUNT(*) AS total, AVG(rating) AS avg_rating,
+    SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS star5,
+    SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS star4,
+    SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS star3,
+    SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS star2,
+    SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS star1
+    FROM reviews WHERE music_id = :music_id AND status = 'published'");
+$rStmt->execute([':music_id' => $track['id']]);
+$rStats = $rStmt->fetch();
+$reviewTotal = (int) ($rStats['total'] ?? 0);
+$reviewAvg = $reviewTotal > 0 ? round((float) $rStats['avg_rating'], 1) : '0.0';
+$reviewDist = [
+    5 => (int) ($rStats['star5'] ?? 0),
+    4 => (int) ($rStats['star4'] ?? 0),
+    3 => (int) ($rStats['star3'] ?? 0),
+    2 => (int) ($rStats['star2'] ?? 0),
+    1 => (int) ($rStats['star1'] ?? 0),
 ];
 
-$track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
+// Published reviews (max 6 for grid)
+$rStmt2 = $reviewDb->prepare("SELECT r.*, u.user_id AS user_public_id, u.full_name AS user_name, u.profile_image AS user_image
+    FROM reviews r LEFT JOIN users u ON u.id = r.user_id
+    WHERE r.music_id = :music_id AND r.status = 'published'
+    ORDER BY r.created_at DESC LIMIT 6");
+$rStmt2->execute([':music_id' => $track['id']]);
+$reviewCards = $rStmt2->fetchAll();
+
+// All published reviews (for drawer)
+$rStmt3 = $reviewDb->prepare("SELECT r.*, u.user_id AS user_public_id, u.full_name AS user_name, u.profile_image AS user_image
+    FROM reviews r LEFT JOIN users u ON u.id = r.user_id
+    WHERE r.music_id = :music_id AND r.status = 'published'
+    ORDER BY r.created_at DESC");
+$rStmt3->execute([':music_id' => $track['id']]);
+$allReviews = $rStmt3->fetchAll();
+
+function wgRelativeTime($ts) {
+    if (!$ts || $ts === '0000-00-00 00:00:00') return '';
+    $diff = time() - strtotime($ts);
+    if ($diff < 60) return 'Just now';
+    if ($diff < 3600) { $m = floor($diff / 60); return $m . ' minute' . ($m > 1 ? 's' : '') . ' ago'; }
+    if ($diff < 86400) { $h = floor($diff / 3600); return $h . ' hour' . ($h > 1 ? 's' : '') . ' ago'; }
+    if ($diff < 2592000) { $d = floor($diff / 86400); return $d . ' day' . ($d > 1 ? 's' : '') . ' ago'; }
+    if ($diff < 31536000) { $w = floor($diff / 604800); return $w . ' week' . ($w > 1 ? 's' : '') . ' ago'; }
+    $y = floor($diff / 31536000);
+    return $y . ' year' . ($y > 1 ? 's' : '') . ' ago';
+}
+
+function wgUserInitials($name) {
+    $parts = explode(' ', trim($name));
+    if (count($parts) >= 2) {
+        return strtoupper(substr($parts[0], 0, 1) . substr(end($parts), 0, 1));
+    }
+    return strtoupper(substr($name, 0, 2));
+}
+
+function wgStarHtml($rating) {
+    $filled = str_repeat('&#9733;', $rating);
+    $empty = str_repeat('&#9734;', 5 - $rating);
+    return $filled . $empty;
+}
+
+function wgReviewAvatarHtml($userImage, $userName, $idx) {
+    $initials = htmlspecialchars(wgUserInitials($userName));
+    if ($userImage) {
+        $baseUrl = '/Aptech_E_Project_02/sound_management';
+        $src = $baseUrl . '/' . ltrim($userImage, '/');
+        return '<div class="wg-review-card__avatar"><img src="' . htmlspecialchars($src) . '" alt="" class="wg-review-card__avatar-img" loading="lazy" onerror="this.style.display=\'none\';this.parentNode.textContent=\'' . $initials . '\'"></div>';
+    }
+    return '<div class="wg-review-card__avatar">' . $initials . '</div>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +144,7 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title><?php echo htmlspecialchars($track['title']); ?> - SOUND Group</title>
+    <title><?php echo htmlspecialchars($track['song_title']); ?> - SOUND Group</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -41,8 +155,11 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/music_details.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/signup_modal/signup_modal.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/login_modal/login_modal.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/profile_modal/profile_modal.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/notifications/notification.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/loaders/button-spinner.css">
 </head>
-<body class="wg-page--details">
+<body class="wg-page--details" data-music-id="<?php echo (int)$track['id']; ?>" data-handler-url="/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php">
 
 <?php include __DIR__ . '/../components/layout/navbar/navbar.php'; ?>
 
@@ -53,7 +170,7 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
         <span class="wg-details-breadcrumb__sep">/</span>
         <a href="<?php echo $websiteBase; ?>/music/music.php" class="wg-details-breadcrumb__link">Music</a>
         <span class="wg-details-breadcrumb__sep">/</span>
-        <span class="wg-details-breadcrumb__current"><?php echo htmlspecialchars($track['title']); ?></span>
+        <span class="wg-details-breadcrumb__current"><?php echo htmlspecialchars($track['song_title']); ?></span>
     </div>
 </div>
 
@@ -64,60 +181,73 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
         <!-- TOP SECTION: Cover + Info -->
         <div class="wg-details__top">
             <div class="wg-details__cover">
-                <div class="wg-details__cover-placeholder wg-card__cover-placeholder--<?php echo (int) $track['placeholder']; ?>">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="56" height="56">
-                        <path d="M9 18V5l12-2v13"/>
-                        <circle cx="6" cy="18" r="3"/>
-                        <circle cx="18" cy="16" r="3"/>
-                    </svg>
-                </div>
-                <div class="wg-details__cover-play">
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                </div>
+                <?php if ($trackCoverUrl): ?>
+                    <img src="<?php echo htmlspecialchars($trackCoverUrl); ?>" alt="<?php echo htmlspecialchars($track['song_title']); ?>" class="wg-details__cover-img">
+                <?php else: ?>
+                    <div class="wg-details__cover-placeholder wg-card__cover-placeholder--<?php echo $trackPlaceholder; ?>">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="56" height="56">
+                            <path d="M9 18V5l12-2v13"/>
+                            <circle cx="6" cy="18" r="3"/>
+                            <circle cx="18" cy="16" r="3"/>
+                        </svg>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="wg-details__info">
                 <div class="wg-details__status">
-                    <span class="wg-details__status-badge wg-details__status-badge--<?php echo strtolower($track['status']); ?>"><?php echo htmlspecialchars($track['status']); ?></span>
+                    <span class="wg-details__status-badge wg-details__status-badge--<?php echo strtolower($track['status']); ?>"><?php echo htmlspecialchars($trackStatus); ?></span>
                 </div>
-                <h1 class="wg-details__title"><?php echo htmlspecialchars($track['title']); ?></h1>
-                <p class="wg-details__artist"><?php echo htmlspecialchars($track['artist']); ?></p>
+                <h1 class="wg-details__title"><?php echo htmlspecialchars($track['song_title']); ?></h1>
+                <p class="wg-details__artist"><?php echo htmlspecialchars($artistName ?: 'Unknown Artist'); ?></p>
 
                 <!-- META PILLS -->
                 <div class="wg-details__meta">
+                    <?php if ($track['album_name']): ?>
                     <span class="wg-details__meta-pill">
                         <span class="wg-details__meta-pill-label">Album</span>
-                        <span class="wg-details__meta-pill-value"><?php echo htmlspecialchars($track['album']); ?></span>
+                        <span class="wg-details__meta-pill-value"><?php echo htmlspecialchars($track['album_name']); ?></span>
                     </span>
+                    <?php endif; ?>
+                    <?php if ($track['year_name']): ?>
                     <span class="wg-details__meta-pill">
                         <span class="wg-details__meta-pill-label">Year</span>
-                        <span class="wg-details__meta-pill-value"><?php echo htmlspecialchars($track['year']); ?></span>
+                        <span class="wg-details__meta-pill-value"><?php echo htmlspecialchars($track['year_name']); ?></span>
                     </span>
+                    <?php endif; ?>
+                    <?php if ($track['genre_name']): ?>
                     <span class="wg-details__meta-pill">
                         <span class="wg-details__meta-pill-label">Genre</span>
-                        <span class="wg-details__meta-pill-value"><?php echo htmlspecialchars($track['genre']); ?></span>
+                        <span class="wg-details__meta-pill-value"><?php echo htmlspecialchars($track['genre_name']); ?></span>
                     </span>
+                    <?php endif; ?>
+                    <?php if ($track['language_name']): ?>
                     <span class="wg-details__meta-pill">
                         <span class="wg-details__meta-pill-label">Language</span>
-                        <span class="wg-details__meta-pill-value"><?php echo htmlspecialchars($track['language']); ?></span>
+                        <span class="wg-details__meta-pill-value"><?php echo htmlspecialchars($track['language_name']); ?></span>
                     </span>
+                    <?php endif; ?>
                     <span class="wg-details__meta-pill wg-details__meta-pill--rating">
                         <span class="wg-details__meta-pill-value">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
                     </span>
                 </div>
 
                 <!-- DESCRIPTION -->
+                <?php if ($track['description']): ?>
                 <div class="wg-details__description">
                     <h3 class="wg-details__desc-heading">About this song</h3>
                     <p class="wg-details__desc-text"><?php echo htmlspecialchars($track['description']); ?></p>
                 </div>
+                <?php endif; ?>
 
                 <!-- CUSTOM AUDIO PLAYER -->
-                <div class="wg-player" id="wgPlayer">
+                <div class="wg-player<?php echo $isInactive ? ' wg-player--disabled' : ''; ?>" id="wgPlayer">
                     <audio class="wg-player__audio" id="wgAudioPlayer" preload="metadata">
-                        <source src="" type="audio/mpeg">
+                        <?php if ($trackAudioUrl): ?>
+                            <source src="<?php echo htmlspecialchars($trackAudioUrl); ?>" type="audio/mpeg">
+                        <?php endif; ?>
                     </audio>
-                    <button class="wg-player__play" id="wgPlayerPlay" type="button" aria-label="Play">
+                    <button class="wg-player__play" id="wgPlayerPlay" type="button" aria-label="Play" <?php echo $isInactive ? 'disabled' : ''; ?>>
                         <svg class="svg--play" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
                         <svg class="svg--pause" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
                     </button>
@@ -134,9 +264,16 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
                         </button>
                         <input type="range" class="wg-player__volume-slider" id="wgPlayerVolume" min="0" max="100" value="80">
                     </div>
-                    <a class="wg-player__download" id="wgPlayerDownload" href="#" download aria-label="Download">
+                    <?php if ($trackAudioUrl): ?>
+                    <a class="wg-player__download" id="wgPlayerDownload" href="<?php echo htmlspecialchars($trackAudioUrl); ?>" download aria-label="Download">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </a>
+                    <?php endif; ?>
+                    <?php if ($isInactive): ?>
+                    <div class="wg-player__unavailable" style="color:var(--wg-text-muted);font-size:0.8125rem;padding:0 0.5rem;">Audio not available for this track</div>
+                    <?php elseif (!$trackAudioUrl): ?>
+                    <div class="wg-player__unavailable" style="color:var(--wg-text-muted);font-size:0.8125rem;padding:0 0.5rem;">Audio unavailable</div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -149,23 +286,29 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
                 <div class="wg-reviews__summary">
                     <h3 class="wg-reviews__summary-title">Ratings &amp; Reviews</h3>
                     <div class="wg-reviews__score">
-                        <span class="wg-reviews__score-number">4.8</span>
+                        <span class="wg-reviews__score-number"><?php echo $reviewAvg; ?></span>
                         <span class="wg-reviews__score-max">/ 5</span>
                     </div>
                     <div class="wg-reviews__stars">
-                        <span class="wg-reviews__star wg-reviews__star--filled">&#9733;</span>
-                        <span class="wg-reviews__star wg-reviews__star--filled">&#9733;</span>
-                        <span class="wg-reviews__star wg-reviews__star--filled">&#9733;</span>
-                        <span class="wg-reviews__star wg-reviews__star--filled">&#9733;</span>
-                        <span class="wg-reviews__star wg-reviews__star--half">&#9733;</span>
+                        <?php
+                        $avgInt = (int) floor($reviewAvg);
+                        $hasHalf = ($reviewAvg - $avgInt) >= 0.5;
+                        for ($s = 1; $s <= 5; $s++):
+                            if ($s <= $avgInt): ?>
+                                <span class="wg-reviews__star wg-reviews__star--filled">&#9733;</span>
+                            <?php elseif ($s === $avgInt + 1 && $hasHalf): ?>
+                                <span class="wg-reviews__star wg-reviews__star--half">&#9733;</span>
+                            <?php else: ?>
+                                <span class="wg-reviews__star">&#9733;</span>
+                            <?php endif;
+                        endfor; ?>
                     </div>
-                    <p class="wg-reviews__based">Based on 128 reviews</p>
+                    <p class="wg-reviews__based">Based on <?php echo $reviewTotal; ?> review<?php echo $reviewTotal !== 1 ? 's' : ''; ?></p>
                     <div class="wg-reviews__dist">
-                        <div class="wg-reviews__dist-row"><span class="wg-reviews__dist-label">5 &#9733;</span><div class="wg-reviews__dist-bar"><div class="wg-reviews__dist-fill" style="width:68%"></div></div><span class="wg-reviews__dist-pct">68%</span></div>
-                        <div class="wg-reviews__dist-row"><span class="wg-reviews__dist-label">4 &#9733;</span><div class="wg-reviews__dist-bar"><div class="wg-reviews__dist-fill" style="width:22%"></div></div><span class="wg-reviews__dist-pct">22%</span></div>
-                        <div class="wg-reviews__dist-row"><span class="wg-reviews__dist-label">3 &#9733;</span><div class="wg-reviews__dist-bar"><div class="wg-reviews__dist-fill" style="width:6%"></div></div><span class="wg-reviews__dist-pct">6%</span></div>
-                        <div class="wg-reviews__dist-row"><span class="wg-reviews__dist-label">2 &#9733;</span><div class="wg-reviews__dist-bar"><div class="wg-reviews__dist-fill" style="width:3%"></div></div><span class="wg-reviews__dist-pct">3%</span></div>
-                        <div class="wg-reviews__dist-row"><span class="wg-reviews__dist-label">1 &#9733;</span><div class="wg-reviews__dist-bar"><div class="wg-reviews__dist-fill" style="width:1%"></div></div><span class="wg-reviews__dist-pct">1%</span></div>
+                        <?php for ($i = 5; $i >= 1; $i--):
+                            $pct = $reviewTotal > 0 ? round($reviewDist[$i] / $reviewTotal * 100) : 0; ?>
+                            <div class="wg-reviews__dist-row"><span class="wg-reviews__dist-label"><?php echo $i; ?> &#9733;</span><div class="wg-reviews__dist-bar"><div class="wg-reviews__dist-fill" style="width:<?php echo $pct; ?>%"></div></div><span class="wg-reviews__dist-pct"><?php echo $pct; ?>%</span></div>
+                        <?php endfor; ?>
                     </div>
                 </div>
 
@@ -179,7 +322,9 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
                         <span class="wg-reviews__star-pick" data-star="4">&#9733;</span>
                         <span class="wg-reviews__star-pick" data-star="5">&#9733;</span>
                     </div>
-                    <textarea class="wg-reviews__textarea" placeholder="Write your review..." rows="3"></textarea>
+                    <div class="wg-reviews__form-error" id="ratingError" style="display:none;color:#f87171;font-size:0.8125rem;margin-bottom:0.5rem;"></div>
+                    <textarea class="wg-reviews__textarea" id="reviewText" placeholder="Write your review..." rows="3"></textarea>
+                    <div class="wg-reviews__form-error" id="reviewError" style="display:none;color:#f87171;font-size:0.8125rem;margin-bottom:0.5rem;"></div>
                     <button class="wg-reviews__submit-btn" id="submitReview">Submit Review</button>
                 </div>
             </div>
@@ -187,75 +332,27 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
             <!-- ROW 2: Reviews Grid -->
             <div class="wg-reviews__cards-section">
                 <h3 class="wg-details__section-title" style="margin-bottom:1rem;">Reviews</h3>
-                <div class="wg-reviews__cards-grid">
+                <div class="wg-reviews__cards-grid" id="reviewsGrid">
+                    <?php foreach ($reviewCards as $idx => $rc): ?>
                     <div class="wg-review-card">
                         <div class="wg-review-card__row">
-                            <div class="wg-review-card__avatar">AR</div>
+                            <?php echo wgReviewAvatarHtml($rc['user_image'], $rc['user_name'], $idx); ?>
                             <div class="wg-review-card__info">
-                                <span class="wg-review-card__name">Alex Rivera</span>
-                                <span class="wg-review-card__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                                <span class="wg-review-card__name"><?php echo htmlspecialchars($rc['user_name'] ?: 'Anonymous'); ?></span>
+                                <span class="wg-review-card__stars"><?php echo wgStarHtml((int)$rc['rating']); ?></span>
                             </div>
-                            <span class="wg-review-card__date">3 days ago</span>
+                            <span class="wg-review-card__date" data-ts="<?php echo htmlspecialchars($rc['created_at']); ?>"><?php echo wgRelativeTime($rc['created_at']); ?></span>
                         </div>
-                        <p class="wg-review-card__text">"Amazing track! The vocals and guitars create such a powerful vibe."</p>
+                        <p class="wg-review-card__text">"<?php echo htmlspecialchars($rc['review_text']); ?>"</p>
                     </div>
-                    <div class="wg-review-card">
-                        <div class="wg-review-card__row">
-                            <div class="wg-review-card__avatar">SF</div>
-                            <div class="wg-review-card__info">
-                                <span class="wg-review-card__name">Sara Fatima</span>
-                                <span class="wg-review-card__stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
-                            </div>
-                            <span class="wg-review-card__date">5 days ago</span>
-                        </div>
-                        <p class="wg-review-card__text">"Beautiful composition with great emotional depth. Sophisticated yet accessible."</p>
-                    </div>
-                    <div class="wg-review-card">
-                        <div class="wg-review-card__row">
-                            <div class="wg-review-card__avatar">MR</div>
-                            <div class="wg-review-card__info">
-                                <span class="wg-review-card__name">Mujahid Raza</span>
-                                <span class="wg-review-card__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                            </div>
-                            <span class="wg-review-card__date">1 week ago</span>
-                        </div>
-                        <p class="wg-review-card__text">"On repeat since it dropped. Hauntingly beautiful vocals and deeply resonant lyrics."</p>
-                    </div>
-                    <div class="wg-review-card">
-                        <div class="wg-review-card__row">
-                            <div class="wg-review-card__avatar">JL</div>
-                            <div class="wg-review-card__info">
-                                <span class="wg-review-card__name">Jordan Lee</span>
-                                <span class="wg-review-card__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                            </div>
-                            <span class="wg-review-card__date">1 week ago</span>
-                        </div>
-                        <p class="wg-review-card__text">"The production quality is stellar. Every layer serves the song perfectly."</p>
-                    </div>
-                    <div class="wg-review-card">
-                        <div class="wg-review-card__row">
-                            <div class="wg-review-card__avatar">NK</div>
-                            <div class="wg-review-card__info">
-                                <span class="wg-review-card__name">Nadia Khan</span>
-                                <span class="wg-review-card__stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
-                            </div>
-                            <span class="wg-review-card__date">2 weeks ago</span>
-                        </div>
-                        <p class="wg-review-card__text">"Great vibes, perfect for late-night listening. The arrangement is top notch."</p>
-                    </div>
-                    <div class="wg-review-card">
-                        <div class="wg-review-card__row">
-                            <div class="wg-review-card__avatar">TC</div>
-                            <div class="wg-review-card__info">
-                                <span class="wg-review-card__name">Tom Chen</span>
-                                <span class="wg-review-card__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                            </div>
-                            <span class="wg-review-card__date">2 weeks ago</span>
-                        </div>
-                        <p class="wg-review-card__text">"A masterpiece in every sense. The melody stays with you long after listening."</p>
-                    </div>
+                    <?php endforeach; ?>
+                    <?php if (empty($reviewCards)): ?>
+                    <div class="wg-reviews__empty" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--wg-text-muted);">No reviews yet. Be the first to review!</div>
+                    <?php endif; ?>
                 </div>
+                <?php if ($reviewTotal > 6 || count($allReviews) > 6): ?>
                 <button class="wg-reviews__all-btn" id="openDrawer">All Reviews</button>
+                <?php endif; ?>
             </div>
         </section>
 
@@ -265,101 +362,30 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
             <div class="wg-drawer__header">
                 <div>
                     <h3 class="wg-drawer__title">All Reviews</h3>
-                    <span class="wg-drawer__count">128 Reviews</span>
+                    <span class="wg-drawer__count"><?php echo $reviewTotal; ?> Review<?php echo $reviewTotal !== 1 ? 's' : ''; ?></span>
                 </div>
                 <button class="wg-drawer__close" id="closeDrawer" aria-label="Close">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
-            <div class="wg-drawer__list">
+            <div class="wg-drawer__list" id="drawerList">
+                <?php foreach ($allReviews as $idx => $rc): ?>
                 <div class="wg-drawer__review">
                     <div class="wg-drawer__review-row">
-                        <div class="wg-drawer__review-avatar">AR</div>
+                        <?php if ($rc['user_image']): ?>
+                            <div class="wg-drawer__review-avatar"><img src="<?php echo htmlspecialchars('/Aptech_E_Project_02/sound_management/' . ltrim($rc['user_image'], '/')); ?>" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='<?php echo htmlspecialchars(wgUserInitials($rc['user_name'])); ?>'"></div>
+                        <?php else: ?>
+                            <div class="wg-drawer__review-avatar"><?php echo htmlspecialchars(wgUserInitials($rc['user_name'])); ?></div>
+                        <?php endif; ?>
                         <div class="wg-drawer__review-info">
-                            <span class="wg-drawer__review-name">Alex Rivera</span>
-                            <span class="wg-drawer__review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                            <span class="wg-drawer__review-name"><?php echo htmlspecialchars($rc['user_name'] ?: 'Anonymous'); ?></span>
+                            <span class="wg-drawer__review-stars"><?php echo wgStarHtml((int)$rc['rating']); ?></span>
                         </div>
-                        <span class="wg-drawer__review-date">3 days ago</span>
+                        <span class="wg-drawer__review-date" data-ts="<?php echo htmlspecialchars($rc['created_at']); ?>"><?php echo wgRelativeTime($rc['created_at']); ?></span>
                     </div>
-                    <p class="wg-drawer__review-text">"Absolutely incredible track. The vocals and guitars create such a powerful vibe. One of the best releases this year."</p>
+                    <p class="wg-drawer__review-text">"<?php echo htmlspecialchars($rc['review_text']); ?>"</p>
                 </div>
-                <div class="wg-drawer__review">
-                    <div class="wg-drawer__review-row">
-                        <div class="wg-drawer__review-avatar">SF</div>
-                        <div class="wg-drawer__review-info">
-                            <span class="wg-drawer__review-name">Sara Fatima</span>
-                            <span class="wg-drawer__review-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
-                        </div>
-                        <span class="wg-drawer__review-date">5 days ago</span>
-                    </div>
-                    <p class="wg-drawer__review-text">"Beautiful composition with great emotional depth. The arrangement is sophisticated yet accessible."</p>
-                </div>
-                <div class="wg-drawer__review">
-                    <div class="wg-drawer__review-row">
-                        <div class="wg-drawer__review-avatar">MR</div>
-                        <div class="wg-drawer__review-info">
-                            <span class="wg-drawer__review-name">Mujahid Raza</span>
-                            <span class="wg-drawer__review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                        </div>
-                        <span class="wg-drawer__review-date">1 week ago</span>
-                    </div>
-                    <p class="wg-drawer__review-text">"This has been on repeat since it dropped. The vocals are hauntingly beautiful and the lyrics resonate deeply."</p>
-                </div>
-                <div class="wg-drawer__review">
-                    <div class="wg-drawer__review-row">
-                        <div class="wg-drawer__review-avatar">JL</div>
-                        <div class="wg-drawer__review-info">
-                            <span class="wg-drawer__review-name">Jordan Lee</span>
-                            <span class="wg-drawer__review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                        </div>
-                        <span class="wg-drawer__review-date">1 week ago</span>
-                    </div>
-                    <p class="wg-drawer__review-text">"The production quality is stellar. Every layer serves the song perfectly. A masterclass in modern music production."</p>
-                </div>
-                <div class="wg-drawer__review">
-                    <div class="wg-drawer__review-row">
-                        <div class="wg-drawer__review-avatar">NK</div>
-                        <div class="wg-drawer__review-info">
-                            <span class="wg-drawer__review-name">Nadia Khan</span>
-                            <span class="wg-drawer__review-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
-                        </div>
-                        <span class="wg-drawer__review-date">2 weeks ago</span>
-                    </div>
-                    <p class="wg-drawer__review-text">"Great vibes, perfect for late-night listening. The arrangement is top notch and the melody is unforgettable."</p>
-                </div>
-                <div class="wg-drawer__review">
-                    <div class="wg-drawer__review-row">
-                        <div class="wg-drawer__review-avatar">TC</div>
-                        <div class="wg-drawer__review-info">
-                            <span class="wg-drawer__review-name">Tom Chen</span>
-                            <span class="wg-drawer__review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                        </div>
-                        <span class="wg-drawer__review-date">2 weeks ago</span>
-                    </div>
-                    <p class="wg-drawer__review-text">"A masterpiece in every sense. The melody stays with you long after listening. Truly exceptional work."</p>
-                </div>
-                <div class="wg-drawer__review">
-                    <div class="wg-drawer__review-row">
-                        <div class="wg-drawer__review-avatar">JS</div>
-                        <div class="wg-drawer__review-info">
-                            <span class="wg-drawer__review-name">John Smith</span>
-                            <span class="wg-drawer__review-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
-                        </div>
-                        <span class="wg-drawer__review-date">3 weeks ago</span>
-                    </div>
-                    <p class="wg-drawer__review-text">"Great song overall. The mixing is clean and the vocals sit perfectly in the mix."</p>
-                </div>
-                <div class="wg-drawer__review">
-                    <div class="wg-drawer__review-row">
-                        <div class="wg-drawer__review-avatar">LP</div>
-                        <div class="wg-drawer__review-info">
-                            <span class="wg-drawer__review-name">Lisa Park</span>
-                            <span class="wg-drawer__review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-                        </div>
-                        <span class="wg-drawer__review-date">3 weeks ago</span>
-                    </div>
-                    <p class="wg-drawer__review-text">"Instant classic. The emotion in every note is palpable. Can't stop listening to this one."</p>
-                </div>
+                <?php endforeach; ?>
             </div>
             <div class="wg-drawer__form">
                 <h4 class="wg-drawer__form-title">Add Your Review</h4>
@@ -370,27 +396,14 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
                     <span class="wg-reviews__star-pick" data-star="4">&#9733;</span>
                     <span class="wg-reviews__star-pick" data-star="5">&#9733;</span>
                 </div>
-                <textarea class="wg-reviews__textarea" placeholder="Write your review..." rows="3"></textarea>
-                <button class="wg-reviews__submit-btn wg-drawer__submit-btn">Submit Review</button>
+                <div class="wg-reviews__form-error" id="drawerRatingError" style="display:none;color:#f87171;font-size:0.8125rem;margin-bottom:0.5rem;"></div>
+                <textarea class="wg-reviews__textarea" id="drawerReviewText" placeholder="Write your review..." rows="3"></textarea>
+                <div class="wg-reviews__form-error" id="drawerReviewError" style="display:none;color:#f87171;font-size:0.8125rem;margin-bottom:0.5rem;"></div>
+                <button class="wg-reviews__submit-btn wg-drawer__submit-btn" id="drawerSubmitReview">Submit Review</button>
             </div>
         </aside>
 
         <!-- MORE FROM THIS ARTIST -->
-        <?php
-        $artistCards = [];
-        foreach ($allMusic as $mid => $m) {
-            if ($m['artist'] === $track['artist'] && $mid !== $id) {
-                $artistCards[] = ['mc_id' => $mid, 'mc_title' => $m['title'], 'mc_artist' => $m['artist'], 'mc_album' => $m['album'], 'mc_year' => $m['year'], 'mc_genre' => $m['genre'], 'mc_language' => $m['language'], 'mc_placeholder' => $m['placeholder']];
-            }
-        }
-        if (count($artistCards) < 6) {
-            foreach ($allMusic as $mid => $m) {
-                if ($mid !== $id && $m['artist'] !== $track['artist'] && !in_array($mid, array_column($artistCards, 'mc_id')) && count($artistCards) < 6) {
-                    $artistCards[] = ['mc_id' => $mid, 'mc_title' => $m['title'], 'mc_artist' => $m['artist'], 'mc_album' => $m['album'], 'mc_year' => $m['year'], 'mc_genre' => $m['genre'], 'mc_language' => $m['language'], 'mc_placeholder' => $m['placeholder']];
-                }
-            }
-        }
-        ?>
         <?php if (!empty($artistCards)): ?>
         <section class="wg-details__artist-section">
             <div class="wg-details__artist-header">
@@ -399,12 +412,22 @@ $track = isset($allMusic[$id]) ? $allMusic[$id] : $allMusic[1];
             </div>
             <div class="wg-carousel">
                 <div class="wg-carousel__track" id="artistCarousel">
-                    <?php foreach ($artistCards as $card): ?>
+                    <?php
+                    $artistPlaceholder = 1;
+                    foreach ($artistCards as $ac):
+                        $mc_id = (int)$ac['id'];
+                        $mc_title = $ac['song_title'];
+                        $mc_artist = $ac['artist_name'] ?: 'Unknown Artist';
+                        $mc_album = $ac['album_name'] ?: '';
+                        $mc_year = $ac['year_name'] ?: '';
+                        $mc_genre = $ac['genre_name'] ?: '';
+                        $mc_language = $ac['language_name'] ?: '';
+                        $mc_placeholder = $artistPlaceholder;
+                        $mc_cover_image = $ac['cover_image'] ?: '';
+                        $artistPlaceholder = ($artistPlaceholder % 5) + 1;
+                    ?>
                     <div class="wg-carousel__item">
-                        <?php
-                        extract($card);
-                        include __DIR__ . '/../components/music_card/music_card.php';
-                        ?>
+                        <?php include __DIR__ . '/../components/music_card/music_card.php'; ?>
                     </div>
                     <?php endforeach; ?>
                 </div>

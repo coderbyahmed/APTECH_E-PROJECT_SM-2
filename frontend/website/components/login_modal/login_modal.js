@@ -153,10 +153,7 @@
 
             // Set loading state
             if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.classList.add('is-loading');
-                var btnSpan = submitBtn.querySelector('span');
-                if (btnSpan) btnSpan.textContent = 'Logging in...';
+                startButtonLoading(submitBtn, 'Logging in...');
             }
 
             // Build FormData
@@ -172,28 +169,20 @@
             xhr.onload = function () {
                 var resp = xhr.response;
                 if (!resp || typeof resp !== 'object') {
-                    resetLoginBtn();
-                    if (errorEl) {
-                        errorEl.textContent = 'An unexpected error occurred. Please try again.';
-                        errorEl.style.display = '';
-                    }
+                    stopButtonLoading(submitBtn);
+                    showError('An unexpected error occurred. Please try again.');
                     return;
                 }
 
                 if (xhr.status === 200 && resp.success) {
-                    // Success
-                    if (successEl) {
-                        successEl.textContent = resp.message || 'Login successful! Redirecting...';
-                        successEl.style.display = '';
-                    }
+                    closeLogin();
+                    showSuccess(resp.message || 'Login successful! Redirecting...');
                     setTimeout(function () {
-                        closeLogin();
                         window.location.reload();
-                    }, 1200);
+                    }, 1500);
                 } else {
-                    resetLoginBtn();
+                    stopButtonLoading(submitBtn);
                     if (resp.errors) {
-                        // Field-specific errors
                         var firstError = '';
                         if (resp.errors.email) {
                             emailInput.style.borderColor = 'rgba(239, 68, 68, 0.5)';
@@ -208,30 +197,15 @@
                             errorEl.style.display = '';
                         }
                     } else if (resp.error) {
-                        if (errorEl) {
-                            errorEl.textContent = resp.error;
-                            errorEl.style.display = '';
-                        }
+                        showError(resp.error);
                     }
                 }
             };
 
             xhr.onerror = function () {
-                resetLoginBtn();
-                if (errorEl) {
-                    errorEl.textContent = 'Network error. Please check your connection and try again.';
-                    errorEl.style.display = '';
-                }
+                stopButtonLoading(submitBtn);
+                showError('Network error. Please check your connection and try again.');
             };
-
-            function resetLoginBtn() {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.classList.remove('is-loading');
-                    var btnSpan = submitBtn.querySelector('span');
-                    if (btnSpan) btnSpan.textContent = 'Login';
-                }
-            }
 
             xhr.send(formData);
         });

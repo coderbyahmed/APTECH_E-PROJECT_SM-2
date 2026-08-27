@@ -66,7 +66,7 @@ include __DIR__ . '/../layout/admin-layout.php';
             <h2 class="um-grid-section__title">All Users</h2>
         </div>
 
-        <div class="um-user-grid" id="umCardGrid" data-csrf="<?php echo htmlspecialchars($csrfToken); ?>">
+        <div class="um-user-grid" id="umCardGrid" data-csrf="<?php echo htmlspecialchars($csrfToken); ?>" data-base-url="<?php echo htmlspecialchars($baseUrl); ?>">
             <?php if (empty($users)): ?>
             <?php else: ?>
                 <?php foreach ($users as $i => $user): ?>
@@ -77,7 +77,7 @@ include __DIR__ . '/../layout/admin-layout.php';
                         $regDate = umFormatTimestamp($user['created_at']);
                         $loginDate = umFormatTimestamp($user['last_login']);
                         $logoutDate = umFormatTimestamp($user['last_logout']);
-                        $imgPath = $user['profile_image'] ? ('/' . ltrim($user['profile_image'], '/')) : '';
+                        $imgPath = $user['profile_image'] ? ($baseUrl . '/' . ltrim($user['profile_image'], '/')) : '';
                     ?>
                     <div class="um-user-card"
                          data-user-id="<?php echo htmlspecialchars($user['user_id']); ?>"
@@ -93,7 +93,7 @@ include __DIR__ . '/../layout/admin-layout.php';
                          data-image="<?php echo htmlspecialchars($imgPath); ?>">
                         <div class="um-user-card__header">
                             <?php if ($imgPath): ?>
-                                <div class="um-avatar um-avatar--card" style="background-image:url('<?php echo htmlspecialchars($imgPath); ?>');background-size:cover;background-position:center;"></div>
+                                <div class="um-avatar um-avatar--card"><img src="<?php echo htmlspecialchars($imgPath); ?>" alt="<?php echo htmlspecialchars($user['full_name']); ?>"></div>
                             <?php else: ?>
                                 <div class="um-avatar um-avatar--card um-avatar--<?php echo $color; ?>"><?php echo $initials; ?></div>
                             <?php endif; ?>

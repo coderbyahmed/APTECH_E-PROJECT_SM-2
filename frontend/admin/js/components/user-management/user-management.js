@@ -17,6 +17,11 @@
         return grid ? (grid.getAttribute('data-csrf') || '') : '';
     }
 
+    function getBaseUrl() {
+        var grid = document.getElementById('umCardGrid');
+        return grid ? (grid.getAttribute('data-base-url') || '') : '';
+    }
+
     function init() {
         if (!document.getElementById('umCardGrid')) return;
 
@@ -205,16 +210,10 @@
                 var avatarEl = document.getElementById('um-view-avatar');
                 if (avatarEl) {
                     if (cardImage) {
-                        avatarEl.textContent = '';
-                        avatarEl.style.backgroundImage = 'url(' + cardImage + ')';
-                        avatarEl.style.backgroundSize = 'cover';
-                        avatarEl.style.backgroundPosition = 'center';
+                        avatarEl.innerHTML = '<img src="' + cardImage + '" alt="' + (cardName || 'User') + '">';
                         avatarEl.className = 'um-avatar um-avatar--large';
                     } else {
-                        avatarEl.style.backgroundImage = '';
-                        avatarEl.style.backgroundSize = '';
-                        avatarEl.style.backgroundPosition = '';
-                        avatarEl.textContent = initials(cardName);
+                        avatarEl.innerHTML = initials(cardName);
                         avatarEl.className = 'um-avatar um-avatar--large um-avatar--violet';
                     }
                 }
@@ -278,16 +277,11 @@
             var avatarEl = document.getElementById('um-edit-avatar');
             if (avatarEl) {
                 if (cardImage) {
-                    avatarEl.textContent = '';
-                    avatarEl.style.backgroundImage = 'url(' + cardImage + ')';
-                    avatarEl.style.backgroundSize = 'cover';
-                    avatarEl.style.backgroundPosition = 'center';
+                    avatarEl.innerHTML = '<img src="' + cardImage + '" alt="' + (cardName || 'User') + '">';
                     avatarEl.className = 'um-avatar um-avatar--large';
                 } else {
-                    avatarEl.textContent = initials(cardName);
+                    avatarEl.innerHTML = initials(cardName);
                     avatarEl.style.backgroundImage = '';
-                    avatarEl.style.backgroundSize = '';
-                    avatarEl.style.backgroundPosition = '';
                     avatarEl.className = 'um-avatar um-avatar--large um-avatar--violet';
                 }
             }
@@ -358,7 +352,7 @@
                         currentUser.setAttribute('data-status', rec.status);
 
                         if (rec.profile_image) {
-                            currentUser.setAttribute('data-image', '/' + rec.profile_image.replace(/^\//, ''));
+                            currentUser.setAttribute('data-image', getBaseUrl() + '/' + rec.profile_image.replace(/^\//, ''));
                         }
 
                         // Update card display
@@ -377,13 +371,11 @@
                         var avatar = currentUser.querySelector('.um-avatar');
                         if (avatar) {
                             if (rec.profile_image) {
-                                avatar.textContent = '';
-                                avatar.style.backgroundImage = 'url(/' + rec.profile_image.replace(/^\//, '') + ')';
-                                avatar.style.backgroundSize = 'cover';
-                                avatar.style.backgroundPosition = 'center';
+                                var imgUrl = getBaseUrl() + '/' + rec.profile_image.replace(/^\//, '');
+                                avatar.innerHTML = '<img src="' + imgUrl + '" alt="' + (rec.full_name || 'User') + '">';
                                 avatar.className = 'um-avatar um-avatar--card';
                             } else {
-                                avatar.textContent = initials(rec.full_name);
+                                avatar.innerHTML = initials(rec.full_name);
                                 avatar.style.backgroundImage = '';
                                 avatar.className = 'um-avatar um-avatar--card um-avatar--violet';
                             }
@@ -496,10 +488,7 @@
                     var reader = new FileReader();
                     reader.onload = function (e) {
                         if (editAvatar) {
-                            editAvatar.textContent = '';
-                            editAvatar.style.backgroundImage = 'url(' + e.target.result + ')';
-                            editAvatar.style.backgroundSize = 'cover';
-                            editAvatar.style.backgroundPosition = 'center';
+                            editAvatar.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
                         }
                     };
                     reader.readAsDataURL(imageInput.files[0]);

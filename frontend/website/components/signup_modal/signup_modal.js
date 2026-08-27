@@ -56,15 +56,9 @@
     function setSubmitting(loading) {
         if (!submitBtn) return;
         if (loading) {
-            submitBtn.disabled = true;
-            submitBtn.classList.add('is-loading');
-            var span = submitBtn.querySelector('span');
-            if (span) span.textContent = 'Creating Account...';
+            startButtonLoading(submitBtn, 'Creating Account...');
         } else {
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('is-loading');
-            var span = submitBtn.querySelector('span');
-            if (span) span.textContent = 'Create Account';
+            stopButtonLoading(submitBtn);
         }
     }
 
@@ -268,23 +262,15 @@
                 var resp = xhr.response;
                 if (!resp || typeof resp !== 'object') {
                     setSubmitting(false);
-                    if (errorEl) {
-                        errorEl.textContent = 'An unexpected error occurred. Please try again.';
-                        errorEl.style.display = '';
-                    }
+                    showError('An unexpected error occurred. Please try again.');
                     return;
                 }
 
                 if (xhr.status === 200 && resp.success) {
-                    // Success
-                    if (successEl) {
-                        successEl.textContent = resp.message || 'Account created successfully!';
-                        successEl.style.display = '';
-                    }
-                    setTimeout(closeSignup, 1500);
+                    closeSignup();
+                    showSuccess(resp.message || 'Account created successfully!');
                 } else {
                     setSubmitting(false);
-                    // Handle validation errors
                     if (resp.errors && typeof resp.errors === 'object') {
                         var firstError = '';
                         Object.keys(resp.errors).forEach(function (key) {
@@ -299,20 +285,14 @@
                             errorEl.style.display = '';
                         }
                     } else if (resp.error) {
-                        if (errorEl) {
-                            errorEl.textContent = resp.error;
-                            errorEl.style.display = '';
-                        }
+                        showError(resp.error);
                     }
                 }
             };
 
             xhr.onerror = function () {
                 setSubmitting(false);
-                if (errorEl) {
-                    errorEl.textContent = 'Network error. Please check your connection and try again.';
-                    errorEl.style.display = '';
-                }
+                showError('Network error. Please check your connection and try again.');
             };
 
             xhr.send(formData);

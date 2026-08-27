@@ -15,27 +15,30 @@ if (!isset($mc_placeholder))
     $mc_placeholder = 1;
 if (!isset($mc_id))
     $mc_id = 1;
+if (!isset($mc_cover_image))
+    $mc_cover_image = '';
 if (!isset($websiteBase))
     $websiteBase = '/Aptech_E_Project_02/sound_management/frontend/website';
-$detailHref = $websiteBase . '/music_details/music_details.php?id=' . (int)$mc_id;
+$detailHref = $websiteBase . '/music_details/music_details.php?id=' . (int) $mc_id;
+$coverUrl = '';
+if ($mc_cover_image) {
+    $coverUrl = '/Aptech_E_Project_02/sound_management/' . ltrim($mc_cover_image, '/');
+}
 ?>
 <a href="<?php echo $detailHref; ?>" class="wg-card wg-card--music wg-card--link">
     <div class="wg-card__cover">
-        <div class="wg-card__cover-placeholder wg-card__cover-placeholder--<?php echo (int) $mc_placeholder; ?>"><svg
-                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                stroke-linejoin="round" width="36" height="36">
-                <path d="M9 18V5l12-2v13" />
-                <circle cx="6" cy="18" r="3" />
-                <circle cx="18" cy="16" r="3" />
-            </svg></div>
-        <div class="wg-card__play"><svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                <polygon points="5 3 19 12 5 21 5 3" />
-            </svg></div>
-        <span class="wg-card__dots" aria-label="More options"><svg viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="5" r="1.5" />
-                <circle cx="12" cy="12" r="1.5" />
-                <circle cx="12" cy="19" r="1.5" />
-            </svg></span>
+        <?php if ($coverUrl): ?>
+            <img src="<?php echo htmlspecialchars($coverUrl); ?>" alt="<?php echo htmlspecialchars($mc_title); ?>"
+                class="wg-card__cover-img" loading="lazy">
+        <?php else: ?>
+            <div class="wg-card__cover-placeholder wg-card__cover-placeholder--<?php echo (int) $mc_placeholder; ?>"><svg
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" width="36" height="36">
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                </svg></div>
+        <?php endif; ?>
     </div>
     <div class="wg-card__info">
         <h3 class="wg-card__title"><?php echo htmlspecialchars($mc_title); ?></h3>

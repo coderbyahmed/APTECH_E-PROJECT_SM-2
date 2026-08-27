@@ -184,3 +184,45 @@ CREATE TABLE IF NOT EXISTS `music` (
     CONSTRAINT `music_genre_id_foreign` FOREIGN KEY (`genre_id`) REFERENCES `genres` (`id`) ON DELETE SET NULL,
     CONSTRAINT `music_language_id_foreign` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -------------------------------------------
+-- Videos Table
+-- -------------------------------------------
+CREATE TABLE IF NOT EXISTS `videos` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `video_title` VARCHAR(255) NOT NULL,
+    `artist_id` BIGINT UNSIGNED DEFAULT NULL,
+    `album_id` BIGINT UNSIGNED DEFAULT NULL,
+    `year_id` BIGINT UNSIGNED DEFAULT NULL,
+    `genre_id` BIGINT UNSIGNED DEFAULT NULL,
+    `language_id` BIGINT UNSIGNED DEFAULT NULL,
+    `description` TEXT DEFAULT NULL,
+    `video_path` VARCHAR(500) DEFAULT NULL,
+    `thumbnail_path` VARCHAR(500) DEFAULT NULL,
+    `status` ENUM('active','draft','inactive') NOT NULL DEFAULT 'active',
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `videos_artist_id_foreign` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE SET NULL,
+    CONSTRAINT `videos_album_id_foreign` FOREIGN KEY (`album_id`) REFERENCES `albums` (`id`) ON DELETE SET NULL,
+    CONSTRAINT `videos_year_id_foreign` FOREIGN KEY (`year_id`) REFERENCES `air` (`id`) ON DELETE SET NULL,
+    CONSTRAINT `videos_genre_id_foreign` FOREIGN KEY (`genre_id`) REFERENCES `genres` (`id`) ON DELETE SET NULL,
+    CONSTRAINT `videos_language_id_foreign` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -------------------------------------------
+-- Reviews Table
+-- -------------------------------------------
+CREATE TABLE IF NOT EXISTS `reviews` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `user_id` BIGINT UNSIGNED NOT NULL,
+    `music_id` BIGINT UNSIGNED NOT NULL,
+    `rating` TINYINT UNSIGNED NOT NULL,
+    `review_text` TEXT NOT NULL,
+    `status` ENUM('published','hidden') NOT NULL DEFAULT 'published',
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `reviews_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `reviews_music_id_foreign` FOREIGN KEY (`music_id`) REFERENCES `music` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -2,11 +2,12 @@
 /**
  * SOUND Group — Reviews & Ratings Management
  *
- * UI ONLY — mock data. Backend/database to be connected later.
+ * Real database integration.
  */
 
 require_once __DIR__ . '/../../../backend/includes/session.php';
 require_once __DIR__ . '/../../../backend/includes/auth.php';
+require_once __DIR__ . '/../../../backend/includes/db.php';
 
 requireAuth();
 
@@ -16,57 +17,66 @@ $activeItem = 'review-management';
 include __DIR__ . '/../layout/admin-layout.php';
 
 /* ----------------------------------------------------------
-   Mock review data (UI only). Keys describe the future
-   backend structure: review id, user, content, rating,
-   review text, status, dates.
+   Fetch real review data from database
    ---------------------------------------------------------- */
-$now = time();
-$dayTs = function ($daysAgo) use ($now) {
-    return $now - $daysAgo * 86400;
-};
-$dateValue = function ($daysAgo) use ($dayTs) {
-    return date('Y-m-d', $dayTs($daysAgo));
-};
-$dateLabel = function ($daysAgo) use ($dayTs) {
-    return date('M j, Y', $dayTs($daysAgo));
-};
+$db = getDb();
 
-$reviews = [
-    // id, uid, first, last, avatar, type, title, artist, album, rating, daysAgo, updatedDaysAgo, status, text
-    ['RV-101', 'U1001', 'Ava', 'Thompson', 'violet',    'music', 'Midnight Echoes',          'The Velvet Waves', 'Neon Tides',     5, 0,  null, 'published', 'Absolutely incredible. The bass line carries the whole song and the vocals sit perfectly on top. I have been replaying it all day.' ],
-    ['RV-102', 'U1002', 'Liam', 'Carter', 'blue',       'video', 'Live at The Roxy',         'The Velvet Waves', 'Live Sessions', 4, 1,  null, 'published', 'The live energy is unmatched. Sound mix is a bit rough at times but the performance more than makes up for it.' ],
-    ['RV-103', 'U1003', 'Sofia', 'Reyes', 'pink',       'music', 'Golden Hour',             'Luna Haze',        'Sunset Avenue', 3, 3,  null, 'published', 'Nice melody but it feels a little repetitive after the second chorus. Still a pleasant listen.' ],
-    ['RV-104', 'U1004', 'Noah', 'Williams', 'green',    'video', 'Night Drive — Official Video', 'Cipher Kids', 'Static Bloom', 5, 6,  2,   'published', 'Stunning visuals and the cinematography matches the mood of the track perfectly. Best video they have released.' ],
-    ['RV-105', 'U1005', 'Mia', 'Chen', 'amber',         'music', 'Parallel Lines',           'Cipher Kids',      'Static Bloom',  5, 9,  4,   'published', 'This song got me through finals week. The production is clean and the hook is impossible to get out of my head.' ],
-    ['RV-106', 'U1006', 'Ethan', 'Brooks', 'rose',      'video', 'Making of Neon Tides',     'The Velvet Waves', 'Neon Tides',    2, 11, null, 'hidden',   'The documentary is okay but it is mostly filler. I expected more insight into the recording process.' ],
-    ['RV-107', 'U1007', 'Zoe', 'Martin', 'teal',        'music', 'Summer Static',            'Echo Pacific',     'Rewind',        4, 14, 5,   'published', 'Perfect summer track. Light, breezy and instantly nostalgic. The outro is gorgeous.' ],
-    ['RV-108', 'U1008', 'Lucas', 'Bell', 'indigo',      'video', 'Acoustic Session: Golden Hour', 'Luna Haze', 'Sunset Avenue', 1, 17, null, 'hidden', 'The audio is distorted in the first minute and the video is shaky. Disappointing upload quality.' ],
-    ['RV-109', 'U1001', 'Ava', 'Thompson', 'violet',    'music', 'Paper Moons',              'Ivory Arcade',     'Low Light',     4, 21, 18,  'published', 'Delicate and dreamy. The piano arrangement is beautiful and the lyrics feel personal and honest.' ],
-    ['RV-110', 'U1002', 'Liam', 'Carter', 'blue',       'video', 'Lyric Video — Paper Moons', 'Ivory Arcade',    'Low Light',     3, 24, null, 'hidden',   'The lyrics are great but the animation is very basic compared to their previous lyric videos.' ],
-    ['RV-111', 'U1009', 'Aisha', 'Rahman', 'cyan',      'music', 'City Lullaby',             'Night Owls',       'Roof Tops',     5, 0,  null, 'published', 'Instant classic. Perfect for late night drives through the city. The harmonies gave me chills.' ],
-    ['RV-112', 'U1010', 'Daniel', 'Fox', 'orange',      'video', 'Behind the Scenes: Static Bloom', 'Cipher Kids', 'Static Bloom', 4, 30, 26,  'published', 'Great behind the scenes content. You really see how much work goes into the album production.' ],
-    ['RV-113', 'U1005', 'Mia', 'Chen', 'amber',         'music', 'Golden Hour',              'Luna Haze',        'Sunset Avenue', 5, 2,  1,   'published', 'I came back to this song weeks later and it somehow sounds even better. Beautiful arrangement and vocals.' ],
-    ['RV-114', 'U1006', 'Ethan', 'Brooks', 'rose',      'video', 'Live at The Roxy',         'The Velvet Waves', 'Live Sessions', 3, 8,  null, 'published', 'Good live set overall. The crowd noise adds a lot of atmosphere even if a couple of transitions feel rushed.' ],
+$reviewJoinSql = "FROM reviews r
+    LEFT JOIN users u ON u.id = r.user_id
+    LEFT JOIN music m ON m.id = r.music_id
+    LEFT JOIN artists a ON a.id = m.artist_id
+    LEFT JOIN albums al ON al.id = m.album_id";
+
+$statsStmt = $db->prepare("SELECT COUNT(*) AS total, AVG(r.rating) AS avg_rating,
+    SUM(CASE WHEN r.rating = 5 THEN 1 ELSE 0 END) AS star5,
+    SUM(CASE WHEN r.rating = 4 THEN 1 ELSE 0 END) AS star4,
+    SUM(CASE WHEN r.rating = 3 THEN 1 ELSE 0 END) AS star3,
+    SUM(CASE WHEN r.rating = 2 THEN 1 ELSE 0 END) AS star2,
+    SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END) AS star1
+    FROM reviews r");
+$statsStmt->execute();
+$allStats = $statsStmt->fetch();
+
+$totalReviews = (int) ($allStats['total'] ?? 0);
+$avgRating = $totalReviews > 0 ? number_format((float) $allStats['avg_rating'], 1) : '0.0';
+$starCounts = [
+    5 => (int) ($allStats['star5'] ?? 0),
+    4 => (int) ($allStats['star4'] ?? 0),
+    3 => (int) ($allStats['star3'] ?? 0),
+    2 => (int) ($allStats['star2'] ?? 0),
+    1 => (int) ($allStats['star1'] ?? 0),
 ];
 
-/* ----------------------------------------------------------
-   Summary statistics (computed from mock data)
-   ---------------------------------------------------------- */
-$totalReviews = count($reviews);
-$starCounts = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
-$musicCount = 0;
-$videoCount = 0;
-$sumRating = 0;
-foreach ($reviews as $r) {
-    $starCounts[$r[9]]++;
-    if ($r[5] === 'music') {
-        $musicCount++;
-    } else {
-        $videoCount++;
-    }
-    $sumRating += $r[9];
+$reviewsStmt = $db->prepare("SELECT r.*, u.user_id AS user_public_id, u.full_name AS user_name, u.profile_image AS user_image,
+    m.song_title, a.name AS artist_name, al.name AS album_name
+    $reviewJoinSql
+    ORDER BY r.created_at DESC");
+$reviewsStmt->execute();
+$reviews = $reviewsStmt->fetchAll();
+
+function formatAdminTimestamp($ts) {
+    if (!$ts || $ts === '0000-00-00 00:00:00') return null;
+    return date('Y-m-d', strtotime($ts));
 }
-$avgRating = $totalReviews > 0 ? number_format($sumRating / $totalReviews, 1) : '0.0';
+
+function formatAdminDateLabel($ts) {
+    if (!$ts || $ts === '0000-00-00 00:00:00') return null;
+    return date('M j, Y', strtotime($ts));
+}
+
+function adminUserInitials($name) {
+    $parts = explode(' ', trim($name));
+    if (count($parts) >= 2) {
+        return strtoupper(substr($parts[0], 0, 1) . substr(end($parts), 0, 1));
+    }
+    return strtoupper(substr($name, 0, 2));
+}
+
+function adminAvatarColor($id) {
+    $colors = ['violet', 'blue', 'pink', 'green', 'amber', 'rose', 'teal', 'indigo', 'cyan', 'orange'];
+    return $colors[$id % count($colors)];
+}
+
 $starLabel = ['5 Stars', '4 Stars', '3 Stars', '2 Stars', '1 Star'];
 $starFillColors = ['rr-distribution__fill--5', 'rr-distribution__fill--4', 'rr-distribution__fill--3', 'rr-distribution__fill--2', 'rr-distribution__fill--1'];
 ?>
@@ -99,32 +109,31 @@ $starFillColors = ['rr-distribution__fill--5', 'rr-distribution__fill--4', 'rr-d
             </div>
             <div class="rr-stat-card__info">
                 <span class="rr-stat-card__label">Average Rating</span>
-                <span class="rr-stat-card__value"><?php echo $avgRating; ?></span>
+                <span class="rr-stat-card__value" id="rrAvgRating"><?php echo $avgRating; ?></span>
             </div>
         </div>
         <div class="rr-stat-card">
-            <div class="rr-stat-card__icon rr-stat-card__icon--pink">
+            <div class="rr-stat-card__icon rr-stat-card__icon--green">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
-                    <path d="M9 18V5l12-2v13"/>
-                    <circle cx="6" cy="18" r="3"/>
-                    <circle cx="18" cy="16" r="3"/>
+                    <polyline points="20 6 9 17 4 12"/>
                 </svg>
             </div>
             <div class="rr-stat-card__info">
-                <span class="rr-stat-card__label">Music Reviews</span>
-                <span class="rr-stat-card__value"><?php echo $musicCount; ?></span>
+                <span class="rr-stat-card__label">Published</span>
+                <span class="rr-stat-card__value" id="rrPublishedCount"><?php echo $totalReviews; ?></span>
             </div>
         </div>
         <div class="rr-stat-card">
-            <div class="rr-stat-card__icon rr-stat-card__icon--blue">
+            <div class="rr-stat-card__icon rr-stat-card__icon--red">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
-                    <polygon points="23 7 16 12 23 17 23 7"/>
-                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
                 </svg>
             </div>
             <div class="rr-stat-card__info">
-                <span class="rr-stat-card__label">Video Reviews</span>
-                <span class="rr-stat-card__value"><?php echo $videoCount; ?></span>
+                <span class="rr-stat-card__label">Hidden</span>
+                <span class="rr-stat-card__value" id="rrHiddenCount">0</span>
             </div>
         </div>
     </div>
@@ -196,26 +205,35 @@ $starFillColors = ['rr-distribution__fill--5', 'rr-distribution__fill--4', 'rr-d
         <div class="rr-review-grid" id="rrReviewGrid">
 
             <?php foreach ($reviews as $r) {
-                list($rid, $uid, $first, $last, $avatarColor, $type, $title, $artist, $album, $rating, $daysAgo, $updatedDaysAgo, $status, $text) = $r;
-                $dValue = $dateValue($daysAgo);
-                $dLabel = $dateLabel($daysAgo);
-                $hasUpdate = $updatedDaysAgo !== null;
-                $uValue = $hasUpdate ? $dateValue($updatedDaysAgo) : '';
-                $uLabel = $hasUpdate ? $dateLabel($updatedDaysAgo) : '';
-                $fullName = $first . ' ' . $last;
-                $typeClass = $type === 'music' ? 'rr-type--music' : 'rr-type--video';
-                $typeLabel = $type === 'music' ? 'Music' : 'Video';
+                $rid = 'RV-' . str_pad($r['id'], 3, '0', STR_PAD_LEFT);
+                $uid = $r['user_public_id'] ?? '';
+                $fullName = $r['user_name'] ?? 'Anonymous';
+                $nameParts = explode(' ', $fullName);
+                $first = $nameParts[0] ?? '';
+                $last = end($nameParts);
+                $avatarColor = adminAvatarColor($r['id']);
+                $title = $r['song_title'] ?? '';
+                $artist = $r['artist_name'] ?? 'Unknown';
+                $album = $r['album_name'] ?? 'Unknown';
+                $rating = (int) $r['rating'];
+                $status = $r['status'];
+                $text = $r['review_text'];
+                $dValue = formatAdminTimestamp($r['created_at']);
+                $dLabel = formatAdminDateLabel($r['created_at']);
+                $uValue = formatAdminTimestamp($r['updated_at']);
+                $uLabel = formatAdminDateLabel($r['updated_at']);
+                $hasUpdate = $uValue && $uValue !== $dValue;
                 $statusClass = $status === 'published' ? 'rr-badge--published' : 'rr-badge--hidden';
-                $statusLabel = $status === 'published' ? 'Published' : 'Hidden';
+                $statusLabel = ucfirst($status);
                 $starWidth = $rating * 20;
                 $ratingLabel = number_format($rating, 1);
             ?>
             <article class="rr-review-card"
-                     data-review-id="<?php echo $rid; ?>"
-                     data-user-id="<?php echo $uid; ?>"
+                     data-review-id="<?php echo (int) $r['id']; ?>"
+                     data-user-id="<?php echo htmlspecialchars($uid); ?>"
                      data-first="<?php echo htmlspecialchars($first); ?>"
                      data-last="<?php echo htmlspecialchars($last); ?>"
-                     data-content-type="<?php echo $type; ?>"
+                     data-content-type="music"
                      data-title="<?php echo htmlspecialchars($title); ?>"
                      data-artist="<?php echo htmlspecialchars($artist); ?>"
                      data-album="<?php echo htmlspecialchars($album); ?>"
@@ -225,16 +243,16 @@ $starFillColors = ['rr-distribution__fill--5', 'rr-distribution__fill--4', 'rr-d
                      data-status="<?php echo $status; ?>"
                      data-text="<?php echo htmlspecialchars($text); ?>">
                 <div class="rr-review-card__header">
-                    <div class="rr-avatar rr-avatar--card rr-avatar--<?php echo $avatarColor; ?>"><?php echo htmlspecialchars(substr($first, 0, 1) . substr($last, 0, 1)); ?></div>
+                    <div class="rr-avatar rr-avatar--card rr-avatar--<?php echo $avatarColor; ?>"><?php echo htmlspecialchars(adminUserInitials($fullName)); ?></div>
                     <div class="rr-review-card__user">
                         <h3 class="rr-review-card__user-name"><?php echo htmlspecialchars($fullName); ?></h3>
-                        <span class="rr-review-card__user-id">User ID: <?php echo $uid; ?></span>
+                        <span class="rr-review-card__user-id">User ID: <?php echo htmlspecialchars($uid); ?></span>
                     </div>
                     <span class="rr-badge <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
                 </div>
                 <div class="rr-review-card__content">
                     <div class="rr-review-card__type-row">
-                        <span class="rr-type <?php echo $typeClass; ?>"><?php echo $typeLabel; ?></span>
+                        <span class="rr-type rr-type--music">Music</span>
                         <h4 class="rr-review-card__title"><?php echo htmlspecialchars($title); ?></h4>
                     </div>
                     <div class="rr-review-card__meta">

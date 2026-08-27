@@ -21,6 +21,9 @@ $currentPage = 'about';
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/about.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/signup_modal/signup_modal.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/login_modal/login_modal.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/profile_modal/profile_modal.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/notifications/notification.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/loaders/button-spinner.css">
 </head>
 <body class="wg-page--about">
 

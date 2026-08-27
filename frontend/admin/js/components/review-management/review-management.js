@@ -1,7 +1,6 @@
 /**
- * SOUND Group — Reviews & Ratings Management (UI Only)
- * Handles: modal open/close, view/edit/delete, search & filters
- *          (content type, rating, date), empty state, mock pagination
+ * SOUND Group — Reviews & Ratings Management (Real DB)
+ * Handles: AJAX list/view/edit/delete/toggle-status, search & filters, pagination
  */
 (function () {
     'use strict';
@@ -11,11 +10,19 @@
     var currentPage = 1;
     var totalPages = 1;
     var selectedRating = 5;
+    var handlerUrl = '/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php';
+    var csrfToken = '';
 
     var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     function init() {
         if (!document.getElementById('rrReviewGrid')) return;
+
+        // Get CSRF token from meta or form
+        var metaCsrf = document.querySelector('meta[name="csrf-token"]');
+        if (metaCsrf) csrfToken = metaCsrf.getAttribute('content');
+        var hiddenCsrf = document.querySelector('input[name="csrf_token"]');
+        if (hiddenCsrf) csrfToken = hiddenCsrf.value;
 
         function openModal(id) {
             var modal = document.getElementById(id);
@@ -72,13 +79,8 @@
         function setTypeBadge(el, type) {
             if (!el) return;
             el.className = 'rr-type';
-            if (type === 'video') {
-                el.classList.add('rr-type--video');
-                el.textContent = 'Video';
-            } else {
-                el.classList.add('rr-type--music');
-                el.textContent = 'Music';
-            }
+            el.classList.add('rr-type--music');
+            el.textContent = 'Music';
         }
 
         function setStatusBadge(el, status) {
@@ -119,7 +121,6 @@
                 if (el) el.value = val;
             };
 
-            setValue('rr-edit-type', textValue('data-content-type', 'music'));
             setValue('rr-edit-title', textValue('data-title', ''));
             setValue('rr-edit-artist', textValue('data-artist', ''));
             setValue('rr-edit-album', textValue('data-album', ''));
@@ -154,7 +155,6 @@
 
         function getFilteredCards() {
             var query = (document.getElementById('rrSearchInput').value || '').toLowerCase().trim();
-            var type = document.getElementById('rrTypeFilter').value;
             var rating = document.getElementById('rrRatingFilter').value;
             var dateFilter = document.getElementById('rrDateFilter').value;
             var minDate = getMinDate(dateFilter);
@@ -168,7 +168,6 @@
                 var title = (card.getAttribute('data-title') || '').toLowerCase();
                 var fullName = (first + ' ' + last).trim();
 
-                var cardType = card.getAttribute('data-content-type') || '';
                 var cardRating = card.getAttribute('data-rating') || '';
                 var cardDate = card.getAttribute('data-date') || '';
 
@@ -179,11 +178,10 @@
                     userId.indexOf(query) !== -1 ||
                     title.indexOf(query) !== -1;
 
-                var matchType = type === 'all' || cardType === type;
                 var matchRating = rating === 'all' || cardRating === rating;
                 var matchDate = !minDate || (cardDate.length > 0 && cardDate >= minDate);
 
-                return matchQuery && matchType && matchRating && matchDate;
+                return matchQuery && matchRating && matchDate;
             });
         }
 
@@ -254,6 +252,30 @@
             renderPagination(total);
         }
 
+        function postAction(action, data, callback) {
+            var fd = new FormData();
+            fd.append('action', action);
+            if (csrfToken) fd.append('csrf_token', csrfToken);
+            if (data) {
+                Object.keys(data).forEach(function (k) {
+                    fd.append(k, data[k]);
+                });
+            }
+            fetch(handlerUrl, { method: 'POST', body: fd })
+                .then(function (r) { return r.json(); })
+                .then(function (result) { callback(result); })
+                .catch(function () {
+                    callback({ success: false, error: 'Network error. Please try again.' });
+                });
+        }
+
+        function updateStats(total, hiddenCount) {
+            var totalEl = document.getElementById('rrTotalReviews');
+            if (totalEl) totalEl.textContent = total;
+            var hiddenEl = document.getElementById('rrHiddenCount');
+            if (hiddenEl) hiddenEl.textContent = hiddenCount;
+        }
+
         // --- Close Buttons ---
         document.querySelectorAll('[data-rr-close]').forEach(function (btn) {
             btn.addEventListener('click', function () {
@@ -295,7 +317,6 @@
                 var last = textValue('data-last', '');
                 var name = first + ' ' + last;
                 var status = textValue('data-status', 'published');
-                var type = textValue('data-content-type', 'music');
                 var rating = parseInt(textValue('data-rating', '5'), 10) || 5;
 
                 var avatarEl = document.getElementById('rr-view-avatar');
@@ -312,17 +333,17 @@
                 setText('rr-view-artist', textValue('data-artist', ''));
                 setText('rr-view-album', textValue('data-album', ''));
                 setText('rr-view-rating-value', rating.toFixed(1));
-                setText('rr-view-review-id', textValue('data-review-id', ''));
+                setText('rr-view-review-id', 'RV-' + String(textValue('data-review-id', '0')).padStart(3, '0'));
                 setText('rr-view-text', textValue('data-text', ''));
                 setText('rr-view-status-text', status === 'published' ? 'Published' : 'Hidden');
 
-                var dLabel = dateLabel(textValue('data-date', ''));
-                setText('rr-view-date', dLabel);
+                var dValue = textValue('data-date', '');
+                setText('rr-view-date', dValue ? dateLabel(dValue) : '\u2014');
 
                 var updated = textValue('data-updated', '');
                 setText('rr-view-updated', updated ? dateLabel(updated) : '\u2014');
 
-                setTypeBadge(document.getElementById('rr-view-type-badge'), type);
+                setTypeBadge(document.getElementById('rr-view-type-badge'), 'music');
                 setStatusBadge(document.getElementById('rr-view-status-badge'), status);
                 setStars(document.getElementById('rr-view-stars'), rating);
 
@@ -358,82 +379,75 @@
             });
         });
 
-        // --- Update Review (UI Only, updates the card) ---
+        // --- Update Review (AJAX) ---
         var updateBtn = document.getElementById('rrUpdateReviewBtn');
         if (updateBtn) {
             updateBtn.addEventListener('click', function () {
                 if (!currentCard) return;
 
-                var type = document.getElementById('rr-edit-type').value;
-                var title = document.getElementById('rr-edit-title').value.trim();
-                var artist = document.getElementById('rr-edit-artist').value.trim();
-                var album = document.getElementById('rr-edit-album').value.trim();
+                var reviewId = textValue('data-review-id', '0');
                 var text = document.getElementById('rr-edit-text').value.trim();
                 var status = document.getElementById('rr-edit-status').value;
 
-                if (!title) {
-                    document.getElementById('rr-edit-title').focus();
-                    return;
-                }
                 if (!text) {
                     document.getElementById('rr-edit-text').focus();
                     return;
                 }
 
-                var now = new Date();
-                var updatedValue = dateValue(now);
-                var updatedLabel = dateLabel(updatedValue);
+                updateBtn.disabled = true;
 
-                // Update card data attributes
-                currentCard.setAttribute('data-content-type', type);
-                currentCard.setAttribute('data-title', title);
-                currentCard.setAttribute('data-artist', artist);
-                currentCard.setAttribute('data-album', album);
-                currentCard.setAttribute('data-rating', String(selectedRating));
-                currentCard.setAttribute('data-text', text);
-                currentCard.setAttribute('data-status', status);
-                currentCard.setAttribute('data-updated', updatedValue);
+                postAction('edit', {
+                    review_id: reviewId,
+                    rating: selectedRating,
+                    review_text: text,
+                    status: status
+                }, function (data) {
+                    updateBtn.disabled = false;
+                    if (data.success) {
+                        // Update card data attributes
+                        currentCard.setAttribute('data-rating', String(selectedRating));
+                        currentCard.setAttribute('data-text', text);
+                        currentCard.setAttribute('data-status', status);
 
-                // Update displayed card content
-                setTypeBadge(currentCard.querySelector('.rr-type'), type);
+                        var now = new Date();
+                        var updatedValue = dateValue(now);
+                        currentCard.setAttribute('data-updated', updatedValue);
 
-                var titleEl = currentCard.querySelector('.rr-review-card__title');
-                if (titleEl) titleEl.textContent = title;
+                        // Update displayed card content
+                        var fill = currentCard.querySelector('.rr-stars__fill');
+                        if (fill) fill.style.width = (selectedRating * 20) + '%';
 
-                var strongs = currentCard.querySelectorAll('.rr-review-card__meta-item strong');
-                if (strongs.length >= 2) {
-                    strongs[0].textContent = artist;
-                    strongs[1].textContent = album;
-                }
+                        var ratingValue = currentCard.querySelector('.rr-review-card__rating-value');
+                        if (ratingValue) ratingValue.textContent = selectedRating.toFixed(1);
 
-                var fill = currentCard.querySelector('.rr-stars__fill');
-                if (fill) fill.style.width = (selectedRating * 20) + '%';
+                        var textEl = currentCard.querySelector('.rr-review-card__text');
+                        if (textEl) textEl.textContent = text;
 
-                var ratingValue = currentCard.querySelector('.rr-review-card__rating-value');
-                if (ratingValue) ratingValue.textContent = selectedRating.toFixed(1);
+                        setStatusBadge(currentCard.querySelector('.rr-badge'), status);
 
-                var textEl = currentCard.querySelector('.rr-review-card__text');
-                if (textEl) textEl.textContent = text;
+                        var dates = currentCard.querySelector('.rr-review-card__dates');
+                        if (dates) {
+                            var updatedDateEl = currentCard.querySelector('.rr-review-card__date--updated');
+                            if (!updatedDateEl) {
+                                updatedDateEl = document.createElement('span');
+                                updatedDateEl.className = 'rr-review-card__date rr-review-card__date--updated';
+                                dates.appendChild(updatedDateEl);
+                            }
+                            updatedDateEl.textContent = 'Updated: ' + dateLabel(updatedValue);
+                        }
 
-                setStatusBadge(currentCard.querySelector('.rr-badge'), status);
+                        closeModal('rrEditModal');
+                        renderGrid();
 
-                var dates = currentCard.querySelector('.rr-review-card__dates');
-                if (dates) {
-                    var updatedDateEl = currentCard.querySelector('.rr-review-card__date--updated');
-                    if (!updatedDateEl) {
-                        updatedDateEl = document.createElement('span');
-                        updatedDateEl.className = 'rr-review-card__date rr-review-card__date--updated';
-                        dates.appendChild(updatedDateEl);
+                        if (typeof showSuccess === 'function') {
+                            showSuccess('Review updated successfully.', 2000);
+                        }
+                    } else {
+                        if (typeof showError === 'function') {
+                            showError(data.error || 'Failed to update review.', 3000);
+                        }
                     }
-                    updatedDateEl.textContent = 'Updated: ' + updatedLabel;
-                }
-
-                closeModal('rrEditModal');
-                renderGrid();
-
-                if (typeof showSuccess === 'function') {
-                    showSuccess('Review updated successfully.', 2000);
-                }
+                });
             });
         }
 
@@ -458,20 +472,34 @@
             });
         });
 
-        // --- Confirm Delete (UI Only, removes the card) ---
+        // --- Confirm Delete (AJAX) ---
         var confirmDeleteBtn = document.getElementById('rrConfirmDeleteBtn');
         if (confirmDeleteBtn) {
             confirmDeleteBtn.addEventListener('click', function () {
-                if (currentCard && currentCard.parentNode) {
-                    currentCard.parentNode.removeChild(currentCard);
-                }
-                currentCard = null;
-                closeModal('rrDeleteModal');
-                renderGrid();
+                if (!currentCard) return;
 
-                if (typeof showSuccess === 'function') {
-                    showSuccess('Review deleted successfully.', 2000);
-                }
+                var reviewId = textValue('data-review-id', '0');
+                confirmDeleteBtn.disabled = true;
+
+                postAction('delete', { review_id: reviewId }, function (data) {
+                    confirmDeleteBtn.disabled = false;
+                    if (data.success) {
+                        if (currentCard && currentCard.parentNode) {
+                            currentCard.parentNode.removeChild(currentCard);
+                        }
+                        currentCard = null;
+                        closeModal('rrDeleteModal');
+                        renderGrid();
+
+                        if (typeof showSuccess === 'function') {
+                            showSuccess('Review deleted successfully.', 2000);
+                        }
+                    } else {
+                        if (typeof showError === 'function') {
+                            showError(data.error || 'Failed to delete review.', 3000);
+                        }
+                    }
+                });
             });
         }
 

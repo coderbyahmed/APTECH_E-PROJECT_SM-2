@@ -4,6 +4,9 @@ $websiteBase = $baseUrl . '/frontend/website';
 $cssBase = $websiteBase . '/css/home';
 $jsBase = $websiteBase . '/js/home';
 $currentPage = 'home';
+
+require_once __DIR__ . '/includes/music-data.php';
+$latestMusic = wgGetAllMusic(5);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +25,9 @@ $currentPage = 'home';
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/video_card/video_card.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/signup_modal/signup_modal.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/login_modal/login_modal.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/components/profile_modal/profile_modal.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/notifications/notification.css">
+    <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/loaders/button-spinner.css">
 </head>
 <body>
 
@@ -90,18 +96,24 @@ $currentPage = 'home';
         </div>
         <div class="wg-cards wg-cards--music">
             <?php
-            $musicCards = [
-                ['mc_id' => 1, 'mc_title' => 'Midnight Dreams', 'mc_artist' => 'Hammad Aziz', 'mc_album' => 'Night Sessions', 'mc_year' => '2025', 'mc_genre' => 'Pop', 'mc_language' => 'English', 'mc_placeholder' => 1],
-                ['mc_id' => 2, 'mc_title' => 'Tum Hi Ho', 'mc_artist' => 'Arijit Singh', 'mc_album' => 'Aashiqui 2', 'mc_year' => '2013', 'mc_genre' => 'Bollywood', 'mc_language' => 'Hindi', 'mc_placeholder' => 2],
-                ['mc_id' => 3, 'mc_title' => 'Neon Lights', 'mc_artist' => 'Aria Collins', 'mc_album' => 'Electric Dreams', 'mc_year' => '2024', 'mc_genre' => 'Electronic', 'mc_language' => 'English', 'mc_placeholder' => 3],
-                ['mc_id' => 4, 'mc_title' => 'City Rain', 'mc_artist' => 'Kai Moreno', 'mc_album' => 'Lo-fi Nights', 'mc_year' => '2025', 'mc_genre' => 'Lo-fi', 'mc_language' => 'English', 'mc_placeholder' => 4],
-                ['mc_id' => 5, 'mc_title' => 'Summer Breeze', 'mc_artist' => 'Luna Park', 'mc_album' => 'Chill Vibes', 'mc_year' => '2024', 'mc_genre' => 'Chill', 'mc_language' => 'English', 'mc_placeholder' => 5],
-            ];
-            foreach ($musicCards as $card) {
-                extract($card);
+            $placeholderCounter = 1;
+            foreach ($latestMusic as $m):
+                $mc_id = (int)$m['id'];
+                $mc_title = $m['song_title'];
+                $mc_artist = $m['artist_name'] ?: 'Unknown Artist';
+                $mc_album = $m['album_name'] ?: '';
+                $mc_year = $m['year_name'] ?: '';
+                $mc_genre = $m['genre_name'] ?: '';
+                $mc_language = $m['language_name'] ?: '';
+                $mc_placeholder = $placeholderCounter;
+                $mc_cover_image = $m['cover_image'] ?: '';
+                $placeholderCounter = ($placeholderCounter % 5) + 1;
                 include __DIR__ . '/components/music_card/music_card.php';
-            }
+            endforeach;
+            if (empty($latestMusic)):
             ?>
+                <p style="color:var(--wg-text-secondary);grid-column:1/-1;text-align:center;padding:2rem 0;">No music available yet.</p>
+            <?php endif; ?>
         </div>
     </div>
 </section>
