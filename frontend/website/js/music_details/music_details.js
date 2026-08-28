@@ -145,13 +145,21 @@
 
     function relativeTime(ts) {
         if (!ts) return '';
-        var diff = Math.floor(Date.now() / 1000) - Math.floor(new Date(ts + 'Z').getTime() / 1000);
-        if (diff < 0) diff = 0;
+        var norm = String(ts).trim().replace(' ', 'T');
+        var ms = new Date(norm + 'Z').getTime();
+        if (isNaN(ms)) return '';
+        var diff = Math.max(0, Math.floor(Date.now() / 1000) - Math.floor(ms / 1000));
         if (diff < 60) return 'Just now';
-        if (diff < 3600) { var m = Math.floor(diff / 60); return m + ' minute' + (m > 1 ? 's' : '') + ' ago'; }
-        if (diff < 86400) { var h = Math.floor(diff / 3600); return h + ' hour' + (h > 1 ? 's' : '') + ' ago'; }
-        if (diff < 2592000) { var d = Math.floor(diff / 86400); return d + ' day' + (d > 1 ? 's' : '') + ' ago'; }
-        if (diff < 31536000) { var w = Math.floor(diff / 604800); return w + ' week' + (w > 1 ? 's' : '') + ' ago'; }
+        var m = Math.floor(diff / 60);
+        if (diff < 3600) return m + ' minute' + (m > 1 ? 's' : '') + ' ago';
+        var h = Math.floor(diff / 3600);
+        if (diff < 86400) return h + ' hour' + (h > 1 ? 's' : '') + ' ago';
+        var d = Math.floor(diff / 86400);
+        if (diff < 604800) return d + ' day' + (d > 1 ? 's' : '') + ' ago';
+        var w = Math.floor(diff / 604800);
+        if (diff < 2592000) return w + ' week' + (w > 1 ? 's' : '') + ' ago';
+        var mo = Math.floor(diff / 2592000);
+        if (diff < 31536000) return mo + ' month' + (mo > 1 ? 's' : '') + ' ago';
         var y = Math.floor(diff / 31536000);
         return y + ' year' + (y > 1 ? 's' : '') + ' ago';
     }
@@ -325,7 +333,7 @@
                 // Update "All Reviews" button visibility
                 var allBtn = document.getElementById('openDrawer');
                 if (allBtn) {
-                    allBtn.style.display = reviews.length > 0 ? '' : 'none';
+                    allBtn.style.display = reviews.length > 6 ? '' : 'none';
                 }
 
                 // Refresh stats

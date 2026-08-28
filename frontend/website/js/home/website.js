@@ -2,23 +2,6 @@
 (function () {
     'use strict';
 
-    /* Mobile Menu Toggle */
-    var toggle = document.getElementById('wgMenuToggle');
-    var menu = document.getElementById('wgMobileMenu');
-    if (toggle && menu) {
-        toggle.addEventListener('click', function () {
-            toggle.classList.toggle('is-active');
-            menu.classList.toggle('is-open');
-        });
-        var mobileLinks = menu.querySelectorAll('.wg-mobile-nav__link, .wg-btn');
-        for (var i = 0; i < mobileLinks.length; i++) {
-            mobileLinks[i].addEventListener('click', function () {
-                toggle.classList.remove('is-active');
-                menu.classList.remove('is-open');
-            });
-        }
-    }
-
     /* Header scroll effect */
     var header = document.getElementById('wgHeader');
     if (header) {

@@ -17,6 +17,16 @@ if (!isset($pageTitle)) {
 $baseUrl = '/Aptech_E_Project_02/sound_management';
 $cssBase = $baseUrl . '/frontend/admin/css';
 $jsBase  = $baseUrl . '/frontend/admin/js';
+
+require_once __DIR__ . '/../../../backend/includes/session.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$csrfToken = csrfToken();
+
+require_once __DIR__ . '/../../../backend/includes/website-settings.php';
+$wsLayout = getWebsiteSettings();
+$wsLayoutName = htmlspecialchars($wsLayout['website_name']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +34,8 @@ $jsBase  = $baseUrl . '/frontend/admin/js';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title><?php echo htmlspecialchars($pageTitle); ?> — SOUND Group</title>
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken); ?>">
+    <title><?php echo htmlspecialchars($pageTitle); ?> — <?php echo $wsLayoutName; ?></title>
 
     <!-- Google Fonts: Instrument Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -9,6 +9,11 @@ if (!isset($currentPage)) {
     $currentPage = 'home';
 }
 
+require_once dirname(__DIR__, 5) . '/backend/includes/website-settings.php';
+$ws = getWebsiteSettings();
+$wsWebsiteName = htmlspecialchars($ws['website_name']);
+$wsLogoPath    = $ws['site_logo'];
+
 require_once dirname(__DIR__, 5) . '/backend/includes/user-auth.php';
 $siteUserLoggedIn = isUserLoggedIn();
 $siteUserName = $siteUserLoggedIn ? getCurrentUserName() : '';
@@ -41,14 +46,18 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
     <div class="wg-header__inner">
         <a href="<?php echo $websiteBase; ?>/index.php" class="wg-logo">
             <span class="wg-logo__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M9 18V5l12-2v13" />
-                    <circle cx="6" cy="18" r="3" />
-                    <circle cx="18" cy="16" r="3" />
-                </svg>
+                <?php if ($wsLogoPath): ?>
+                    <img src="<?php echo htmlspecialchars($wsLogoPath); ?>" alt="<?php echo $wsWebsiteName; ?>" style="width:28px;height:28px;object-fit:contain;">
+                <?php else: ?>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M9 18V5l12-2v13" />
+                        <circle cx="6" cy="18" r="3" />
+                        <circle cx="18" cy="16" r="3" />
+                    </svg>
+                <?php endif; ?>
             </span>
-            <span class="wg-logo__text">Sound Group</span>
+            <span class="wg-logo__text"><?php echo $wsWebsiteName; ?></span>
         </a>
 
         <nav class="wg-nav" id="wgNav">
@@ -114,54 +123,90 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
         </button>
     </div>
 
-    <div class="wg-mobile-menu" id="wgMobileMenu">
-        <nav class="wg-mobile-nav">
+    <!-- MOBILE DRAWER OVERLAY -->
+    <div class="wg-drawer-overlay" id="wgDrawerOverlay"></div>
+
+    <!-- MOBILE DRAWER -->
+    <div class="wg-drawer" id="wgDrawer">
+        <div class="wg-drawer__header">
+            <a href="<?php echo $websiteBase; ?>/index.php" class="wg-logo">
+                <span class="wg-logo__icon">
+                    <?php if ($wsLogoPath): ?>
+                        <img src="<?php echo htmlspecialchars($wsLogoPath); ?>" alt="<?php echo $wsWebsiteName; ?>" style="width:28px;height:28px;object-fit:contain;">
+                    <?php else: ?>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M9 18V5l12-2v13" />
+                            <circle cx="6" cy="18" r="3" />
+                            <circle cx="18" cy="16" r="3" />
+                        </svg>
+                    <?php endif; ?>
+                </span>
+                <span class="wg-logo__text"><?php echo $wsWebsiteName; ?></span>
+            </a>
+            <button class="wg-drawer__close" id="wgDrawerClose" aria-label="Close menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" width="20" height="20">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+
+        <nav class="wg-drawer__nav">
             <a href="<?php echo $homeHref; ?>"
-                class="wg-mobile-nav__link <?php echo ($currentPage === 'home') ? 'wg-mobile-nav__link--active' : ''; ?>">Home</a>
+                class="wg-drawer__link <?php echo ($currentPage === 'home') ? 'wg-drawer__link--active' : ''; ?>">Home</a>
             <a href="<?php echo $musicHref; ?>"
-                class="wg-mobile-nav__link <?php echo ($currentPage === 'music') ? 'wg-mobile-nav__link--active' : ''; ?>">Music</a>
+                class="wg-drawer__link <?php echo ($currentPage === 'music') ? 'wg-drawer__link--active' : ''; ?>">Music</a>
             <a href="<?php echo $videosHref; ?>"
-                class="wg-mobile-nav__link <?php echo ($currentPage === 'videos') ? 'wg-mobile-nav__link--active' : ''; ?>">Videos</a>
+                class="wg-drawer__link <?php echo ($currentPage === 'videos') ? 'wg-drawer__link--active' : ''; ?>">Videos</a>
             <a href="<?php echo $searchHref; ?>"
-                class="wg-mobile-nav__link <?php echo ($currentPage === 'search') ? 'wg-mobile-nav__link--active' : ''; ?>">Search</a>
+                class="wg-drawer__link <?php echo ($currentPage === 'search') ? 'wg-drawer__link--active' : ''; ?>">Search</a>
             <a href="<?php echo $aboutHref; ?>"
-                class="wg-mobile-nav__link <?php echo ($currentPage === 'about') ? 'wg-mobile-nav__link--active' : ''; ?>">About</a>
+                class="wg-drawer__link <?php echo ($currentPage === 'about') ? 'wg-drawer__link--active' : ''; ?>">About</a>
             <a href="<?php echo $contactHref; ?>"
-                class="wg-mobile-nav__link <?php echo ($currentPage === 'contact') ? 'wg-mobile-nav__link--active' : ''; ?>">Contact</a>
+                class="wg-drawer__link <?php echo ($currentPage === 'contact') ? 'wg-drawer__link--active' : ''; ?>">Contact</a>
         </nav>
-        <div class="wg-mobile-actions">
+
+        <div class="wg-drawer__footer">
             <?php if ($siteUserLoggedIn): ?>
-                <div class="wg-user-menu wg-user-menu--mobile" id="wgUserMenuMobile">
-                    <button class="wg-user-menu__trigger" type="button" aria-expanded="false" aria-label="User menu">
+                <div class="wg-drawer__user">
+                    <div class="wg-drawer__user-info">
                         <?php if ($siteUserImage): ?>
                             <img src="<?php echo $baseUrl . '/' . htmlspecialchars($siteUserImage); ?>"
-                                alt="<?php echo htmlspecialchars($siteUserName); ?>" class="wg-user-menu__avatar">
+                                alt="<?php echo htmlspecialchars($siteUserName); ?>" class="wg-drawer__user-avatar">
                         <?php else: ?>
-                            <span class="wg-user-menu__initial"
+                            <span class="wg-drawer__user-initial"
                                 style="background-color:<?php echo $siteUserAvatarColor; ?>;"><?php echo $siteUserInitial; ?></span>
                         <?php endif; ?>
-                        <span class="wg-user-menu__name"><?php echo htmlspecialchars($siteUserName); ?></span>
-                    </button>
-                    <button class="wg-btn wg-btn--ghost wg-btn--block" id="wgUserProfileBtnMobile" type="button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                        Profile
-                    </button>
-                    <button class="wg-btn wg-btn--ghost wg-btn--block wg-user-menu__item--logout" id="wgUserLogoutBtnMobile"
-                        type="button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                            <polyline points="16 17 21 12 16 7" />
-                            <line x1="21" y1="12" x2="9" y2="12" />
-                        </svg>
-                        Logout
-                    </button>
+                        <div class="wg-drawer__user-details">
+                            <span class="wg-drawer__user-name"><?php echo htmlspecialchars($siteUserName); ?></span>
+                        </div>
+                    </div>
+                    <div class="wg-drawer__user-actions">
+                        <button class="wg-btn wg-btn--ghost wg-btn--block" id="wgDrawerProfileBtn" type="button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            Profile
+                        </button>
+                        <button class="wg-btn wg-btn--ghost wg-btn--block wg-drawer__logout-btn" id="wgDrawerLogoutBtn"
+                            type="button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" y1="12" x2="9" y2="12" />
+                            </svg>
+                            Logout
+                        </button>
+                    </div>
                 </div>
             <?php else: ?>
-                <a href="#" class="wg-btn wg-btn--ghost wg-btn--block">Login</a>
-                <a href="#" class="wg-btn wg-btn--primary wg-btn--block">Sign Up</a>
+                <div class="wg-drawer__auth">
+                    <button class="wg-btn wg-btn--ghost wg-btn--block wg-drawer__login-btn" id="wgDrawerLoginBtn" type="button">Login</button>
+                    <button class="wg-btn wg-btn--primary wg-btn--block wg-drawer__signup-btn" id="wgDrawerSignupBtn" type="button">Sign Up</button>
+                </div>
             <?php endif; ?>
         </div>
     </div>
@@ -204,6 +249,7 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
             // Logout handler
             function handleLogout(e) {
                 e.preventDefault();
+                closeDrawer();
                 var btn = e.currentTarget;
                 startButtonLoading(btn, 'Logging out...');
                 var xhr = new XMLHttpRequest();
@@ -224,15 +270,16 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
             }
 
             var logoutBtn = document.getElementById('wgUserLogoutBtn');
-            var logoutBtnMobile = document.getElementById('wgUserLogoutBtnMobile');
+            var logoutBtnMobile = document.getElementById('wgDrawerLogoutBtn');
             if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
             if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
 
-            // Profile button (mobile)
-            var profileBtnMobile = document.getElementById('wgUserProfileBtnMobile');
-            if (profileBtnMobile) {
-                profileBtnMobile.addEventListener('click', function (e) {
+            // Profile button (drawer)
+            var profileBtnDrawer = document.getElementById('wgDrawerProfileBtn');
+            if (profileBtnDrawer) {
+                profileBtnDrawer.addEventListener('click', function (e) {
                     e.preventDefault();
+                    closeDrawer();
                     if (typeof window.openProfileModal === 'function') {
                         window.openProfileModal();
                     }
@@ -253,20 +300,20 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
                     var baseUrl = '<?php echo $baseUrl; ?>';
                     var bust = '?v=' + Date.now();
 
-                    // Update navbar name (desktop + mobile)
-                    var nameEls = document.querySelectorAll('.wg-user-menu__name');
+                    // Update navbar name (desktop + drawer)
+                    var nameEls = document.querySelectorAll('.wg-user-menu__name, .wg-drawer__user-name');
                     nameEls.forEach(function (el) { el.textContent = u.full_name; });
 
                     // Update navbar avatar images with cache-bust
                     if (u.profile_image) {
                         var src = u.profile_image.indexOf('/') === 0 ? u.profile_image : '/' + u.profile_image;
                         var newUrl = baseUrl + src + bust;
-                        var imgs = document.querySelectorAll('.wg-user-menu__avatar');
+                        var imgs = document.querySelectorAll('.wg-user-menu__avatar, .wg-drawer__user-avatar');
                         imgs.forEach(function (img) { img.src = newUrl; });
                     }
 
                     // Update initial avatar color when no image
-                    var initials = document.querySelectorAll('.wg-user-menu__initial');
+                    var initials = document.querySelectorAll('.wg-user-menu__initial, .wg-drawer__user-initial');
                     if (!u.profile_image && initials.length) {
                         var initial = (u.full_name || '?').charAt(0).toUpperCase();
                         initials.forEach(function (el) { el.textContent = initial; });
@@ -285,3 +332,85 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
         })();
     </script>
 <?php endif; ?>
+<script>
+    (function () {
+        'use strict';
+
+        var toggle = document.getElementById('wgMenuToggle');
+        var drawer = document.getElementById('wgDrawer');
+        var overlay = document.getElementById('wgDrawerOverlay');
+        var closeBtn = document.getElementById('wgDrawerClose');
+        var drawerLinks = drawer ? drawer.querySelectorAll('.wg-drawer__link, .wg-drawer__auth button') : [];
+
+        function openDrawer() {
+            if (!drawer || !overlay) return;
+            drawer.classList.add('is-open');
+            overlay.classList.add('is-open');
+            if (toggle) toggle.classList.add('is-active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDrawer() {
+            if (!drawer || !overlay) return;
+            drawer.classList.remove('is-open');
+            overlay.classList.remove('is-open');
+            if (toggle) toggle.classList.remove('is-active');
+            document.body.style.overflow = '';
+        }
+
+        // Expose for logged-in script
+        window.closeDrawer = closeDrawer;
+
+        if (toggle) {
+            toggle.addEventListener('click', function () {
+                if (drawer && drawer.classList.contains('is-open')) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+            });
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', closeDrawer);
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeDrawer);
+        }
+
+        // Close on link click
+        drawerLinks.forEach(function (link) {
+            link.addEventListener('click', function () {
+                closeDrawer();
+            });
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && drawer && drawer.classList.contains('is-open')) {
+                closeDrawer();
+            }
+        });
+
+        // Guest login/signup buttons in drawer
+        var drawerLoginBtn = document.getElementById('wgDrawerLoginBtn');
+        var drawerSignupBtn = document.getElementById('wgDrawerSignupBtn');
+        if (drawerLoginBtn) {
+            drawerLoginBtn.addEventListener('click', function () {
+                closeDrawer();
+                if (typeof window.openLoginModal === 'function') {
+                    window.openLoginModal();
+                }
+            });
+        }
+        if (drawerSignupBtn) {
+            drawerSignupBtn.addEventListener('click', function () {
+                closeDrawer();
+                if (typeof window.openSignupModal === 'function') {
+                    window.openSignupModal();
+                }
+            });
+        }
+    })();
+</script>

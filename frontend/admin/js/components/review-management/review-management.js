@@ -79,8 +79,13 @@
         function setTypeBadge(el, type) {
             if (!el) return;
             el.className = 'rr-type';
-            el.classList.add('rr-type--music');
-            el.textContent = 'Music';
+            if (type === 'video') {
+                el.classList.add('rr-type--video');
+                el.textContent = 'Video';
+            } else {
+                el.classList.add('rr-type--music');
+                el.textContent = 'Music';
+            }
         }
 
         function setStatusBadge(el, status) {
@@ -157,6 +162,7 @@
             var query = (document.getElementById('rrSearchInput').value || '').toLowerCase().trim();
             var rating = document.getElementById('rrRatingFilter').value;
             var dateFilter = document.getElementById('rrDateFilter').value;
+            var typeFilter = document.getElementById('rrTypeFilter').value;
             var minDate = getMinDate(dateFilter);
 
             return Array.prototype.slice.call(
@@ -167,6 +173,7 @@
                 var userId = (card.getAttribute('data-user-id') || '').toLowerCase();
                 var title = (card.getAttribute('data-title') || '').toLowerCase();
                 var fullName = (first + ' ' + last).trim();
+                var cardType = card.getAttribute('data-content-type') || 'music';
 
                 var cardRating = card.getAttribute('data-rating') || '';
                 var cardDate = card.getAttribute('data-date') || '';
@@ -180,8 +187,9 @@
 
                 var matchRating = rating === 'all' || cardRating === rating;
                 var matchDate = !minDate || (cardDate.length > 0 && cardDate >= minDate);
+                var matchType = typeFilter === 'all' || cardType === typeFilter;
 
-                return matchQuery && matchRating && matchDate;
+                return matchQuery && matchRating && matchDate && matchType;
             });
         }
 
@@ -269,11 +277,16 @@
                 });
         }
 
-        function updateStats(total, hiddenCount) {
+        function updateStats(stats) {
+            if (!stats) return;
             var totalEl = document.getElementById('rrTotalReviews');
-            if (totalEl) totalEl.textContent = total;
+            if (totalEl && stats.total !== undefined) totalEl.textContent = stats.total;
+            var avgEl = document.getElementById('rrAvgRating');
+            if (avgEl && stats.avg_rating !== undefined) avgEl.textContent = stats.avg_rating;
+            var publishedEl = document.getElementById('rrPublishedCount');
+            if (publishedEl && stats.published_count !== undefined) publishedEl.textContent = stats.published_count;
             var hiddenEl = document.getElementById('rrHiddenCount');
-            if (hiddenEl) hiddenEl.textContent = hiddenCount;
+            if (hiddenEl && stats.hidden_count !== undefined) hiddenEl.textContent = stats.hidden_count;
         }
 
         // --- Close Buttons ---
@@ -343,7 +356,7 @@
                 var updated = textValue('data-updated', '');
                 setText('rr-view-updated', updated ? dateLabel(updated) : '\u2014');
 
-                setTypeBadge(document.getElementById('rr-view-type-badge'), 'music');
+                setTypeBadge(document.getElementById('rr-view-type-badge'), textValue('data-content-type', 'music'));
                 setStatusBadge(document.getElementById('rr-view-status-badge'), status);
                 setStars(document.getElementById('rr-view-stars'), rating);
 
@@ -439,6 +452,8 @@
                         closeModal('rrEditModal');
                         renderGrid();
 
+                        if (data.stats) updateStats(data.stats);
+
                         if (typeof showSuccess === 'function') {
                             showSuccess('Review updated successfully.', 2000);
                         }
@@ -490,6 +505,8 @@
                         currentCard = null;
                         closeModal('rrDeleteModal');
                         renderGrid();
+
+                        if (data.stats) updateStats(data.stats);
 
                         if (typeof showSuccess === 'function') {
                             showSuccess('Review deleted successfully.', 2000);

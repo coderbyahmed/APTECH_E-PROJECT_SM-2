@@ -35,70 +35,179 @@
         }
     }
 
-    // Contact form — frontend validation only (no backend submission)
+    // Contact form — validation + backend submission
     var form = document.getElementById('contactForm');
-    var errorEl = document.getElementById('formError');
-    var successEl = document.getElementById('formSuccess');
+    var submitBtn = document.getElementById('contactSubmit');
 
     if (!form) return;
+
+    var fields = {
+        name:    { el: document.getElementById('contactName'),    errorEl: document.getElementById('contactNameError'),    fieldWrap: null },
+        email:   { el: document.getElementById('contactEmail'),   errorEl: document.getElementById('contactEmailError'),   fieldWrap: null },
+        phone:   { el: document.getElementById('contactPhone'),   errorEl: document.getElementById('contactPhoneError'),   fieldWrap: null },
+        inquiry: { el: document.getElementById('contactInquiry'), errorEl: document.getElementById('contactInquiryError'), fieldWrap: null },
+        subject: { el: document.getElementById('contactSubject'), errorEl: document.getElementById('contactSubjectError'), fieldWrap: null },
+        message: { el: document.getElementById('contactMessage'), errorEl: document.getElementById('contactMessageError'), fieldWrap: null }
+    };
+
+    // Cache parent .wg-contact-form__field wrappers
+    Object.keys(fields).forEach(function (key) {
+        var f = fields[key];
+        if (f.el) {
+            f.fieldWrap = f.el.closest('.wg-contact-form__field');
+        }
+    });
+
+    function showFieldError(key, msg) {
+        var f = fields[key];
+        if (!f || !f.el) return;
+        if (f.fieldWrap) f.fieldWrap.classList.add('is-error');
+        if (f.errorEl) {
+            f.errorEl.textContent = msg;
+            f.errorEl.classList.add('is-visible');
+        }
+    }
+
+    function clearFieldError(key) {
+        var f = fields[key];
+        if (!f || !f.el) return;
+        if (f.fieldWrap) f.fieldWrap.classList.remove('is-error');
+        if (f.errorEl) {
+            f.errorEl.textContent = '';
+            f.errorEl.classList.remove('is-visible');
+        }
+    }
+
+    function clearAllErrors() {
+        Object.keys(fields).forEach(function (key) {
+            clearFieldError(key);
+        });
+    }
+
+    function validate() {
+        clearAllErrors();
+        var firstError = null;
+
+        var nameVal = fields.name.el ? fields.name.el.value.trim() : '';
+        if (!nameVal) {
+            showFieldError('name', 'Please enter your full name.');
+            if (!firstError) firstError = fields.name;
+        }
+
+        var emailVal = fields.email.el ? fields.email.el.value.trim() : '';
+        if (!emailVal) {
+            showFieldError('email', 'Please enter your email address.');
+            if (!firstError) firstError = fields.email;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+            showFieldError('email', 'Please enter a valid email address.');
+            if (!firstError) firstError = fields.email;
+        }
+
+        var inquiryVal = fields.inquiry.el ? fields.inquiry.el.value : '';
+        if (!inquiryVal) {
+            showFieldError('inquiry', 'Please select an inquiry type.');
+            if (!firstError) firstError = fields.inquiry;
+        }
+
+        var subjectVal = fields.subject.el ? fields.subject.el.value.trim() : '';
+        if (!subjectVal) {
+            showFieldError('subject', 'Please enter a subject.');
+            if (!firstError) firstError = fields.subject;
+        }
+
+        var messageVal = fields.message.el ? fields.message.el.value.trim() : '';
+        if (!messageVal) {
+            showFieldError('message', 'Please enter your message.');
+            if (!firstError) firstError = fields.message;
+        }
+
+        return firstError;
+    }
+
+    // Clear individual field errors on input
+    Object.keys(fields).forEach(function (key) {
+        var f = fields[key];
+        if (f.el) {
+            f.el.addEventListener('input', function () {
+                clearFieldError(key);
+            });
+            f.el.addEventListener('change', function () {
+                clearFieldError(key);
+            });
+        }
+    });
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        errorEl.style.display = 'none';
-        successEl.style.display = 'none';
+        clearAllErrors();
 
-        var name = document.getElementById('contactName');
-        var email = document.getElementById('contactEmail');
-        var inquiry = document.getElementById('contactInquiry');
-        var subject = document.getElementById('contactSubject');
-        var message = document.getElementById('contactMessage');
-
-        // Remove previous error states
-        var inputs = form.querySelectorAll('.wg-contact-form__input');
-        inputs.forEach(function (inp) { inp.style.borderColor = ''; });
-
-        // Validate required fields
-        var errors = [];
-
-        if (!name.value.trim()) {
-            errors.push('Please enter your full name.');
-            name.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-        }
-
-        if (!email.value.trim()) {
-            errors.push('Please enter your email address.');
-            email.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
-            errors.push('Please enter a valid email address.');
-            email.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-        }
-
-        if (!inquiry.value) {
-            errors.push('Please select an inquiry type.');
-            inquiry.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-        }
-
-        if (!subject.value.trim()) {
-            errors.push('Please enter a subject.');
-            subject.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-        }
-
-        if (!message.value.trim()) {
-            errors.push('Please enter your message.');
-            message.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-        }
-
-        if (errors.length > 0) {
-            errorEl.textContent = errors[0];
-            errorEl.style.display = '';
+        var firstInvalid = validate();
+        if (firstInvalid) {
+            if (firstInvalid.el) firstInvalid.el.focus();
             return;
         }
 
-        // Success — no backend yet
-        successEl.textContent = 'Thank you for your message! We will get back to you soon.';
-        successEl.style.display = '';
-        form.reset();
+        // Start loading
+        if (typeof window.startButtonLoading === 'function') {
+            window.startButtonLoading(submitBtn, 'Sending...');
+        } else if (submitBtn) {
+            submitBtn.disabled = true;
+        }
+
+        var formData = new FormData();
+        formData.append('action', 'submit');
+        formData.append('name', fields.name.el.value.trim());
+        formData.append('email', fields.email.el.value.trim());
+        formData.append('phone', fields.phone.el ? fields.phone.el.value.trim() : '');
+        formData.append('inquiry_type', fields.inquiry.el.value);
+        formData.append('subject', fields.subject.el.value.trim());
+        formData.append('message', fields.message.el.value.trim());
+
+        fetch('/Aptech_E_Project_02/sound_management/backend/handlers/contact-handler.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+            if (data.success) {
+                if (typeof window.showSuccess === 'function') {
+                    window.showSuccess(data.message || 'Your message has been submitted successfully.');
+                }
+                form.reset();
+                clearAllErrors();
+            } else {
+                var errorMsg = data.error || 'Something went wrong. Please try again.';
+                if (typeof window.showError === 'function') {
+                    window.showError(errorMsg);
+                }
+                // Map backend errors to specific fields
+                var errLower = errorMsg.toLowerCase();
+                if (errLower.indexOf('name') !== -1) {
+                    showFieldError('name', errorMsg);
+                } else if (errLower.indexOf('email') !== -1) {
+                    showFieldError('email', errorMsg);
+                } else if (errLower.indexOf('inquiry') !== -1) {
+                    showFieldError('inquiry', errorMsg);
+                } else if (errLower.indexOf('subject') !== -1) {
+                    showFieldError('subject', errorMsg);
+                } else if (errLower.indexOf('message') !== -1) {
+                    showFieldError('message', errorMsg);
+                }
+            }
+        })
+        .catch(function () {
+            if (typeof window.showError === 'function') {
+                window.showError('Network error. Please check your connection and try again.');
+            }
+        })
+        .finally(function () {
+            if (typeof window.stopButtonLoading === 'function') {
+                window.stopButtonLoading(submitBtn);
+            } else if (submitBtn) {
+                submitBtn.disabled = false;
+            }
+        });
     });
 
     // Smooth scroll for "Get In Touch" anchor link

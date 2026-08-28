@@ -5,7 +5,7 @@
 /* ============================================
    NAVBAR ACTIVE STATE (mobile)
    ============================================ */
-.wg-mobile-nav__link--active {
+.wg-drawer__link--active {
     color: var(--wg-accent-purple);
     background: rgba(139, 92, 246, 0.1);
 }

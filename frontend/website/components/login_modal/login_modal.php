@@ -14,12 +14,16 @@
             <div class="wg-login-modal__header">
                 <a href="<?php echo $websiteBase; ?>/index.php" class="wg-login-modal__logo">
                     <span class="wg-login-modal__logo-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                        <?php if (!empty($wsLogoPath)): ?>
+                            <img src="<?php echo htmlspecialchars($wsLogoPath); ?>" alt="<?php echo $wsWebsiteName; ?>" style="width:28px;height:28px;object-fit:contain;">
+                        <?php else: ?>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                        <?php endif; ?>
                     </span>
-                    <span class="wg-login-modal__logo-text">Sound Group</span>
+                    <span class="wg-login-modal__logo-text"><?php echo $wsWebsiteName; ?></span>
                 </a>
                 <h2 class="wg-login-modal__title" id="wgLoginTitle">Welcome Back</h2>
-                <p class="wg-login-modal__subtitle">Login to continue enjoying Sound Group.</p>
+                <p class="wg-login-modal__subtitle">Login to continue enjoying <?php echo $wsWebsiteName; ?>.</p>
             </div>
 
             <!-- Form -->

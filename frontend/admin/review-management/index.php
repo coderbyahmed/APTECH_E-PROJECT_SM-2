@@ -25,20 +25,25 @@ $reviewJoinSql = "FROM reviews r
     LEFT JOIN users u ON u.id = r.user_id
     LEFT JOIN music m ON m.id = r.music_id
     LEFT JOIN artists a ON a.id = m.artist_id
-    LEFT JOIN albums al ON al.id = m.album_id";
+    LEFT JOIN albums al ON al.id = m.album_id
+    LEFT JOIN videos v ON v.id = r.video_id";
 
 $statsStmt = $db->prepare("SELECT COUNT(*) AS total, AVG(r.rating) AS avg_rating,
     SUM(CASE WHEN r.rating = 5 THEN 1 ELSE 0 END) AS star5,
     SUM(CASE WHEN r.rating = 4 THEN 1 ELSE 0 END) AS star4,
     SUM(CASE WHEN r.rating = 3 THEN 1 ELSE 0 END) AS star3,
     SUM(CASE WHEN r.rating = 2 THEN 1 ELSE 0 END) AS star2,
-    SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END) AS star1
+    SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END) AS star1,
+    SUM(CASE WHEN r.status = 'published' THEN 1 ELSE 0 END) AS published_count,
+    SUM(CASE WHEN r.status = 'hidden' THEN 1 ELSE 0 END) AS hidden_count
     FROM reviews r");
 $statsStmt->execute();
 $allStats = $statsStmt->fetch();
 
 $totalReviews = (int) ($allStats['total'] ?? 0);
 $avgRating = $totalReviews > 0 ? number_format((float) $allStats['avg_rating'], 1) : '0.0';
+$publishedCount = (int) ($allStats['published_count'] ?? 0);
+$hiddenCount = (int) ($allStats['hidden_count'] ?? 0);
 $starCounts = [
     5 => (int) ($allStats['star5'] ?? 0),
     4 => (int) ($allStats['star4'] ?? 0),
@@ -48,7 +53,7 @@ $starCounts = [
 ];
 
 $reviewsStmt = $db->prepare("SELECT r.*, u.user_id AS user_public_id, u.full_name AS user_name, u.profile_image AS user_image,
-    m.song_title, a.name AS artist_name, al.name AS album_name
+    m.song_title, a.name AS artist_name, al.name AS album_name, v.video_title
     $reviewJoinSql
     ORDER BY r.created_at DESC");
 $reviewsStmt->execute();
@@ -120,7 +125,7 @@ $starFillColors = ['rr-distribution__fill--5', 'rr-distribution__fill--4', 'rr-d
             </div>
             <div class="rr-stat-card__info">
                 <span class="rr-stat-card__label">Published</span>
-                <span class="rr-stat-card__value" id="rrPublishedCount"><?php echo $totalReviews; ?></span>
+                <span class="rr-stat-card__value" id="rrPublishedCount"><?php echo $publishedCount; ?></span>
             </div>
         </div>
         <div class="rr-stat-card">
@@ -133,7 +138,7 @@ $starFillColors = ['rr-distribution__fill--5', 'rr-distribution__fill--4', 'rr-d
             </div>
             <div class="rr-stat-card__info">
                 <span class="rr-stat-card__label">Hidden</span>
-                <span class="rr-stat-card__value" id="rrHiddenCount">0</span>
+                <span class="rr-stat-card__value" id="rrHiddenCount"><?php echo $hiddenCount; ?></span>
             </div>
         </div>
     </div>
@@ -212,7 +217,9 @@ $starFillColors = ['rr-distribution__fill--5', 'rr-distribution__fill--4', 'rr-d
                 $first = $nameParts[0] ?? '';
                 $last = end($nameParts);
                 $avatarColor = adminAvatarColor($r['id']);
-                $title = $r['song_title'] ?? '';
+                $isVideo = !empty($r['video_id']);
+                $contentType = $isVideo ? 'video' : 'music';
+                $title = $isVideo ? ($r['video_title'] ?? '') : ($r['song_title'] ?? '');
                 $artist = $r['artist_name'] ?? 'Unknown';
                 $album = $r['album_name'] ?? 'Unknown';
                 $rating = (int) $r['rating'];
@@ -233,7 +240,7 @@ $starFillColors = ['rr-distribution__fill--5', 'rr-distribution__fill--4', 'rr-d
                      data-user-id="<?php echo htmlspecialchars($uid); ?>"
                      data-first="<?php echo htmlspecialchars($first); ?>"
                      data-last="<?php echo htmlspecialchars($last); ?>"
-                     data-content-type="music"
+                     data-content-type="<?php echo $contentType; ?>"
                      data-title="<?php echo htmlspecialchars($title); ?>"
                      data-artist="<?php echo htmlspecialchars($artist); ?>"
                      data-album="<?php echo htmlspecialchars($album); ?>"
@@ -252,7 +259,7 @@ $starFillColors = ['rr-distribution__fill--5', 'rr-distribution__fill--4', 'rr-d
                 </div>
                 <div class="rr-review-card__content">
                     <div class="rr-review-card__type-row">
-                        <span class="rr-type rr-type--music">Music</span>
+                        <span class="rr-type rr-type--<?php echo $contentType; ?>"><?php echo ucfirst($contentType); ?></span>
                         <h4 class="rr-review-card__title"><?php echo htmlspecialchars($title); ?></h4>
                     </div>
                     <div class="rr-review-card__meta">

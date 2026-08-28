@@ -369,6 +369,40 @@
     color: #9ca3af;
 }
 
+/* --- Remove Logo Button --- */
+.wi-btn-remove {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    font-family: inherit;
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    margin-top: 0.25rem;
+}
+
+.wi-btn-remove:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+}
+
+.wi-btn-remove--active {
+    color: #ffffff;
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+.wi-btn-remove--active:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+}
+
 /* ============================================
    Responsive — Website Info
    ============================================ */

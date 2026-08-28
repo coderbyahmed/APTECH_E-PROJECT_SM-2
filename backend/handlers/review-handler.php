@@ -33,10 +33,13 @@ function buildReviewRecord($row) {
         'user_public_id' => $row['user_public_id'] ?? '',
         'user_name'    => $row['user_name'] ?? '',
         'user_image'   => $row['user_image'] ?? '',
-        'music_id'     => (int) $row['music_id'],
+        'music_id'     => $row['music_id'] ? (int) $row['music_id'] : null,
+        'video_id'     => $row['video_id'] ? (int) $row['video_id'] : null,
         'song_title'   => $row['song_title'] ?? '',
+        'video_title'  => $row['video_title'] ?? '',
         'artist_name'  => $row['artist_name'] ?? '',
         'album_name'   => $row['album_name'] ?? '',
+        'content_type' => !empty($row['video_id']) ? 'video' : 'music',
         'rating'       => (int) $row['rating'],
         'review_text'  => $row['review_text'],
         'status'       => $row['status'],
@@ -58,13 +61,16 @@ function formatTimestamp($ts) {
  */
 function relativeTime($ts) {
     if (!$ts || $ts === '0000-00-00 00:00:00') return '';
-    $diff = time() - strtotime($ts);
+    $tsUtc = (new DateTime($ts, new DateTimeZone('UTC')))->getTimestamp();
+    $diff = time() - $tsUtc;
+    if ($diff < 0) $diff = 0;
     if ($diff < 60) return 'Just now';
-    if ($diff < 3600) return floor($diff / 60) . ' min ago';
-    if ($diff < 86400) return floor($diff / 3600) . ' hr ago';
-    if ($diff < 604800) return floor($diff / 86400) . ' days ago';
-    if ($diff < 2592000) return floor($diff / 604800) . ' weeks ago';
-    return date('M j, Y', strtotime($ts));
+    if ($diff < 3600) return floor($diff / 60) . ' minute' . (floor($diff / 60) > 1 ? 's' : '') . ' ago';
+    if ($diff < 86400) return floor($diff / 3600) . ' hour' . (floor($diff / 3600) > 1 ? 's' : '') . ' ago';
+    if ($diff < 604800) return floor($diff / 86400) . ' day' . (floor($diff / 86400) > 1 ? 's' : '') . ' ago';
+    if ($diff < 2592000) return floor($diff / 604800) . ' week' . (floor($diff / 604800) > 1 ? 's' : '') . ' ago';
+    if ($diff < 31536000) return floor($diff / 2592000) . ' month' . (floor($diff / 2592000) > 1 ? 's' : '') . ' ago';
+    return floor($diff / 31536000) . ' year' . (floor($diff / 31536000) > 1 ? 's' : '') . ' ago';
 }
 
 /**
@@ -74,7 +80,8 @@ $reviewJoinSql = "FROM reviews r
     LEFT JOIN users u ON u.id = r.user_id
     LEFT JOIN music m ON m.id = r.music_id
     LEFT JOIN artists a ON a.id = m.artist_id
-    LEFT JOIN albums al ON al.id = m.album_id";
+    LEFT JOIN albums al ON al.id = m.album_id
+    LEFT JOIN videos v ON v.id = r.video_id";
 
 switch ($action) {
 
@@ -89,7 +96,7 @@ switch ($action) {
         }
 
         $stmt = $db->prepare("SELECT r.*, u.user_id AS user_public_id, u.full_name AS user_name, u.profile_image AS user_image,
-                   m.song_title, a.name AS artist_name, al.name AS album_name
+                   m.song_title, a.name AS artist_name, al.name AS album_name, v.video_title
             $reviewJoinSql
             WHERE r.music_id = :music_id AND r.status = 'published'
             ORDER BY r.created_at DESC");
@@ -146,6 +153,73 @@ switch ($action) {
         exit;
 
     // =========================================================
+    // PUBLIC: Get reviews for a specific video (published only)
+    // =========================================================
+    case 'get-for-video':
+        $videoId = isset($_POST['video_id']) ? (int) $_POST['video_id'] : 0;
+        if ($videoId <= 0) {
+            echo json_encode(['success' => false, 'error' => 'Invalid video ID.']);
+            exit;
+        }
+
+        $stmt = $db->prepare("SELECT r.*, u.user_id AS user_public_id, u.full_name AS user_name, u.profile_image AS user_image,
+                   m.song_title, a.name AS artist_name, al.name AS album_name, v.video_title
+            $reviewJoinSql
+            WHERE r.video_id = :video_id AND r.status = 'published'
+            ORDER BY r.created_at DESC");
+        $stmt->execute([':video_id' => $videoId]);
+        $rows = $stmt->fetchAll();
+
+        $reviews = [];
+        foreach ($rows as $row) {
+            $rec = buildReviewRecord($row);
+            $rec['created_at_formatted'] = formatTimestamp($row['created_at']);
+            $rec['relative_time'] = relativeTime($row['created_at']);
+            $reviews[] = $rec;
+        }
+
+        echo json_encode(['success' => true, 'reviews' => $reviews]);
+        exit;
+
+    // =========================================================
+    // PUBLIC: Get rating stats for a specific video
+    // =========================================================
+    case 'get-video-stats':
+        $videoId = isset($_POST['video_id']) ? (int) $_POST['video_id'] : 0;
+        if ($videoId <= 0) {
+            echo json_encode(['success' => false, 'error' => 'Invalid video ID.']);
+            exit;
+        }
+
+        $stmt = $db->prepare("SELECT COUNT(*) AS total, AVG(rating) AS avg_rating,
+                   SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) AS star5,
+                   SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS star4,
+                   SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS star3,
+                   SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS star2,
+                   SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS star1
+            FROM reviews WHERE video_id = :video_id AND status = 'published'");
+        $stmt->execute([':video_id' => $videoId]);
+        $stats = $stmt->fetch();
+
+        $total = (int) ($stats['total'] ?? 0);
+        $avgRating = $total > 0 ? round((float) $stats['avg_rating'], 1) : 0;
+        $distribution = [
+            5 => (int) ($stats['star5'] ?? 0),
+            4 => (int) ($stats['star4'] ?? 0),
+            3 => (int) ($stats['star3'] ?? 0),
+            2 => (int) ($stats['star2'] ?? 0),
+            1 => (int) ($stats['star1'] ?? 0),
+        ];
+
+        echo json_encode([
+            'success' => true,
+            'total' => $total,
+            'avg_rating' => $avgRating,
+            'distribution' => $distribution,
+        ]);
+        exit;
+
+    // =========================================================
     // PUBLIC: Submit a new review (authenticated user required)
     // =========================================================
     case 'add':
@@ -163,13 +237,14 @@ switch ($action) {
 
         $userId = getCurrentUserId();
         $musicId = isset($_POST['music_id']) ? (int) $_POST['music_id'] : 0;
+        $videoId = isset($_POST['video_id']) ? (int) $_POST['video_id'] : 0;
         $rating = isset($_POST['rating']) ? (int) $_POST['rating'] : 0;
         $reviewText = trim($_POST['review_text'] ?? '');
 
         // Validation
         $errors = [];
-        if ($musicId <= 0) {
-            $errors['music_id'] = 'Invalid music ID.';
+        if ($musicId <= 0 && $videoId <= 0) {
+            $errors['content'] = 'Invalid content ID.';
         }
         if ($rating < 1 || $rating > 5) {
             $errors['rating'] = 'Please select a rating.';
@@ -183,23 +258,40 @@ switch ($action) {
             exit;
         }
 
-        // Check music exists and is published (active)
-        $stmt = $db->prepare("SELECT id, status FROM music WHERE id = :id");
-        $stmt->execute([':id' => $musicId]);
-        $music = $stmt->fetch();
-        if (!$music || $music['status'] !== 'active') {
-            echo json_encode(['success' => false, 'error' => 'Music not found.']);
-            exit;
+        // Check content exists and is published (active)
+        if ($videoId > 0) {
+            $stmt = $db->prepare("SELECT id, status FROM videos WHERE id = :id");
+            $stmt->execute([':id' => $videoId]);
+            $video = $stmt->fetch();
+            if (!$video || $video['status'] !== 'active') {
+                echo json_encode(['success' => false, 'error' => 'Video not found.']);
+                exit;
+            }
+            $stmt = $db->prepare("INSERT INTO reviews (user_id, video_id, rating, review_text, status, created_at, updated_at)
+                VALUES (:user_id, :video_id, :rating, :review_text, 'published', UTC_TIMESTAMP(), UTC_TIMESTAMP())");
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':video_id' => $videoId,
+                ':rating' => $rating,
+                ':review_text' => $reviewText,
+            ]);
+        } else {
+            $stmt = $db->prepare("SELECT id, status FROM music WHERE id = :id");
+            $stmt->execute([':id' => $musicId]);
+            $music = $stmt->fetch();
+            if (!$music || $music['status'] !== 'active') {
+                echo json_encode(['success' => false, 'error' => 'Music not found.']);
+                exit;
+            }
+            $stmt = $db->prepare("INSERT INTO reviews (user_id, music_id, rating, review_text, status, created_at, updated_at)
+                VALUES (:user_id, :music_id, :rating, :review_text, 'published', UTC_TIMESTAMP(), UTC_TIMESTAMP())");
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':music_id' => $musicId,
+                ':rating' => $rating,
+                ':review_text' => $reviewText,
+            ]);
         }
-
-        $stmt = $db->prepare("INSERT INTO reviews (user_id, music_id, rating, review_text, status, created_at, updated_at)
-            VALUES (:user_id, :music_id, :rating, :review_text, 'published', NOW(), NOW())");
-        $stmt->execute([
-            ':user_id' => $userId,
-            ':music_id' => $musicId,
-            ':rating' => $rating,
-            ':review_text' => $reviewText,
-        ]);
 
         $newId = $db->lastInsertId();
 
@@ -229,11 +321,20 @@ switch ($action) {
         $params = [];
 
         if ($search !== '') {
-            $where[] = "(u.full_name LIKE :search OR u.user_id LIKE :search2 OR m.song_title LIKE :search3 OR a.name LIKE :search4)";
+            $where[] = "(u.full_name LIKE :search OR u.user_id LIKE :search2 OR m.song_title LIKE :search3 OR a.name LIKE :search4 OR v.video_title LIKE :search5)";
             $params[':search'] = "%$search%";
             $params[':search2'] = "%$search%";
             $params[':search3'] = "%$search%";
             $params[':search4'] = "%$search%";
+            $params[':search5'] = "%$search%";
+        }
+
+        if ($typeFilter !== 'all' && in_array($typeFilter, ['music','video'])) {
+            if ($typeFilter === 'music') {
+                $where[] = "r.music_id IS NOT NULL";
+            } else {
+                $where[] = "r.video_id IS NOT NULL";
+            }
         }
 
         if ($ratingFilter !== 'all' && in_array($ratingFilter, ['1','2','3','4','5'])) {
@@ -252,7 +353,7 @@ switch ($action) {
         $whereSql = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
         $stmt = $db->prepare("SELECT r.*, u.user_id AS user_public_id, u.full_name AS user_name, u.profile_image AS user_image,
-                   m.song_title, a.name AS artist_name, al.name AS album_name
+                   m.song_title, a.name AS artist_name, al.name AS album_name, v.video_title
             $reviewJoinSql
             $whereSql
             ORDER BY r.created_at DESC");
@@ -274,7 +375,9 @@ switch ($action) {
                    SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) AS star4,
                    SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) AS star3,
                    SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) AS star2,
-                   SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS star1
+                   SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS star1,
+                   SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END) AS published_count,
+                   SUM(CASE WHEN status = 'hidden' THEN 1 ELSE 0 END) AS hidden_count
             FROM reviews");
         $statsStmt->execute();
         $allStats = $statsStmt->fetch();
@@ -288,6 +391,8 @@ switch ($action) {
             'stats' => [
                 'total' => $totalAll,
                 'avg_rating' => $avgAll,
+                'published_count' => (int) ($allStats['published_count'] ?? 0),
+                'hidden_count' => (int) ($allStats['hidden_count'] ?? 0),
                 'star5' => (int) ($allStats['star5'] ?? 0),
                 'star4' => (int) ($allStats['star4'] ?? 0),
                 'star3' => (int) ($allStats['star3'] ?? 0),
@@ -314,7 +419,7 @@ switch ($action) {
         }
 
         $stmt = $db->prepare("SELECT r.*, u.user_id AS user_public_id, u.full_name AS user_name, u.profile_image AS user_image,
-                   m.song_title, a.name AS artist_name, al.name AS album_name
+                   m.song_title, a.name AS artist_name, al.name AS album_name, v.video_title
             $reviewJoinSql
             WHERE r.id = :id");
         $stmt->execute([':id' => $reviewId]);
@@ -374,7 +479,7 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $db->prepare("UPDATE reviews SET rating = :rating, review_text = :review_text, status = :status, updated_at = NOW()
+        $stmt = $db->prepare("UPDATE reviews SET rating = :rating, review_text = :review_text, status = :status, updated_at = UTC_TIMESTAMP()
             WHERE id = :id");
         $stmt->execute([
             ':rating' => $rating,
@@ -383,7 +488,26 @@ switch ($action) {
             ':id' => $reviewId,
         ]);
 
-        echo json_encode(['success' => true, 'message' => 'Review updated successfully.']);
+        $statsStmt = $db->prepare("SELECT COUNT(*) AS total, AVG(rating) AS avg_rating,
+                   SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END) AS published_count,
+                   SUM(CASE WHEN status = 'hidden' THEN 1 ELSE 0 END) AS hidden_count
+            FROM reviews");
+        $statsStmt->execute();
+        $freshStats = $statsStmt->fetch();
+
+        $freshTotal = (int) ($freshStats['total'] ?? 0);
+        $freshAvg = $freshTotal > 0 ? round((float) $freshStats['avg_rating'], 1) : '0.0';
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Review updated successfully.',
+            'stats' => [
+                'total' => $freshTotal,
+                'avg_rating' => $freshAvg,
+                'published_count' => (int) ($freshStats['published_count'] ?? 0),
+                'hidden_count' => (int) ($freshStats['hidden_count'] ?? 0),
+            ],
+        ]);
         exit;
 
     // =========================================================
@@ -411,7 +535,26 @@ switch ($action) {
         $stmt = $db->prepare("DELETE FROM reviews WHERE id = :id");
         $stmt->execute([':id' => $reviewId]);
 
-        echo json_encode(['success' => true, 'message' => 'Review deleted successfully.']);
+        $statsStmt = $db->prepare("SELECT COUNT(*) AS total, AVG(rating) AS avg_rating,
+                   SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END) AS published_count,
+                   SUM(CASE WHEN status = 'hidden' THEN 1 ELSE 0 END) AS hidden_count
+            FROM reviews");
+        $statsStmt->execute();
+        $freshStats = $statsStmt->fetch();
+
+        $freshTotal = (int) ($freshStats['total'] ?? 0);
+        $freshAvg = $freshTotal > 0 ? round((float) $freshStats['avg_rating'], 1) : '0.0';
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Review deleted successfully.',
+            'stats' => [
+                'total' => $freshTotal,
+                'avg_rating' => $freshAvg,
+                'published_count' => (int) ($freshStats['published_count'] ?? 0),
+                'hidden_count' => (int) ($freshStats['hidden_count'] ?? 0),
+            ],
+        ]);
         exit;
 
     // =========================================================
@@ -438,11 +581,31 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $db->prepare("UPDATE reviews SET status = :status, updated_at = NOW() WHERE id = :id");
+        $stmt = $db->prepare("UPDATE reviews SET status = :status, updated_at = UTC_TIMESTAMP() WHERE id = :id");
         $stmt->execute([':status' => $newStatus, ':id' => $reviewId]);
 
+        $statsStmt = $db->prepare("SELECT COUNT(*) AS total, AVG(rating) AS avg_rating,
+                   SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END) AS published_count,
+                   SUM(CASE WHEN status = 'hidden' THEN 1 ELSE 0 END) AS hidden_count
+            FROM reviews");
+        $statsStmt->execute();
+        $freshStats = $statsStmt->fetch();
+
+        $freshTotal = (int) ($freshStats['total'] ?? 0);
+        $freshAvg = $freshTotal > 0 ? round((float) $freshStats['avg_rating'], 1) : '0.0';
+
         $label = $newStatus === 'published' ? 'Published' : 'Hidden';
-        echo json_encode(['success' => true, 'message' => "Review status changed to $label.", 'new_status' => $newStatus]);
+        echo json_encode([
+            'success' => true,
+            'message' => "Review status changed to $label.",
+            'new_status' => $newStatus,
+            'stats' => [
+                'total' => $freshTotal,
+                'avg_rating' => $freshAvg,
+                'published_count' => (int) ($freshStats['published_count'] ?? 0),
+                'hidden_count' => (int) ($freshStats['hidden_count'] ?? 0),
+            ],
+        ]);
         exit;
 
     default:

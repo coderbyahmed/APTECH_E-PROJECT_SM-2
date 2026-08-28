@@ -4,6 +4,32 @@ $websiteBase = $baseUrl . '/frontend/website';
 $cssBase = $websiteBase . '/css/video';
 $jsBase = $websiteBase . '/js/video';
 $currentPage = 'videos';
+
+require_once dirname(__DIR__, 1) . '/includes/video-data.php';
+$allVideos = wgGetAllVideos(0, 'published');
+$videoCount = count($allVideos);
+
+$filterArtists = [];
+$filterAlbums = [];
+$filterYears = [];
+$filterGenres = [];
+$filterLanguages = [];
+foreach ($allVideos as $v) {
+    if (!empty($v['artist_name'])) $filterArtists[$v['artist_name']] = true;
+    if (!empty($v['album_name'])) $filterAlbums[$v['album_name']] = true;
+    if (!empty($v['year_name'])) $filterYears[$v['year_name']] = true;
+    if (!empty($v['genre_name'])) $filterGenres[$v['genre_name']] = true;
+    if (!empty($v['language_name'])) $filterLanguages[$v['language_name']] = true;
+}
+$filterArtists = array_keys($filterArtists);
+$filterAlbums = array_keys($filterAlbums);
+$filterYears = array_keys($filterYears);
+$filterGenres = array_keys($filterGenres);
+$filterLanguages = array_keys($filterLanguages);
+
+require_once __DIR__ . '/../../../backend/includes/website-settings.php';
+$ws = getWebsiteSettings();
+$wsWebsiteName = htmlspecialchars($ws['website_name']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +37,7 @@ $currentPage = 'videos';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Video Library - SOUND Group</title>
+    <title>Video Library - <?php echo $wsWebsiteName; ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -53,57 +79,45 @@ $currentPage = 'videos';
                 <label class="wg-music-filters__label" for="filterArtist">Artist</label>
                 <select class="wg-music-filters__select" id="filterArtist">
                     <option value="">All Artists</option>
-                    <option value="Hammad Aziz">Hammad Aziz</option>
-                    <option value="Aria Collins">Aria Collins</option>
-                    <option value="Kai Moreno">Kai Moreno</option>
-                    <option value="Luna Park">Luna Park</option>
-                    <option value="Arijit Singh">Arijit Singh</option>
-                    <option value="Hamza Tahir">Hamza Tahir</option>
+                    <?php foreach ($filterArtists as $a): ?>
+                    <option value="<?php echo htmlspecialchars($a, ENT_QUOTES); ?>"><?php echo htmlspecialchars($a); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="wg-music-filters__group">
                 <label class="wg-music-filters__label" for="filterAlbum">Album</label>
                 <select class="wg-music-filters__select" id="filterAlbum">
                     <option value="">All Albums</option>
-                    <option value="Acoustic Sessions">Acoustic Sessions</option>
-                    <option value="Electric Dreams">Electric Dreams</option>
-                    <option value="Lo-fi Nights">Lo-fi Nights</option>
-                    <option value="Chill Vibes">Chill Vibes</option>
-                    <option value="Night Sessions">Night Sessions</option>
-                    <option value="Aashiqui 2">Aashiqui 2</option>
-                    <option value="Sade">Sade</option>
+                    <?php foreach ($filterAlbums as $al): ?>
+                    <option value="<?php echo htmlspecialchars($al, ENT_QUOTES); ?>"><?php echo htmlspecialchars($al); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="wg-music-filters__group">
                 <label class="wg-music-filters__label" for="filterYear">Year</label>
                 <select class="wg-music-filters__select" id="filterYear">
                     <option value="">All Years</option>
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
+                    <?php foreach ($filterYears as $y): ?>
+                    <option value="<?php echo htmlspecialchars($y, ENT_QUOTES); ?>"><?php echo htmlspecialchars($y); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="wg-music-filters__group">
                 <label class="wg-music-filters__label" for="filterGenre">Genre</label>
                 <select class="wg-music-filters__select" id="filterGenre">
                     <option value="">All Genres</option>
-                    <option value="Acoustic">Acoustic</option>
-                    <option value="Pop">Pop</option>
-                    <option value="Documentary">Documentary</option>
-                    <option value="Lo-fi">Lo-fi</option>
-                    <option value="Vlog">Vlog</option>
-                    <option value="Sufi">Sufi</option>
-                    <option value="Bollywood">Bollywood</option>
-                    <option value="Electronic">Electronic</option>
+                    <?php foreach ($filterGenres as $g): ?>
+                    <option value="<?php echo htmlspecialchars($g, ENT_QUOTES); ?>"><?php echo htmlspecialchars($g); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="wg-music-filters__group">
                 <label class="wg-music-filters__label" for="filterLanguage">Language</label>
                 <select class="wg-music-filters__select" id="filterLanguage">
                     <option value="">All Languages</option>
-                    <option value="English">English</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Urdu">Urdu</option>
+                    <?php foreach ($filterLanguages as $l): ?>
+                    <option value="<?php echo htmlspecialchars($l, ENT_QUOTES); ?>"><?php echo htmlspecialchars($l); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
         </div>
@@ -112,7 +126,7 @@ $currentPage = 'videos';
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 Clear Filters
             </button>
-            <span class="wg-music-filters__count" id="resultCount">12 videos</span>
+            <span class="wg-music-filters__count" id="resultCount"><?php echo $videoCount; ?> <?php echo $videoCount === 1 ? 'video' : 'videos'; ?></span>
         </div>
     </div>
 </section>
@@ -122,22 +136,19 @@ $currentPage = 'videos';
     <div class="wg-music-grid-section__inner">
         <div class="wg-cards wg-cards--video wg-music-page__cards" id="videoGrid">
             <?php
-            $videoCards = [
-                ['vc_id' => 1, 'vc_title' => 'Live Session Vol.1', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Acoustic Sessions', 'vc_year' => '2025', 'vc_genre' => 'Acoustic', 'vc_language' => 'English', 'vc_duration' => '4:12', 'vc_placeholder' => 1],
-                ['vc_id' => 2, 'vc_title' => 'Music Video Premiere', 'vc_artist' => 'Aria Collins', 'vc_album' => 'Electric Dreams', 'vc_year' => '2024', 'vc_genre' => 'Pop', 'vc_language' => 'English', 'vc_duration' => '3:45', 'vc_placeholder' => 2],
-                ['vc_id' => 3, 'vc_title' => 'Behind The Scenes', 'vc_artist' => 'Kai Moreno', 'vc_album' => 'Lo-fi Nights', 'vc_year' => '2025', 'vc_genre' => 'Documentary', 'vc_language' => 'English', 'vc_duration' => '5:30', 'vc_placeholder' => 3],
-                ['vc_id' => 4, 'vc_title' => 'Studio Session', 'vc_artist' => 'Luna Park', 'vc_album' => 'Chill Vibes', 'vc_year' => '2024', 'vc_genre' => 'Lo-fi', 'vc_language' => 'English', 'vc_duration' => '6:18', 'vc_placeholder' => 4],
-                ['vc_id' => 5, 'vc_title' => 'Summer Tour Recap', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Night Sessions', 'vc_year' => '2025', 'vc_genre' => 'Vlog', 'vc_language' => 'English', 'vc_duration' => '3:22', 'vc_placeholder' => 5],
-                ['vc_id' => 6, 'vc_title' => 'Dil Ka Rishta - Official Video', 'vc_artist' => 'Hamza Tahir', 'vc_album' => 'Sade', 'vc_year' => '2026', 'vc_genre' => 'Sufi', 'vc_language' => 'Urdu', 'vc_duration' => '4:55', 'vc_placeholder' => 1],
-                ['vc_id' => 7, 'vc_title' => 'Acoustic Cover - Tum Hi Ho', 'vc_artist' => 'Arijit Singh', 'vc_album' => 'Aashiqui 2', 'vc_year' => '2024', 'vc_genre' => 'Bollywood', 'vc_language' => 'Hindi', 'vc_duration' => '5:10', 'vc_placeholder' => 2],
-                ['vc_id' => 8, 'vc_title' => 'Live at the Rooftop', 'vc_artist' => 'Aria Collins', 'vc_album' => 'Electric Dreams', 'vc_year' => '2025', 'vc_genre' => 'Pop', 'vc_language' => 'English', 'vc_duration' => '38:22', 'vc_placeholder' => 3],
-                ['vc_id' => 9, 'vc_title' => 'Lo-fi Study Session', 'vc_artist' => 'Kai Moreno', 'vc_album' => 'Lo-fi Nights', 'vc_year' => '2025', 'vc_genre' => 'Lo-fi', 'vc_language' => 'English', 'vc_duration' => '1:02:15', 'vc_placeholder' => 4],
-                ['vc_id' => 10, 'vc_title' => 'Chill Vibes Visualizer', 'vc_artist' => 'Luna Park', 'vc_album' => 'Chill Vibes', 'vc_year' => '2024', 'vc_genre' => 'Electronic', 'vc_language' => 'English', 'vc_duration' => '4:30', 'vc_placeholder' => 5],
-                ['vc_id' => 11, 'vc_title' => 'Midnight Dreams - Lyric Video', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Night Sessions', 'vc_year' => '2025', 'vc_genre' => 'Pop', 'vc_language' => 'English', 'vc_duration' => '3:58', 'vc_placeholder' => 1],
-                ['vc_id' => 12, 'vc_title' => 'Noor - Visual Album', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Sade', 'vc_year' => '2026', 'vc_genre' => 'Sufi', 'vc_language' => 'Urdu', 'vc_duration' => '42:10', 'vc_placeholder' => 3],
-            ];
-            foreach ($videoCards as $card) {
-                extract($card);
+            $placeholderCounter = 1;
+            foreach ($allVideos as $v):
+                $vc_id = (int)$v['id'];
+                $vc_title = $v['video_title'];
+                $vc_artist = $v['artist_name'] ?: 'Unknown Artist';
+                $vc_album = $v['album_name'] ?: '';
+                $vc_year = $v['year_name'] ?: '';
+                $vc_genre = $v['genre_name'] ?: '';
+                $vc_language = $v['language_name'] ?: '';
+                $vc_duration = '0:00';
+                $vc_placeholder = $placeholderCounter;
+                $vc_thumbnail = $v['thumbnail_path'] ?: '';
+                $placeholderCounter = ($placeholderCounter % 5) + 1;
                 echo '<div class="wg-music-card-wrap" '
                     . 'data-title="' . htmlspecialchars($vc_title, ENT_QUOTES) . '" '
                     . 'data-artist="' . htmlspecialchars($vc_artist, ENT_QUOTES) . '" '
@@ -147,8 +158,15 @@ $currentPage = 'videos';
                     . 'data-language="' . htmlspecialchars($vc_language, ENT_QUOTES) . '">';
                 include __DIR__ . '/../components/video_card/video_card.php';
                 echo '</div>';
-            }
+            endforeach;
+            if (empty($allVideos)):
             ?>
+                <div class="wg-music-empty" style="display:block;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    <p class="wg-music-empty__title">No videos available yet</p>
+                    <p class="wg-music-empty__desc">Check back later for new uploads.</p>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- EMPTY STATE (hidden by default) -->

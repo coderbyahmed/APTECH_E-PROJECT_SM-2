@@ -8,6 +8,11 @@ $adminInitial = strtoupper(mb_substr($adminName, 0, 1));
 
 $baseUrl = '/Aptech_E_Project_02/sound_management';
 $logoutUrl = $baseUrl . '/frontend/admin/authentication/logout.php';
+
+require_once __DIR__ . '/../../../../backend/includes/website-settings.php';
+$wsNavbar = getWebsiteSettings();
+$wsNavbarName = htmlspecialchars($wsNavbar['website_name']);
+$wsNavbarLogo = $wsNavbar['site_logo'];
 ?>
 <div class="admin-navbar__left">
     <button type="button" class="admin-navbar__toggle" id="sidebarToggle" aria-label="Toggle sidebar">
@@ -20,14 +25,18 @@ $logoutUrl = $baseUrl . '/frontend/admin/authentication/logout.php';
     </button>
     <div class="admin-navbar__brand">
         <div class="admin-navbar__brand-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 18V5l12-2v13"/>
-                <circle cx="6" cy="18" r="3"/>
-                <circle cx="18" cy="16" r="3"/>
-            </svg>
+            <?php if ($wsNavbarLogo): ?>
+                <img src="<?php echo htmlspecialchars($wsNavbarLogo); ?>" alt="<?php echo $wsNavbarName; ?>" style="width:22px;height:22px;object-fit:contain;">
+            <?php else: ?>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18V5l12-2v13"/>
+                    <circle cx="6" cy="18" r="3"/>
+                    <circle cx="18" cy="16" r="3"/>
+                </svg>
+            <?php endif; ?>
         </div>
         <div class="admin-navbar__brand-text">
-            <span class="admin-navbar__brand-name">SOUND Group</span>
+            <span class="admin-navbar__brand-name"><?php echo $wsNavbarName; ?></span>
             <span class="admin-navbar__brand-label">Admin Panel</span>
         </div>
     </div>

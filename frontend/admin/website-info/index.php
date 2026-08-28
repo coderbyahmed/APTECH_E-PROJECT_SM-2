@@ -2,13 +2,14 @@
 /**
  * SOUND Group — Website Info Management
  *
- * UI ONLY — static/mock data. Backend/database to be connected later.
+ * Loads settings from the database via the centralized website-settings helper.
  * Each section shows current values and provides an Edit modal form
  * that updates the displayed values (frontend experience only).
  */
 
 require_once __DIR__ . '/../../../backend/includes/session.php';
 require_once __DIR__ . '/../../../backend/includes/auth.php';
+require_once __DIR__ . '/../../../backend/includes/website-settings.php';
 
 requireAuth();
 
@@ -18,40 +19,32 @@ $activeItem = 'website-info';
 include __DIR__ . '/../layout/admin-layout.php';
 
 /* ----------------------------------------------------------
-   Mock website info data (UI only). Keys describe the future
-   backend structure for each section.
+   Load live settings from database
    ---------------------------------------------------------- */
-$siteInfo = [
-    'websiteName' => 'SOUND Group',
-    'logoFile' => 'sound-group-logo.svg',
-    'shortDesc' => 'The official entertainment platform for SOUND Group — discover music, music videos and the latest releases all in one place.',
-    'about' => 'SOUND Group is an entertainment company dedicated to bringing artists and audiences closer together. From chart-topping tracks to cinematic videos, we showcase the best of global music and visual content on a single platform.',
-];
+$ws = getWebsiteSettings();
 
-$homeContent = [
-    'heading' => 'Discover Music That Moves You',
-    'intro' => 'Stream the hottest tracks, watch stunning music videos and explore artists from every corner of the world — all in one place.',
-    'featured' => 'Featured This Week',
-    'latestMusic' => 'Latest Music',
-    'latestVideo' => 'Latest Videos',
+$siteInfo = [
+    'websiteName' => $ws['website_name'],
+    'logoFile'    => $ws['site_logo'] ? basename($ws['site_logo']) : 'No logo uploaded',
+    'logoPath'    => $ws['site_logo'],
 ];
 
 $contactInfo = [
-    'email' => 'contact@soundgroup.com',
-    'phone' => '+1 (555) 010-2030',
-    'address' => '124 Harmony Avenue, Suite 500, Los Angeles, CA 90028, USA',
+    'email'   => $ws['contact_email'],
+    'phone'   => $ws['contact_phone'],
+    'address' => $ws['contact_address'],
 ];
 
 $socialLinks = [
-    'facebook' => 'https://www.facebook.com/soundgroup',
-    'github' => 'https://github.com/soundgroup',
-    'linkedin' => 'https://www.linkedin.com/company/soundgroup',
-    'tiktok' => 'https://www.tiktok.com/@soundgroup',
+    'facebook' => $ws['facebook_url'],
+    'github'   => $ws['github_url'],
+    'linkedin' => $ws['linkedin_url'],
+    'tiktok'   => $ws['tiktok_url'],
 ];
 
 $footerInfo = [
-    'desc' => 'SOUND Group is your home for music, videos and entertainment updates. Follow us on social media to stay in the loop with the newest releases.',
-    'copyright' => '© 2026 SOUND Group. All rights reserved.',
+    'desc'      => $ws['footer_description'],
+    'copyright' => $ws['copyright_text'],
 ];
 ?>
 
@@ -104,84 +97,22 @@ $footerInfo = [
                 <div class="wi-field">
                     <span class="wi-field__label">Site Logo</span>
                     <div class="wi-logo">
-                        <span class="wi-logo__badge" id="wiLogoBadge">SG</span>
+                        <?php if ($siteInfo['logoPath']): ?>
+                            <img src="<?php echo htmlspecialchars($siteInfo['logoPath']); ?>" alt="Site Logo" style="width:36px;height:36px;object-fit:contain;border-radius:6px;background:#f3f4f6;padding:2px;">
+                        <?php else: ?>
+                            <span class="wi-logo__badge" id="wiLogoBadge">SG</span>
+                        <?php endif; ?>
                         <span class="wi-logo__name"
                             id="wiLogoName"><?php echo htmlspecialchars($siteInfo['logoFile']); ?></span>
                     </div>
                 </div>
-                <div class="wi-field wi-field--full">
-                    <span class="wi-field__label">Short Description</span>
-                    <p class="wi-field__text" id="wiShortDescValue">
-                        <?php echo htmlspecialchars($siteInfo['shortDesc']); ?></p>
-                </div>
-                <div class="wi-field wi-field--full">
-                    <span class="wi-field__label">About Website / About SOUND Group</span>
-                    <p class="wi-field__text" id="wiAboutValue"><?php echo htmlspecialchars($siteInfo['about']); ?></p>
-                </div>
+
             </div>
         </div>
     </section>
 
     <!-- ==================================================
-             2. HOME PAGE CONTENT
-             ================================================== -->
-    <section class="wi-section" id="wiSectionHome">
-        <div class="wi-section__header">
-            <div class="wi-section__heading">
-                <div class="wi-section__icon wi-section__icon--blue">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" width="22" height="22">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                        <polyline points="9 22 9 12 15 12 15 22" />
-                    </svg>
-                </div>
-                <div class="wi-section__title-block">
-                    <h2 class="wi-section__title">Home Page Content</h2>
-                    <p class="wi-section__desc">Headings and introductory text displayed on the home page.</p>
-                </div>
-            </div>
-            <button type="button" class="wi-edit-btn" data-wi-open="home">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" width="16" height="16">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
-                Edit
-            </button>
-        </div>
-        <div class="wi-section__body">
-            <div class="wi-grid">
-                <div class="wi-field">
-                    <span class="wi-field__label">Home Page Heading</span>
-                    <span class="wi-field__value"
-                        id="wiHomeHeadingValue"><?php echo htmlspecialchars($homeContent['heading']); ?></span>
-                </div>
-                <div class="wi-field">
-                    <span class="wi-field__label">Featured Section Heading</span>
-                    <span class="wi-field__value"
-                        id="wiFeaturedHeadingValue"><?php echo htmlspecialchars($homeContent['featured']); ?></span>
-                </div>
-                <div class="wi-field wi-field--full">
-                    <span class="wi-field__label">Home Page Description / Introduction</span>
-                    <p class="wi-field__text" id="wiHomeIntroValue">
-                        <?php echo htmlspecialchars($homeContent['intro']); ?></p>
-                </div>
-                <div class="wi-field">
-                    <span class="wi-field__label">Latest Music Section Heading</span>
-                    <span class="wi-field__value"
-                        id="wiLatestMusicHeadingValue"><?php echo htmlspecialchars($homeContent['latestMusic']); ?></span>
-                </div>
-                <div class="wi-field">
-                    <span class="wi-field__label">Latest Video Section Heading</span>
-                    <span class="wi-field__value"
-                        id="wiLatestVideoHeadingValue"><?php echo htmlspecialchars($homeContent['latestVideo']); ?></span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ==================================================
-             3. CONTACT INFORMATION
+             2. CONTACT INFORMATION
              ================================================== -->
     <section class="wi-section" id="wiSectionContact">
         <div class="wi-section__header">
@@ -425,90 +356,22 @@ $footerInfo = [
                                 accept="image/svg+xml,image/png,image/jpeg,image/webp" hidden>
                             <span class="wi-file-field__hint">Upload a new logo image (SVG, PNG, JPG or WebP).</span>
                         </div>
+                        <button type="button" class="sg-btn wi-btn-remove" id="wiLogoRemoveBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            </svg>
+                            Remove Logo
+                        </button>
+                        <input type="hidden" id="wiLogoRemoved" value="0">
                     </div>
-                    <div class="sg-form-group wi-form__group--full">
-                        <label class="sg-form-label" for="wiShortDesc">Short Description</label>
-                        <textarea class="sg-form-input wi-form-input wi-form-textarea" id="wiShortDesc"
-                            rows="3"><?php echo htmlspecialchars($siteInfo['shortDesc']); ?></textarea>
-                    </div>
-                    <div class="sg-form-group wi-form__group--full">
-                        <label class="sg-form-label" for="wiAbout">About Website / About SOUND Group</label>
-                        <textarea class="sg-form-input wi-form-input wi-form-textarea" id="wiAbout"
-                            rows="5"><?php echo htmlspecialchars($siteInfo['about']); ?></textarea>
-                    </div>
+
                 </div>
 
                 <div class="wi-form__actions">
                     <button type="button" class="sg-btn wi-btn-cancel" data-wi-close="site">Cancel</button>
                     <button type="button" class="sg-btn sg-btn--primary" id="wiSiteSaveBtn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                            <polyline points="17 21 17 13 7 13 7 21" />
-                            <polyline points="7 3 7 8 15 8" />
-                        </svg>
-                        Save Changes
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Home Page Content -->
-<div class="sg-modal" id="wiHomeModal">
-    <div class="sg-modal__overlay" data-wi-close="home"></div>
-    <div class="sg-modal__dialog wi-modal wi-modal--wide">
-        <button type="button" class="sg-modal__close" data-wi-close="home">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" width="16" height="16">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-        </button>
-        <div class="sg-modal__body">
-            <div class="sg-modal__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" width="22" height="22">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    <polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
-            </div>
-            <h2 class="sg-modal__title">Edit Home Page Content</h2>
-            <p class="sg-modal__subtitle">Update the headings and introductory text displayed on the home page.</p>
-
-            <form id="wiHomeForm" class="wi-form">
-                <div class="wi-form__grid">
-                    <div class="sg-form-group">
-                        <label class="sg-form-label" for="wiHomeHeading">Home Page Heading</label>
-                        <input type="text" class="sg-form-input wi-form-input" id="wiHomeHeading"
-                            value="<?php echo htmlspecialchars($homeContent['heading']); ?>">
-                    </div>
-                    <div class="sg-form-group">
-                        <label class="sg-form-label" for="wiFeaturedHeading">Featured Section Heading</label>
-                        <input type="text" class="sg-form-input wi-form-input" id="wiFeaturedHeading"
-                            value="<?php echo htmlspecialchars($homeContent['featured']); ?>">
-                    </div>
-                    <div class="sg-form-group wi-form__group--full">
-                        <label class="sg-form-label" for="wiHomeIntro">Home Page Description / Introduction</label>
-                        <textarea class="sg-form-input wi-form-input wi-form-textarea" id="wiHomeIntro"
-                            rows="3"><?php echo htmlspecialchars($homeContent['intro']); ?></textarea>
-                    </div>
-                    <div class="sg-form-group">
-                        <label class="sg-form-label" for="wiLatestMusicHeading">Latest Music Section Heading</label>
-                        <input type="text" class="sg-form-input wi-form-input" id="wiLatestMusicHeading"
-                            value="<?php echo htmlspecialchars($homeContent['latestMusic']); ?>">
-                    </div>
-                    <div class="sg-form-group">
-                        <label class="sg-form-label" for="wiLatestVideoHeading">Latest Video Section Heading</label>
-                        <input type="text" class="sg-form-input wi-form-input" id="wiLatestVideoHeading"
-                            value="<?php echo htmlspecialchars($homeContent['latestVideo']); ?>">
-                    </div>
-                </div>
-
-                <div class="wi-form__actions">
-                    <button type="button" class="sg-btn wi-btn-cancel" data-wi-close="home">Cancel</button>
-                    <button type="button" class="sg-btn sg-btn--primary" id="wiHomeSaveBtn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />

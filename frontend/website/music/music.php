@@ -8,6 +8,28 @@ $currentPage = 'music';
 require_once dirname(__DIR__, 1) . '/includes/music-data.php';
 $allMusic = wgGetAllMusic(0, 'published');
 $musicCount = count($allMusic);
+
+$filterArtists = [];
+$filterAlbums = [];
+$filterYears = [];
+$filterGenres = [];
+$filterLanguages = [];
+foreach ($allMusic as $m) {
+    if (!empty($m['artist_name'])) $filterArtists[$m['artist_name']] = true;
+    if (!empty($m['album_name'])) $filterAlbums[$m['album_name']] = true;
+    if (!empty($m['year_name'])) $filterYears[$m['year_name']] = true;
+    if (!empty($m['genre_name'])) $filterGenres[$m['genre_name']] = true;
+    if (!empty($m['language_name'])) $filterLanguages[$m['language_name']] = true;
+}
+$filterArtists = array_keys($filterArtists);
+$filterAlbums = array_keys($filterAlbums);
+$filterYears = array_keys($filterYears);
+$filterGenres = array_keys($filterGenres);
+$filterLanguages = array_keys($filterLanguages);
+
+require_once __DIR__ . '/../../../backend/includes/website-settings.php';
+$ws = getWebsiteSettings();
+$wsWebsiteName = htmlspecialchars($ws['website_name']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +37,7 @@ $musicCount = count($allMusic);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Music Library - SOUND Group</title>
+    <title>Music Library - <?php echo $wsWebsiteName; ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -56,59 +78,45 @@ $musicCount = count($allMusic);
                 <label class="wg-music-filters__label" for="filterArtist">Artist</label>
                 <select class="wg-music-filters__select" id="filterArtist">
                     <option value="">All Artists</option>
-                    <option value="Hammad Aziz">Hammad Aziz</option>
-                    <option value="Arijit Singh">Arijit Singh</option>
-                    <option value="Aria Collins">Aria Collins</option>
-                    <option value="Kai Moreno">Kai Moreno</option>
-                    <option value="Luna Park">Luna Park</option>
-                    <option value="Hamza Tahir">Hamza Tahir</option>
-                    <option value="Ahmed Raza">Ahmed Raza</option>
+                    <?php foreach ($filterArtists as $a): ?>
+                    <option value="<?php echo htmlspecialchars($a, ENT_QUOTES); ?>"><?php echo htmlspecialchars($a); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="wg-music-filters__group">
                 <label class="wg-music-filters__label" for="filterAlbum">Album</label>
                 <select class="wg-music-filters__select" id="filterAlbum">
                     <option value="">All Albums</option>
-                    <option value="Night Sessions">Night Sessions</option>
-                    <option value="Aashiqui 2">Aashiqui 2</option>
-                    <option value="Electric Dreams">Electric Dreams</option>
-                    <option value="Lo-fi Nights">Lo-fi Nights</option>
-                    <option value="Chill Vibes">Chill Vibes</option>
-                    <option value="Sade">Sade</option>
-                    <option value="Acoustic Sessions">Acoustic Sessions</option>
+                    <?php foreach ($filterAlbums as $al): ?>
+                    <option value="<?php echo htmlspecialchars($al, ENT_QUOTES); ?>"><?php echo htmlspecialchars($al); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="wg-music-filters__group">
                 <label class="wg-music-filters__label" for="filterYear">Year</label>
                 <select class="wg-music-filters__select" id="filterYear">
                     <option value="">All Years</option>
-                    <option value="2013">2013</option>
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
+                    <?php foreach ($filterYears as $y): ?>
+                    <option value="<?php echo htmlspecialchars($y, ENT_QUOTES); ?>"><?php echo htmlspecialchars($y); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="wg-music-filters__group">
                 <label class="wg-music-filters__label" for="filterGenre">Genre</label>
                 <select class="wg-music-filters__select" id="filterGenre">
                     <option value="">All Genres</option>
-                    <option value="Pop">Pop</option>
-                    <option value="Bollywood">Bollywood</option>
-                    <option value="Electronic">Electronic</option>
-                    <option value="Lo-fi">Lo-fi</option>
-                    <option value="Chill">Chill</option>
-                    <option value="Sufi">Sufi</option>
-                    <option value="Acoustic">Acoustic</option>
-                    <option value="R&B">R&B</option>
+                    <?php foreach ($filterGenres as $g): ?>
+                    <option value="<?php echo htmlspecialchars($g, ENT_QUOTES); ?>"><?php echo htmlspecialchars($g); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="wg-music-filters__group">
                 <label class="wg-music-filters__label" for="filterLanguage">Language</label>
                 <select class="wg-music-filters__select" id="filterLanguage">
                     <option value="">All Languages</option>
-                    <option value="English">English</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Urdu">Urdu</option>
+                    <?php foreach ($filterLanguages as $l): ?>
+                    <option value="<?php echo htmlspecialchars($l, ENT_QUOTES); ?>"><?php echo htmlspecialchars($l); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
         </div>

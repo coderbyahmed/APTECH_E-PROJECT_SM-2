@@ -18,17 +18,26 @@ $reviewsManagementUrl = $baseUrl . '/frontend/admin/review-management/index.php'
 $websiteInfoUrl = $baseUrl . '/frontend/admin/website-info/index.php';
 $contactMessagesUrl = $baseUrl . '/frontend/admin/contact-messages/index.php';
 $logoutUrl = $baseUrl . '/frontend/admin/authentication/logout.php';
+
+require_once __DIR__ . '/../../../../backend/includes/website-settings.php';
+$wsSidebar = getWebsiteSettings();
+$wsSidebarName  = htmlspecialchars($wsSidebar['website_name']);
+$wsSidebarLogo  = $wsSidebar['site_logo'];
 ?>
 <div class="sidebar-brand">
     <div class="sidebar-brand__icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 18V5l12-2v13"/>
-            <circle cx="6" cy="18" r="3"/>
-            <circle cx="18" cy="16" r="3"/>
-        </svg>
+        <?php if ($wsSidebarLogo): ?>
+            <img src="<?php echo htmlspecialchars($wsSidebarLogo); ?>" alt="<?php echo $wsSidebarName; ?>" style="width:24px;height:24px;object-fit:contain;">
+        <?php else: ?>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V5l12-2v13"/>
+                <circle cx="6" cy="18" r="3"/>
+                <circle cx="18" cy="16" r="3"/>
+            </svg>
+        <?php endif; ?>
     </div>
     <div class="sidebar-brand__text">
-        <span class="sidebar-brand__name">SOUND Group</span>
+        <span class="sidebar-brand__name"><?php echo $wsSidebarName; ?></span>
         <span class="sidebar-brand__label">Admin Panel</span>
     </div>
     <button type="button" class="sidebar-collapse-toggle" id="sidebarCollapseToggle" aria-label="Toggle sidebar">

@@ -7,6 +7,10 @@ $currentPage = 'music';
 
 require_once dirname(__DIR__, 1) . '/includes/music-data.php';
 
+require_once __DIR__ . '/../../../backend/includes/website-settings.php';
+$ws = getWebsiteSettings();
+$wsWebsiteName = htmlspecialchars($ws['website_name']);
+
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $track = $id > 0 ? wgGetMusicById($id, true) : null;
 
@@ -18,7 +22,7 @@ if (!$track) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Music Not Found - SOUND Group</title>
+        <title>Music Not Found - <?php echo $wsWebsiteName; ?></title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -104,12 +108,15 @@ $allReviews = $rStmt3->fetchAll();
 
 function wgRelativeTime($ts) {
     if (!$ts || $ts === '0000-00-00 00:00:00') return '';
-    $diff = time() - strtotime($ts);
+    $tsUtc = (new DateTime($ts, new DateTimeZone('UTC')))->getTimestamp();
+    $diff = time() - $tsUtc;
+    if ($diff < 0) $diff = 0;
     if ($diff < 60) return 'Just now';
     if ($diff < 3600) { $m = floor($diff / 60); return $m . ' minute' . ($m > 1 ? 's' : '') . ' ago'; }
     if ($diff < 86400) { $h = floor($diff / 3600); return $h . ' hour' . ($h > 1 ? 's' : '') . ' ago'; }
-    if ($diff < 2592000) { $d = floor($diff / 86400); return $d . ' day' . ($d > 1 ? 's' : '') . ' ago'; }
-    if ($diff < 31536000) { $w = floor($diff / 604800); return $w . ' week' . ($w > 1 ? 's' : '') . ' ago'; }
+    if ($diff < 604800) { $d = floor($diff / 86400); return $d . ' day' . ($d > 1 ? 's' : '') . ' ago'; }
+    if ($diff < 2592000) { $w = floor($diff / 604800); return $w . ' week' . ($w > 1 ? 's' : '') . ' ago'; }
+    if ($diff < 31536000) { $mo = floor($diff / 2592000); return $mo . ' month' . ($mo > 1 ? 's' : '') . ' ago'; }
     $y = floor($diff / 31536000);
     return $y . ' year' . ($y > 1 ? 's' : '') . ' ago';
 }
@@ -144,7 +151,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title><?php echo htmlspecialchars($track['song_title']); ?> - SOUND Group</title>
+    <title><?php echo htmlspecialchars($track['song_title']); ?> - <?php echo $wsWebsiteName; ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">

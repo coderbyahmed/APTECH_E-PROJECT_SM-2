@@ -6,7 +6,12 @@ $jsBase = $websiteBase . '/js/home';
 $currentPage = 'home';
 
 require_once __DIR__ . '/includes/music-data.php';
+require_once __DIR__ . '/includes/video-data.php';
+require_once __DIR__ . '/../../backend/includes/website-settings.php';
+$ws = getWebsiteSettings();
+$wsWebsiteName = htmlspecialchars($ws['website_name']);
 $latestMusic = wgGetAllMusic(5);
+$latestVideos = wgGetAllVideos(5, 'published');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +19,7 @@ $latestMusic = wgGetAllMusic(5);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>SOUND Group Music &amp; Video Platform</title>
+    <title><?php echo $wsWebsiteName; ?> Music &amp; Video Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -69,7 +74,7 @@ $latestMusic = wgGetAllMusic(5);
                             <circle cx="18" cy="16" r="3"/>
                         </svg>
                     </span>
-                    <span class="wg-cd__brand">Sound Group</span>
+                    <span class="wg-cd__brand"><?php echo $wsWebsiteName; ?></span>
                 </div>
                 <div class="wg-cd__hole"></div>
                 <div class="wg-cd__glow"></div>
@@ -127,18 +132,25 @@ $latestMusic = wgGetAllMusic(5);
         </div>
         <div class="wg-cards wg-cards--video">
             <?php
-            $videoCards = [
-                ['vc_id' => 1, 'vc_title' => 'Live Session Vol.1', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Acoustic Sessions', 'vc_year' => '2025', 'vc_genre' => 'Acoustic', 'vc_language' => 'English', 'vc_duration' => '4:12', 'vc_placeholder' => 1],
-                ['vc_id' => 2, 'vc_title' => 'Music Video Premiere', 'vc_artist' => 'Aria Collins', 'vc_album' => 'Electric Dreams', 'vc_year' => '2024', 'vc_genre' => 'Pop', 'vc_language' => 'English', 'vc_duration' => '3:45', 'vc_placeholder' => 2],
-                ['vc_id' => 3, 'vc_title' => 'Behind The Scenes', 'vc_artist' => 'Kai Moreno', 'vc_album' => 'Lo-fi Nights', 'vc_year' => '2025', 'vc_genre' => 'Documentary', 'vc_language' => 'English', 'vc_duration' => '5:30', 'vc_placeholder' => 3],
-                ['vc_id' => 4, 'vc_title' => 'Studio Session', 'vc_artist' => 'Luna Park', 'vc_album' => 'Chill Vibes', 'vc_year' => '2024', 'vc_genre' => 'Lo-fi', 'vc_language' => 'English', 'vc_duration' => '6:18', 'vc_placeholder' => 4],
-                ['vc_id' => 5, 'vc_title' => 'Summer Tour Recap', 'vc_artist' => 'Hammad Aziz', 'vc_album' => 'Night Sessions', 'vc_year' => '2025', 'vc_genre' => 'Vlog', 'vc_language' => 'English', 'vc_duration' => '3:22', 'vc_placeholder' => 5],
-            ];
-            foreach ($videoCards as $card) {
-                extract($card);
+            $placeholderCounter = 1;
+            foreach ($latestVideos as $v):
+                $vc_id = (int)$v['id'];
+                $vc_title = $v['video_title'];
+                $vc_artist = $v['artist_name'] ?: 'Unknown Artist';
+                $vc_album = $v['album_name'] ?: '';
+                $vc_year = $v['year_name'] ?: '';
+                $vc_genre = $v['genre_name'] ?: '';
+                $vc_language = $v['language_name'] ?: '';
+                $vc_duration = '0:00';
+                $vc_placeholder = $placeholderCounter;
+                $vc_thumbnail = $v['thumbnail_path'] ?: '';
+                $placeholderCounter = ($placeholderCounter % 5) + 1;
                 include __DIR__ . '/components/video_card/video_card.php';
-            }
+            endforeach;
+            if (empty($latestVideos)):
             ?>
+                <p style="color:var(--wg-text-secondary);grid-column:1/-1;text-align:center;padding:2rem 0;">No videos available yet.</p>
+            <?php endif; ?>
         </div>
     </div>
 </section>
