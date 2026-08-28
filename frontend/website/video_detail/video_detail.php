@@ -7,6 +7,8 @@ $currentPage = 'videos';
 
 require_once dirname(__DIR__, 1) . '/includes/music-data.php';
 require_once dirname(__DIR__, 3) . '/backend/includes/db.php';
+require_once dirname(__DIR__, 3) . '/backend/includes/user-auth.php';
+require_once __DIR__ . '/../../../backend/helpers/media-duration.php';
 
 require_once __DIR__ . '/../../../backend/includes/website-settings.php';
 $ws = getWebsiteSettings();
@@ -265,7 +267,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/notifications/notification.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/loaders/button-spinner.css">
 </head>
-<body class="wg-page--details wg-page--video-details" data-video-id="<?php echo (int)$video['id']; ?>" data-handler-url="/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php">
+<body class="wg-page--details wg-page--video-details" data-video-id="<?php echo (int)$video['id']; ?>" data-handler-url="/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php" data-user-logged-in="<?php echo isUserLoggedIn() ? '1' : '0'; ?>">
 
 <?php include __DIR__ . '/../components/layout/navbar/navbar.php'; ?>
 
@@ -505,7 +507,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
                         $vc_year = $card['year_name'] ?: '';
                         $vc_genre = $card['genre_name'] ?: '';
                         $vc_language = $card['language_name'] ?: '';
-                        $vc_duration = '0:00';
+                        $vc_duration = formatDuration($card['duration'] ?? null);
                         $vc_placeholder = ($card['id'] % 5) + 1;
                         $vc_thumbnail = $card['thumbnail_path'] ?: '';
                         include __DIR__ . '/../components/video_card/video_card.php';
@@ -529,6 +531,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
 <?php include __DIR__ . '/../components/layout/footer/footer.php'; ?>
 
 <script src="<?php echo $websiteBase; ?>/js/components/notifications/notification.js"></script>
+<script src="<?php echo $websiteBase; ?>/js/components/loaders/button-spinner.js"></script>
 <script src="<?php echo $jsBase; ?>/video_detail.js"></script>
 </body>
 </html>

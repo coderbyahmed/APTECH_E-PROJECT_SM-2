@@ -268,7 +268,12 @@
 
                 if (xhr.status === 200 && resp.success) {
                     closeSignup();
-                    showSuccess(resp.message || 'Account created successfully!');
+                    showSuccess(resp.message || 'Account created successfully! Please log in.');
+                    setTimeout(function () {
+                        if (typeof window.openLoginModal === 'function') {
+                            window.openLoginModal();
+                        }
+                    }, 800);
                 } else {
                     setSubmitting(false);
                     if (resp.errors && typeof resp.errors === 'object') {

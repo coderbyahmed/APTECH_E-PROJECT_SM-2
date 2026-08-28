@@ -10,7 +10,7 @@ $musicBaseUrl = '/Aptech_E_Project_02/sound_management';
 
 function wgGetAllMusic($limit = 0, $status = 'active') {
     $db = getDb();
-    $sql = "SELECT m.id, m.song_title, m.description, m.music_file, m.cover_image, m.status, m.created_at, m.updated_at,
+    $sql = "SELECT m.id, m.song_title, m.description, m.music_file, m.cover_image, m.duration, m.status, m.created_at, m.updated_at,
                    a.name AS artist_name,
                    al.name AS album_name,
                    y.name AS year_name,
@@ -44,7 +44,7 @@ function wgGetAllMusic($limit = 0, $status = 'active') {
 
 function wgGetMusicById($id, $publicOnly = false) {
     $db = getDb();
-    $sql = "SELECT m.id, m.song_title, m.description, m.music_file, m.cover_image, m.status, m.created_at, m.updated_at,
+    $sql = "SELECT m.id, m.song_title, m.description, m.music_file, m.cover_image, m.duration, m.status, m.created_at, m.updated_at,
                    a.name AS artist_name,
                    al.name AS album_name,
                    y.name AS year_name,
@@ -67,7 +67,7 @@ function wgGetMusicById($id, $publicOnly = false) {
 
 function wgGetMusicByArtist($artistName, $excludeId = 0, $limit = 6) {
     $db = getDb();
-    $sql = "SELECT m.id, m.song_title, m.description, m.music_file, m.cover_image, m.status, m.created_at, m.updated_at,
+    $sql = "SELECT m.id, m.song_title, m.description, m.music_file, m.cover_image, m.duration, m.status, m.created_at, m.updated_at,
                    a.name AS artist_name,
                    al.name AS album_name,
                    y.name AS year_name,

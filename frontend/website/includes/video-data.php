@@ -8,7 +8,7 @@ require_once dirname(__DIR__, 3) . '/backend/includes/db.php';
 
 function wgGetAllVideos($limit = 0, $status = 'active') {
     $db = getDb();
-    $sql = "SELECT v.id, v.video_title, v.description, v.video_path, v.thumbnail_path, v.status, v.created_at, v.updated_at,
+    $sql = "SELECT v.id, v.video_title, v.description, v.video_path, v.thumbnail_path, v.duration, v.status, v.created_at, v.updated_at,
                    a.name AS artist_name,
                    al.name AS album_name,
                    y.name AS year_name,
@@ -42,7 +42,7 @@ function wgGetAllVideos($limit = 0, $status = 'active') {
 
 function wgGetVideoById($id, $publicOnly = false) {
     $db = getDb();
-    $sql = "SELECT v.id, v.video_title, v.description, v.video_path, v.thumbnail_path, v.status, v.created_at, v.updated_at,
+    $sql = "SELECT v.id, v.video_title, v.description, v.video_path, v.thumbnail_path, v.duration, v.status, v.created_at, v.updated_at,
                    a.name AS artist_name,
                    al.name AS album_name,
                    y.name AS year_name,
@@ -65,7 +65,7 @@ function wgGetVideoById($id, $publicOnly = false) {
 
 function wgGetVideosByArtist($artistName, $excludeId = 0, $limit = 6) {
     $db = getDb();
-    $sql = "SELECT v.id, v.video_title, v.description, v.video_path, v.thumbnail_path, v.status, v.created_at, v.updated_at,
+    $sql = "SELECT v.id, v.video_title, v.description, v.video_path, v.thumbnail_path, v.duration, v.status, v.created_at, v.updated_at,
                    a.name AS artist_name,
                    al.name AS album_name,
                    y.name AS year_name,

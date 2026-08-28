@@ -11,6 +11,7 @@
 
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/activity-log.php';
 
 header('Content-Type: application/json');
 
@@ -488,6 +489,13 @@ switch ($action) {
             ':id' => $reviewId,
         ]);
 
+        $revItemName = '';
+        $revStmt = $db->prepare("SELECT COALESCE(m.song_title, v.video_title, 'Review') AS item_name FROM reviews r LEFT JOIN music m ON r.music_id = m.id LEFT JOIN videos v ON r.video_id = v.id WHERE r.id = :id");
+        $revStmt->execute([':id' => $reviewId]);
+        $revRow = $revStmt->fetch();
+        if ($revRow) $revItemName = $revRow['item_name'];
+        logAdminActivity($db, 'updated', 'review', $revItemName, $reviewId);
+
         $statsStmt = $db->prepare("SELECT COUNT(*) AS total, AVG(rating) AS avg_rating,
                    SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END) AS published_count,
                    SUM(CASE WHEN status = 'hidden' THEN 1 ELSE 0 END) AS hidden_count
@@ -534,6 +542,13 @@ switch ($action) {
 
         $stmt = $db->prepare("DELETE FROM reviews WHERE id = :id");
         $stmt->execute([':id' => $reviewId]);
+
+        $revItemName = '';
+        $revStmt = $db->prepare("SELECT COALESCE(m.song_title, v.video_title, 'Review') AS item_name FROM reviews r LEFT JOIN music m ON r.music_id = m.id LEFT JOIN videos v ON r.video_id = v.id WHERE r.id = :id");
+        $revStmt->execute([':id' => $reviewId]);
+        $revRow = $revStmt->fetch();
+        if ($revRow) $revItemName = $revRow['item_name'];
+        logAdminActivity($db, 'deleted', 'review', $revItemName, $reviewId);
 
         $statsStmt = $db->prepare("SELECT COUNT(*) AS total, AVG(rating) AS avg_rating,
                    SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END) AS published_count,
@@ -583,6 +598,13 @@ switch ($action) {
 
         $stmt = $db->prepare("UPDATE reviews SET status = :status, updated_at = UTC_TIMESTAMP() WHERE id = :id");
         $stmt->execute([':status' => $newStatus, ':id' => $reviewId]);
+
+        $revItemName = '';
+        $revStmt = $db->prepare("SELECT COALESCE(m.song_title, v.video_title, 'Review') AS item_name FROM reviews r LEFT JOIN music m ON r.music_id = m.id LEFT JOIN videos v ON r.video_id = v.id WHERE r.id = :id");
+        $revStmt->execute([':id' => $reviewId]);
+        $revRow = $revStmt->fetch();
+        if ($revRow) $revItemName = $revRow['item_name'];
+        logAdminActivity($db, $newStatus === 'published' ? 'published' : 'hidden', 'review', $revItemName, $reviewId);
 
         $statsStmt = $db->prepare("SELECT COUNT(*) AS total, AVG(rating) AS avg_rating,
                    SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END) AS published_count,

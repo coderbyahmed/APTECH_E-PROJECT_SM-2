@@ -12,7 +12,7 @@ if (!isset($vc_genre))
 if (!isset($vc_language))
     $vc_language = '';
 if (!isset($vc_duration))
-    $vc_duration = '0:00';
+    $vc_duration = '';
 if (!isset($vc_placeholder))
     $vc_placeholder = 1;
 if (!isset($vc_id))
@@ -44,7 +44,7 @@ if ($vc_thumbnail) {
                 height="28">
                 <polygon points="5 3 19 12 5 21 5 3" />
             </svg></div>
-        <span class="wg-card__duration"><?php echo htmlspecialchars($vc_duration); ?></span>
+        <?php if ($vc_duration): ?><span class="wg-card__duration"><?php echo htmlspecialchars($vc_duration); ?></span><?php endif; ?>
     </div>
     <div class="wg-card__info">
         <h3 class="wg-card__title"><?php echo htmlspecialchars($vc_title); ?></h3>

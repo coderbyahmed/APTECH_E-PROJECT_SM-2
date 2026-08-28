@@ -12,6 +12,7 @@
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/activity-log.php';
 
 header('Content-Type: application/json');
 
@@ -285,6 +286,8 @@ switch ($action) {
             ':id'            => $id,
         ]);
 
+        logAdminActivity($db, 'updated', 'user', $fullName, $id);
+
         // Fetch updated record
         $stmt = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
         $stmt->execute([':id' => $id]);
@@ -332,6 +335,8 @@ switch ($action) {
         $stmt = $db->prepare("DELETE FROM `users` WHERE `id` = :id");
         $stmt->execute([':id' => $id]);
 
+        logAdminActivity($db, 'deleted', 'user', $row['full_name'], $id);
+
         echo json_encode([
             'success' => true,
             'message' => 'User deleted successfully.',
@@ -367,6 +372,8 @@ switch ($action) {
 
         $stmt = $db->prepare("UPDATE `users` SET `status` = :status, `updated_at` = NOW() WHERE `id` = :id");
         $stmt->execute([':status' => $status, ':id' => $id]);
+
+        logAdminActivity($db, 'status_changed', 'user', $row['full_name'], $id);
 
         echo json_encode([
             'success' => true,

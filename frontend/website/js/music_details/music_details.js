@@ -4,6 +4,21 @@
     var body = document.body;
     var musicId = parseInt(body.getAttribute('data-music-id'), 10) || 0;
     var handlerUrl = body.getAttribute('data-handler-url') || '/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php';
+    var isLoggedIn = body.getAttribute('data-user-logged-in') === '1';
+
+    /* ============================================
+       AUTH GUARD — Show signup modal for guests
+       ============================================ */
+    function requireAuth(actionLabel) {
+        if (isLoggedIn) return true;
+        if (typeof showWarning === 'function') {
+            showWarning('Please sign up to ' + actionLabel + '.', 3000);
+        }
+        if (typeof window.openSignupModal === 'function') {
+            window.openSignupModal();
+        }
+        return false;
+    }
 
     /* ============================================
        AUDIO PLAYER
@@ -27,6 +42,7 @@
 
     if (audio && playerWrap) {
         playBtn.addEventListener('click', function () {
+            if (!requireAuth('play music')) return;
             if (audio.paused) {
                 audio.play().catch(function () {});
             } else {
@@ -86,6 +102,17 @@
                 }
             });
         }
+    }
+
+    /* Download button auth guard */
+    var downloadBtn = document.getElementById('wgPlayerDownload');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function (e) {
+            if (!requireAuth('download music')) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
     }
 
     /* ============================================
@@ -268,11 +295,10 @@
                     refreshReviews();
                 } else if (data.login_required) {
                     if (typeof showWarning === 'function') {
-                        showWarning('Please log in to submit a review.', 3000);
+                        showWarning('Please sign up to submit a review.', 3000);
                     }
-                    var loginModal = document.getElementById('wgLoginModal');
-                    if (loginModal) {
-                        setTimeout(function () { loginModal.classList.add('is-open'); }, 500);
+                    if (typeof window.openSignupModal === 'function') {
+                        window.openSignupModal();
                     }
                 } else {
                     var errs = data.errors || {};

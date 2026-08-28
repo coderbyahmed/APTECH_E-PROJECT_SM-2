@@ -39,6 +39,7 @@ $jsFs    = dirname(__DIR__, 1) . '/js';
     <!-- Account Modals -->
     <?php include __DIR__ . '/../components/modals/change-email-modal.php'; ?>
     <?php include __DIR__ . '/../components/modals/change-password-modal.php'; ?>
+    <?php include __DIR__ . '/../components/modals/my-profile-modal.php'; ?>
 
     <!-- Admin JS -->
     <script src="<?php echo $jsBase; ?>/components/layouts/sidebar-collapse.js?v=<?php echo filemtime($jsFs . '/components/layouts/sidebar-collapse.js'); ?>"></script>
@@ -47,6 +48,7 @@ $jsFs    = dirname(__DIR__, 1) . '/js';
     <script src="<?php echo $jsBase; ?>/components/loaders/button-spinner.js?v=<?php echo filemtime($jsFs . '/components/loaders/button-spinner.js'); ?>"></script>
     <script src="<?php echo $jsBase; ?>/components/modals/change-email-modal.js?v=<?php echo filemtime($jsFs . '/components/modals/change-email-modal.js'); ?>"></script>
     <script src="<?php echo $jsBase; ?>/components/modals/change-password-modal.js?v=<?php echo filemtime($jsFs . '/components/modals/change-password-modal.js'); ?>"></script>
+    <script src="<?php echo $jsBase; ?>/components/modals/my-profile-modal.js?v=<?php echo filemtime($jsFs . '/components/modals/my-profile-modal.js'); ?>"></script>
     <script src="<?php echo $jsBase; ?>/components/music-management/music-management.js?v=<?php echo filemtime($jsFs . '/components/music-management/music-management.js'); ?>"></script>
     <script src="<?php echo $jsBase; ?>/components/video-management/video-management.js?v=<?php echo filemtime($jsFs . '/components/video-management/video-management.js'); ?>"></script>
     <script src="<?php echo $jsBase; ?>/components/category-management/category-management.js?v=<?php echo filemtime($jsFs . '/components/category-management/category-management.js'); ?>"></script>

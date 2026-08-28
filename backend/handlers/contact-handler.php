@@ -12,6 +12,7 @@
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/user-auth.php';
+require_once __DIR__ . '/../includes/activity-log.php';
 
 header('Content-Type: application/json');
 
@@ -275,6 +276,13 @@ switch ($action) {
             exit;
         }
 
+        $cmSubject = '';
+        $cmStmt = $db->prepare("SELECT subject FROM contact_messages WHERE id = :id");
+        $cmStmt->execute([':id' => $id]);
+        $cmRow = $cmStmt->fetch();
+        if ($cmRow) $cmSubject = $cmRow['subject'];
+        logAdminActivity($db, 'toggled_read', 'contact', $cmSubject, $id);
+
         echo json_encode([
             'success' => true,
             'message' => 'Message marked as read.',
@@ -297,13 +305,19 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $db->prepare("DELETE FROM contact_messages WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-
-        if ($stmt->rowCount() === 0) {
+        $delStmt = $db->prepare("SELECT subject FROM contact_messages WHERE id = :id");
+        $delStmt->execute([':id' => $id]);
+        $delRow = $delStmt->fetch();
+        if (!$delRow) {
             echo json_encode(['success' => false, 'error' => 'Message not found.']);
             exit;
         }
+        $delSubject = $delRow['subject'];
+
+        $stmt = $db->prepare("DELETE FROM contact_messages WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+
+        logAdminActivity($db, 'deleted', 'contact', $delSubject, $id);
 
         echo json_encode([
             'success' => true,

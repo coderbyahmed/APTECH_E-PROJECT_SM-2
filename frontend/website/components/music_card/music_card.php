@@ -17,6 +17,8 @@ if (!isset($mc_id))
     $mc_id = 1;
 if (!isset($mc_cover_image))
     $mc_cover_image = '';
+if (!isset($mc_duration))
+    $mc_duration = '';
 if (!isset($websiteBase))
     $websiteBase = '/Aptech_E_Project_02/sound_management/frontend/website';
 $detailHref = $websiteBase . '/music_details/music_details.php?id=' . (int) $mc_id;
@@ -39,6 +41,7 @@ if ($mc_cover_image) {
                     <circle cx="18" cy="16" r="3" />
                 </svg></div>
         <?php endif; ?>
+        <?php if ($mc_duration): ?><span class="wg-card__duration"><?php echo htmlspecialchars($mc_duration); ?></span><?php endif; ?>
     </div>
     <div class="wg-card__info">
         <h3 class="wg-card__title"><?php echo htmlspecialchars($mc_title); ?></h3>

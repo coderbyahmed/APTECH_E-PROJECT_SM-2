@@ -12,6 +12,8 @@
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/activity-log.php';
+require_once __DIR__ . '/../helpers/media-duration.php';
 
 header('Content-Type: application/json');
 
@@ -119,6 +121,7 @@ function buildMusicRecord($row) {
         'description'  => $row['description'] ?? '',
         'music_file'   => $row['music_file'] ?? '',
         'cover_image'  => $row['cover_image'] ?? '',
+        'duration'     => isset($row['duration']) ? (int) $row['duration'] : null,
         'status'       => $row['status'],
         'created_at'   => $row['created_at'] ?? '',
         'updated_at'   => $row['updated_at'] ?? '',
@@ -238,6 +241,8 @@ switch ($action) {
         }
         $savedMusicFile = 'uploads/music/' . $newMusicName;
 
+        $duration = getMediaDuration($musicDir . $newMusicName);
+
         if ($coverImage && $coverImage['error'] !== UPLOAD_ERR_NO_FILE) {
             $newCoverName = generateUniqueFilename($coverImage['name'], 'cover');
             if (!saveUploadedFile($coverImage, $coversDir, $newCoverName)) {
@@ -248,7 +253,7 @@ switch ($action) {
             $savedCoverImage = 'uploads/covers/' . $newCoverName;
         }
 
-        $stmt = $db->prepare("INSERT INTO `music` (`song_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `music_file`, `cover_image`, `status`, `created_at`, `updated_at`) VALUES (:song_title, :artist_id, :album_id, :year_id, :genre_id, :language_id, :description, :music_file, :cover_image, :status, NOW(), NOW())");
+        $stmt = $db->prepare("INSERT INTO `music` (`song_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `music_file`, `cover_image`, `duration`, `status`, `created_at`, `updated_at`) VALUES (:song_title, :artist_id, :album_id, :year_id, :genre_id, :language_id, :description, :music_file, :cover_image, :duration, :status, NOW(), NOW())");
         $stmt->execute([
             ':song_title'   => $title,
             ':artist_id'    => $artistId,
@@ -259,10 +264,13 @@ switch ($action) {
             ':description'  => $description,
             ':music_file'   => $savedMusicFile,
             ':cover_image'  => $savedCoverImage,
+            ':duration'     => $duration,
             ':status'       => $status,
         ]);
 
         $newId = (int) $db->lastInsertId();
+
+        logAdminActivity($db, 'created', 'music', $title, $newId);
 
         $stmt = $db->prepare($joinSql . " WHERE m.`id` = :id");
         $stmt->execute([':id' => $newId]);
@@ -374,6 +382,7 @@ switch ($action) {
 
         $newMusicFile  = $existing['music_file'];
         $newCoverImage = $existing['cover_image'];
+        $duration = $existing['duration'];
 
         if (!$vMusic['skip'] && $musicFile && $musicFile['error'] === UPLOAD_ERR_OK) {
             $newMusicName = generateUniqueFilename($musicFile['name'], 'music');
@@ -384,6 +393,7 @@ switch ($action) {
             $oldMusicPath = dirname(__DIR__, 2) . '/' . $existing['music_file'];
             if ($existing['music_file']) deleteFileIfExists($oldMusicPath);
             $newMusicFile = 'uploads/music/' . $newMusicName;
+            $duration = getMediaDuration($musicDir . $newMusicName);
         }
 
         if (!$vCover['skip'] && $coverImage && $coverImage['error'] === UPLOAD_ERR_OK) {
@@ -397,7 +407,7 @@ switch ($action) {
             $newCoverImage = 'uploads/covers/' . $newCoverName;
         }
 
-        $stmt = $db->prepare("UPDATE `music` SET `song_title` = :song_title, `artist_id` = :artist_id, `album_id` = :album_id, `year_id` = :year_id, `genre_id` = :genre_id, `language_id` = :language_id, `description` = :description, `music_file` = :music_file, `cover_image` = :cover_image, `status` = :status, `updated_at` = NOW() WHERE `id` = :id");
+        $stmt = $db->prepare("UPDATE `music` SET `song_title` = :song_title, `artist_id` = :artist_id, `album_id` = :album_id, `year_id` = :year_id, `genre_id` = :genre_id, `language_id` = :language_id, `description` = :description, `music_file` = :music_file, `cover_image` = :cover_image, `duration` = :duration, `status` = :status, `updated_at` = NOW() WHERE `id` = :id");
         $stmt->execute([
             ':song_title'   => $title,
             ':artist_id'    => $artistId,
@@ -408,9 +418,13 @@ switch ($action) {
             ':description'  => $description,
             ':music_file'   => $newMusicFile,
             ':cover_image'  => $newCoverImage,
+            ':duration'     => $duration,
             ':status'       => $status,
             ':id'           => $id,
         ]);
+
+        $logAction = ($status !== $existing['status']) ? 'status_changed' : 'updated';
+        logAdminActivity($db, $logAction, 'music', $title, $id);
 
         $stmt = $db->prepare($joinSql . " WHERE m.`id` = :id");
         $stmt->execute([':id' => $id]);
@@ -441,6 +455,8 @@ switch ($action) {
 
         $stmt = $db->prepare("DELETE FROM `music` WHERE `id` = :id");
         $stmt->execute([':id' => $id]);
+
+        logAdminActivity($db, 'deleted', 'music', $row['song_title'], $id);
 
         if ($row['music_file']) {
             deleteFileIfExists(dirname(__DIR__, 2) . '/' . $row['music_file']);

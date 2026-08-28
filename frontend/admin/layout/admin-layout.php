@@ -51,6 +51,7 @@ $wsLayoutName = htmlspecialchars($wsLayout['website_name']);
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/components/modals/modal.css">
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/components/modals/change-email-modal.css">
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/components/modals/change-password-modal.css">
+    <link rel="stylesheet" href="<?php echo $cssBase; ?>/components/modals/my-profile-modal.css">
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/music-management/music-management.css">
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/video-management/video-management.css">
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/category-management/category-management.css">
@@ -58,6 +59,7 @@ $wsLayoutName = htmlspecialchars($wsLayout['website_name']);
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/review-management/review-management.css">
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/website-info/website-info.css">
     <link rel="stylesheet" href="<?php echo $cssBase; ?>/contact-messages/contact-messages.css">
+    <link rel="stylesheet" href="<?php echo $cssBase; ?>/dashboard/dashboard.css">
 </head>
 <body>
     <div class="admin-wrapper">

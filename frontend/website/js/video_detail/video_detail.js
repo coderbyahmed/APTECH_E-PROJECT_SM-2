@@ -4,6 +4,21 @@
     var body = document.body;
     var videoId = parseInt(body.getAttribute('data-video-id'), 10) || 0;
     var handlerUrl = body.getAttribute('data-handler-url') || '/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php';
+    var isLoggedIn = body.getAttribute('data-user-logged-in') === '1';
+
+    /* ============================================
+       AUTH GUARD — Show signup modal for guests
+       ============================================ */
+    function requireAuth(actionLabel) {
+        if (isLoggedIn) return true;
+        if (typeof showWarning === 'function') {
+            showWarning('Please sign up to ' + actionLabel + '.', 3000);
+        }
+        if (typeof window.openSignupModal === 'function') {
+            window.openSignupModal();
+        }
+        return false;
+    }
 
     /* ============================================
        STAR RATING — REUSABLE
@@ -185,11 +200,10 @@
                     refreshReviews();
                 } else if (data.login_required) {
                     if (typeof showWarning === 'function') {
-                        showWarning('Please log in to submit a review.', 3000);
+                        showWarning('Please sign up to submit a review.', 3000);
                     }
-                    var loginModal = document.getElementById('wgLoginModal');
-                    if (loginModal) {
-                        setTimeout(function () { loginModal.classList.add('is-open'); }, 500);
+                    if (typeof window.openSignupModal === 'function') {
+                        window.openSignupModal();
                     }
                 } else {
                     var errs = data.errors || {};
@@ -389,6 +403,7 @@
 
     if (videoPlayer && playToggle) {
         playToggle.addEventListener('click', function () {
+            if (!requireAuth('play video')) return;
             var p = videoPlayer.play();
             if (p && typeof p.catch === 'function') {
                 p.catch(function () {});

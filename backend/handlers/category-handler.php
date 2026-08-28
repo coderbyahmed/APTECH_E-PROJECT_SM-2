@@ -12,6 +12,7 @@
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/activity-log.php';
 
 header('Content-Type: application/json');
 
@@ -93,6 +94,8 @@ switch ($action) {
 
         $newId = (int) $db->lastInsertId();
 
+        logAdminActivity($db, 'created', $category, $name, $newId);
+
         echo json_encode([
             'success' => true,
             'message' => $label . ' added successfully.',
@@ -146,6 +149,8 @@ switch ($action) {
         $stmt = $db->prepare("UPDATE `" . $table . "` SET `name` = :name, `updated_at` = NOW() WHERE `id` = :id");
         $stmt->execute([':name' => $name, ':id' => $id]);
 
+        logAdminActivity($db, 'updated', $category, $name, $id);
+
         echo json_encode([
             'success' => true,
             'message' => $label . ' updated successfully.',
@@ -174,6 +179,8 @@ switch ($action) {
 
         $stmt = $db->prepare("DELETE FROM `" . $table . "` WHERE `id` = :id");
         $stmt->execute([':id' => $id]);
+
+        logAdminActivity($db, 'deleted', $category, $row['name'], $id);
 
         echo json_encode([
             'success' => true,

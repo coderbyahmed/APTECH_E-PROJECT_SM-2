@@ -5,9 +5,15 @@
 
 $adminName = isset($_SESSION['admin_name']) ? $_SESSION['admin_name'] : 'Admin';
 $adminInitial = strtoupper(mb_substr($adminName, 0, 1));
+$adminProfileImage = isset($_SESSION['admin_profile_image']) ? $_SESSION['admin_profile_image'] : null;
 
 $baseUrl = '/Aptech_E_Project_02/sound_management';
 $logoutUrl = $baseUrl . '/frontend/admin/authentication/logout.php';
+
+// Normalize profile image path to always be absolute
+if ($adminProfileImage && strpos($adminProfileImage, '/') !== 0) {
+    $adminProfileImage = $baseUrl . '/' . ltrim($adminProfileImage, '/');
+}
 
 require_once __DIR__ . '/../../../../backend/includes/website-settings.php';
 $wsNavbar = getWebsiteSettings();
@@ -58,19 +64,16 @@ $wsNavbarLogo = $wsNavbar['site_logo'];
 </div>
 
 <div class="admin-navbar__right">
-    <!-- Notification Bell -->
-    <button type="button" class="admin-navbar__icon-btn" aria-label="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-        </svg>
-    </button>
-
     <!-- Profile Dropdown -->
     <div class="admin-navbar__profile" id="adminProfileDropdown">
         <button type="button" class="admin-navbar__profile-toggle" id="adminProfileToggle" aria-haspopup="true" aria-expanded="false">
-            <span class="admin-navbar__avatar"><?php echo htmlspecialchars($adminInitial); ?></span>
+            <span class="admin-navbar__avatar">
+                <?php if ($adminProfileImage): ?>
+                    <img src="<?php echo htmlspecialchars($adminProfileImage); ?>" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                <?php else: ?>
+                    <?php echo htmlspecialchars($adminInitial); ?>
+                <?php endif; ?>
+            </span>
             <span class="admin-navbar__name"><?php echo htmlspecialchars($adminName); ?></span>
             <span class="admin-navbar__arrow">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -81,7 +84,7 @@ $wsNavbarLogo = $wsNavbar['site_logo'];
         </button>
 
         <div class="admin-navbar__dropdown" id="adminProfileMenu">
-            <a href="#" class="admin-navbar__dropdown-item">
+            <a href="#" class="admin-navbar__dropdown-item" id="myProfileTrigger">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>

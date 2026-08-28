@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 28, 2026 at 05:46 AM
+-- Generation Time: Aug 28, 2026 at 01:26 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,6 +32,8 @@ CREATE TABLE `admin` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `profile_image` varchar(500) DEFAULT NULL,
+  `address` varchar(500) DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -42,8 +44,32 @@ CREATE TABLE `admin` (
 -- Dumping data for table `admin`
 --
 
-INSERT INTO `admin` (`id`, `name`, `email`, `password`, `email_verified_at`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Muhammad Ahmed', 'ahmedazizkhan405@gmail.com', '$2y$12$tR0nZ0.oJypoEA8Dzum6Cu0GP8zA.zPjL6B03Yfbc7LsDz.K9oUF6', NULL, NULL, '2026-08-27 09:49:36', '2026-08-27 09:49:36');
+INSERT INTO `admin` (`id`, `name`, `email`, `password`, `profile_image`, `address`, `email_verified_at`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, 'Muhammad Ahmed', 'ahmedazizkhan405@gmail.com', '$2y$12$tR0nZ0.oJypoEA8Dzum6Cu0GP8zA.zPjL6B03Yfbc7LsDz.K9oUF6', '/Aptech_E_Project_02/sound_management/uploads/admin-profile-image/admin_4c70d1caca1fb83d_1787911008.jpg', 'karachi', NULL, NULL, '2026-08-27 09:49:36', '2026-08-28 09:56:48');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_activity_logs`
+--
+
+CREATE TABLE `admin_activity_logs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `admin_id` bigint(20) UNSIGNED NOT NULL,
+  `admin_name` varchar(255) NOT NULL,
+  `action` varchar(50) NOT NULL,
+  `module` varchar(50) NOT NULL,
+  `item_name` varchar(500) NOT NULL DEFAULT '',
+  `item_id` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `admin_activity_logs`
+--
+
+INSERT INTO `admin_activity_logs` (`id`, `admin_id`, `admin_name`, `action`, `module`, `item_name`, `item_id`, `created_at`) VALUES
+(3, 1, 'Muhammad Ahmed', 'updated', 'user', 'hammad', 2, '2026-08-28 20:24:55');
 
 -- --------------------------------------------------------
 
@@ -206,6 +232,7 @@ CREATE TABLE `music` (
   `description` text DEFAULT NULL,
   `music_file` varchar(500) DEFAULT NULL,
   `cover_image` varchar(500) DEFAULT NULL,
+  `duration` int(10) UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds',
   `status` enum('active','draft','inactive') NOT NULL DEFAULT 'active',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -215,8 +242,8 @@ CREATE TABLE `music` (
 -- Dumping data for table `music`
 --
 
-INSERT INTO `music` (`id`, `song_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `music_file`, `cover_image`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Tum Hi ho', 1, 1, 1, 1, 1, 'this song is very hibe', 'uploads/music/music_ad10c968218c8bc8_1787824897.mp3', 'uploads/covers/cover_2b3f9ece497e97df_1787824897.jpg', 'active', '2026-08-27 10:01:37', '2026-08-27 10:01:37');
+INSERT INTO `music` (`id`, `song_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `music_file`, `cover_image`, `duration`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Tum Hi ho', 1, 1, 1, 1, 1, 'this song is very hibe', 'uploads/music/music_ad10c968218c8bc8_1787824897.mp3', 'uploads/covers/cover_2b3f9ece497e97df_1787824897.jpg', NULL, 'active', '2026-08-27 10:01:37', '2026-08-27 10:01:37');
 
 -- --------------------------------------------------------
 
@@ -300,7 +327,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `user_id`, `profile_image`, `full_name`, `email`, `phone`, `address`, `password`, `status`, `created_at`, `updated_at`, `last_login`, `last_logout`) VALUES
-(1, 'U0001', 'uploads/profile-img/profile_078eb074ac6ca4f7_1787825014.jpg', 'ahmed', 'ahmedazizkhan405@gmail.com', '03178497732', 'ahmedazizkhan405@gmail.com', '$2y$10$Ydyq5pTAQtM/K8ZNiA48geUACXSnfMf4AGff6DIYBk10wnlg7NGeS', 'active', '2026-08-27 10:03:34', '2026-08-27 10:03:34', '2026-08-28 02:08:11', '2026-08-28 02:08:00');
+(1, 'U0001', 'uploads/profile-img/profile_078eb074ac6ca4f7_1787825014.jpg', 'muhammad ahmed', 'hammadazizkhan405@gmail.com', '03178497732', 'karachi pakistan', '$2y$10$Ydyq5pTAQtM/K8ZNiA48geUACXSnfMf4AGff6DIYBk10wnlg7NGeS', 'active', '2026-08-27 10:03:34', '2026-08-28 10:23:06', '2026-08-28 11:25:24', '2026-08-28 11:25:28'),
+(2, 'U0002', 'uploads/profile-img/profile_1a1e1574476c4f3c_1787916125.jpeg', 'hammad', 'ahmedazizkhan405@gmail.com', '03178497735', 'hammadazizkhan405@gmail.com', '$2y$10$kXrlijsD7ktfCc//rITMGO0BQBcy9a40/9doB5YYxou/YGh3E0eWW', 'inactive', '2026-08-28 11:22:05', '2026-08-28 11:24:55', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -319,6 +347,7 @@ CREATE TABLE `videos` (
   `description` text DEFAULT NULL,
   `video_path` varchar(500) DEFAULT NULL,
   `thumbnail_path` varchar(500) DEFAULT NULL,
+  `duration` int(10) UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds',
   `status` enum('active','draft','inactive') NOT NULL DEFAULT 'active',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -328,8 +357,8 @@ CREATE TABLE `videos` (
 -- Dumping data for table `videos`
 --
 
-INSERT INTO `videos` (`id`, `video_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `video_path`, `thumbnail_path`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'tum hi ho', 1, 1, 1, 1, 1, 'gfhdujdtjedtjetr', 'uploads/videos/video_68cb777d1dbcd2f2_1787828109.mp4', 'uploads/thumbnails/thumb_5b72e50325e0847f_1787828109.jpeg', 'active', '2026-08-27 10:55:09', '2026-08-27 10:55:09');
+INSERT INTO `videos` (`id`, `video_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `video_path`, `thumbnail_path`, `duration`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'tum hi ho', 1, 1, 1, 1, 1, 'gfhdujdtjedtjetr', 'uploads/videos/video_68cb777d1dbcd2f2_1787828109.mp4', 'uploads/thumbnails/thumb_5b72e50325e0847f_1787828109.jpeg', NULL, 'active', '2026-08-27 10:55:09', '2026-08-27 10:55:09');
 
 -- --------------------------------------------------------
 
@@ -371,6 +400,14 @@ INSERT INTO `website_settings` (`id`, `website_name`, `site_logo`, `contact_emai
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `admin_email_unique` (`email`);
+
+--
+-- Indexes for table `admin_activity_logs`
+--
+ALTER TABLE `admin_activity_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `admin_activity_logs_admin_id_index` (`admin_id`),
+  ADD KEY `admin_activity_logs_created_at_index` (`created_at`);
 
 --
 -- Indexes for table `air`
@@ -483,10 +520,16 @@ ALTER TABLE `admin`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `admin_activity_logs`
+--
+ALTER TABLE `admin_activity_logs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `air`
 --
 ALTER TABLE `air`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `albums`
@@ -540,13 +583,13 @@ ALTER TABLE `password_reset_otps`
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `videos`

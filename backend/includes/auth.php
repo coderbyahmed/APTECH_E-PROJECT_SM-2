@@ -33,6 +33,32 @@ function loginAdmin($admin) {
     setSession('admin_id', $admin['id']);
     setSession('admin_name', $admin['name']);
     setSession('admin_email', $admin['email']);
+    setSession('admin_profile_image', $admin['profile_image'] ?? null);
+    setSession('admin_address', $admin['address'] ?? null);
+}
+
+/**
+ * Get full admin profile from database
+ */
+function getAdminProfile($adminId) {
+    $pdo = getDb();
+    $stmt = $pdo->prepare("SELECT id, name, email, profile_image, address, created_at, updated_at FROM admin WHERE id = :id LIMIT 1");
+    $stmt->execute(['id' => $adminId]);
+    return $stmt->fetch();
+}
+
+/**
+ * Update admin profile (name, address, profile_image)
+ */
+function updateAdminProfile($adminId, $name, $address, $profileImage = null) {
+    $pdo = getDb();
+    if ($profileImage !== null) {
+        $stmt = $pdo->prepare("UPDATE admin SET name = :name, address = :address, profile_image = :profile_image, updated_at = NOW() WHERE id = :id");
+        $stmt->execute(['name' => $name, 'address' => $address, 'profile_image' => $profileImage, 'id' => $adminId]);
+    } else {
+        $stmt = $pdo->prepare("UPDATE admin SET name = :name, address = :address, updated_at = NOW() WHERE id = :id");
+        $stmt->execute(['name' => $name, 'address' => $address, 'id' => $adminId]);
+    }
 }
 
 /**

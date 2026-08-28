@@ -6,6 +6,7 @@ $jsBase = $websiteBase . '/js/video';
 $currentPage = 'videos';
 
 require_once dirname(__DIR__, 1) . '/includes/video-data.php';
+require_once __DIR__ . '/../../../backend/helpers/media-duration.php';
 $allVideos = wgGetAllVideos(0, 'published');
 $videoCount = count($allVideos);
 
@@ -145,7 +146,7 @@ $wsWebsiteName = htmlspecialchars($ws['website_name']);
                 $vc_year = $v['year_name'] ?: '';
                 $vc_genre = $v['genre_name'] ?: '';
                 $vc_language = $v['language_name'] ?: '';
-                $vc_duration = '0:00';
+                $vc_duration = formatDuration($v['duration'] ?? null);
                 $vc_placeholder = $placeholderCounter;
                 $vc_thumbnail = $v['thumbnail_path'] ?: '';
                 $placeholderCounter = ($placeholderCounter % 5) + 1;

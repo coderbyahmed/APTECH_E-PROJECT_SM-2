@@ -6,6 +6,8 @@ $jsBase = $websiteBase . '/js/music_details';
 $currentPage = 'music';
 
 require_once dirname(__DIR__, 1) . '/includes/music-data.php';
+require_once __DIR__ . '/../../../backend/includes/user-auth.php';
+require_once __DIR__ . '/../../../backend/helpers/media-duration.php';
 
 require_once __DIR__ . '/../../../backend/includes/website-settings.php';
 $ws = getWebsiteSettings();
@@ -166,7 +168,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/notifications/notification.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/loaders/button-spinner.css">
 </head>
-<body class="wg-page--details" data-music-id="<?php echo (int)$track['id']; ?>" data-handler-url="/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php">
+<body class="wg-page--details" data-music-id="<?php echo (int)$track['id']; ?>" data-handler-url="/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php" data-user-logged-in="<?php echo isUserLoggedIn() ? '1' : '0'; ?>">
 
 <?php include __DIR__ . '/../components/layout/navbar/navbar.php'; ?>
 
@@ -431,6 +433,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
                         $mc_language = $ac['language_name'] ?: '';
                         $mc_placeholder = $artistPlaceholder;
                         $mc_cover_image = $ac['cover_image'] ?: '';
+                        $mc_duration = formatDuration($ac['duration'] ?? null);
                         $artistPlaceholder = ($artistPlaceholder % 5) + 1;
                     ?>
                     <div class="wg-carousel__item">
@@ -453,6 +456,8 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
 
 <?php include __DIR__ . '/../components/layout/footer/footer.php'; ?>
 
+<script src="<?php echo $websiteBase; ?>/js/components/notifications/notification.js"></script>
+<script src="<?php echo $websiteBase; ?>/js/components/loaders/button-spinner.js"></script>
 <script src="<?php echo $jsBase; ?>/music_details.js"></script>
 </body>
 </html>

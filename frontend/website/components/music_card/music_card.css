@@ -61,6 +61,18 @@
     transform: scale(1.06);
 }
 
+.wg-card__duration {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+}
+
 .wg-card__cover-placeholder--1 {
     background: linear-gradient(135deg, #1a0a2e 0%, #2d1052 50%, #1e0838 100%);
 }

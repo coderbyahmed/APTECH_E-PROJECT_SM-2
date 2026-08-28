@@ -7,6 +7,7 @@ $currentPage = 'search';
 
 require_once dirname(__DIR__, 1) . '/includes/music-data.php';
 require_once dirname(__DIR__, 1) . '/includes/video-data.php';
+require_once __DIR__ . '/../../../backend/helpers/media-duration.php';
 $allMusic = wgGetAllMusic(0, 'published');
 $allVideos = wgGetAllVideos(0, 'published');
 $totalCount = count($allMusic) + count($allVideos);
@@ -91,6 +92,7 @@ $wsWebsiteName = htmlspecialchars($ws['website_name']);
                 $mc_language = $m['language_name'] ?: '';
                 $mc_placeholder = $placeholderCounter;
                 $mc_cover_image = $m['cover_image'] ?: '';
+                $mc_duration = formatDuration($m['duration'] ?? null);
                 $placeholderCounter = ($placeholderCounter % 5) + 1;
                 echo '<div class="wg-search-card-wrap" data-type="music" '
                     . 'data-title="' . htmlspecialchars($mc_title, ENT_QUOTES) . '" '
@@ -108,7 +110,7 @@ $wsWebsiteName = htmlspecialchars($ws['website_name']);
                 $vc_year = $v['year_name'] ?: '';
                 $vc_genre = $v['genre_name'] ?: '';
                 $vc_language = $v['language_name'] ?: '';
-                $vc_duration = '0:00';
+                $vc_duration = formatDuration($v['duration'] ?? null);
                 $vc_placeholder = $placeholderCounter;
                 $vc_thumbnail = $v['thumbnail_path'] ?: '';
                 $placeholderCounter = ($placeholderCounter % 5) + 1;

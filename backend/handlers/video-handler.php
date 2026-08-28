@@ -12,6 +12,8 @@
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/activity-log.php';
+require_once __DIR__ . '/../helpers/media-duration.php';
 
 header('Content-Type: application/json');
 
@@ -124,6 +126,7 @@ function buildVideoRecord($row) {
         'description'    => $row['description'] ?? '',
         'video_path'     => $row['video_path'] ?? '',
         'thumbnail_path' => $row['thumbnail_path'] ?? '',
+        'duration'       => isset($row['duration']) ? (int) $row['duration'] : null,
         'status'         => $row['status'],
         'created_at'     => $row['created_at'] ?? '',
         'updated_at'     => $row['updated_at'] ?? '',
@@ -243,6 +246,8 @@ switch ($action) {
         }
         $savedVideoPath = 'uploads/videos/' . $newVideoName;
 
+        $duration = getMediaDuration($videosDir . $newVideoName);
+
         if ($thumbnail && $thumbnail['error'] !== UPLOAD_ERR_NO_FILE) {
             $newThumbName = generateUniqueFilename($thumbnail['name'], 'thumb');
             if (!saveUploadedFile($thumbnail, $thumbnailsDir, $newThumbName)) {
@@ -253,7 +258,7 @@ switch ($action) {
             $savedThumbPath = 'uploads/thumbnails/' . $newThumbName;
         }
 
-        $stmt = $db->prepare("INSERT INTO `videos` (`video_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `video_path`, `thumbnail_path`, `status`, `created_at`, `updated_at`) VALUES (:video_title, :artist_id, :album_id, :year_id, :genre_id, :language_id, :description, :video_path, :thumbnail_path, :status, NOW(), NOW())");
+        $stmt = $db->prepare("INSERT INTO `videos` (`video_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `video_path`, `thumbnail_path`, `duration`, `status`, `created_at`, `updated_at`) VALUES (:video_title, :artist_id, :album_id, :year_id, :genre_id, :language_id, :description, :video_path, :thumbnail_path, :duration, :status, NOW(), NOW())");
         $stmt->execute([
             ':video_title'    => $title,
             ':artist_id'      => $artistId,
@@ -264,10 +269,13 @@ switch ($action) {
             ':description'    => $description,
             ':video_path'     => $savedVideoPath,
             ':thumbnail_path' => $savedThumbPath,
+            ':duration'       => $duration,
             ':status'         => $status,
         ]);
 
         $newId = (int) $db->lastInsertId();
+
+        logAdminActivity($db, 'created', 'video', $title, $newId);
 
         $stmt = $db->prepare($joinSql . " WHERE v.`id` = :id");
         $stmt->execute([':id' => $newId]);
@@ -379,6 +387,7 @@ switch ($action) {
 
         $newVideoPath = $existing['video_path'];
         $newThumbPath = $existing['thumbnail_path'];
+        $duration = $existing['duration'];
 
         if (!$vVideo['skip'] && $videoFile && $videoFile['error'] === UPLOAD_ERR_OK) {
             $newVideoName = generateUniqueFilename($videoFile['name'], 'video');
@@ -389,6 +398,7 @@ switch ($action) {
             $oldVideoPath = dirname(__DIR__, 2) . '/' . $existing['video_path'];
             if ($existing['video_path']) deleteFileIfExists($oldVideoPath);
             $newVideoPath = 'uploads/videos/' . $newVideoName;
+            $duration = getMediaDuration($videosDir . $newVideoName);
         }
 
         if (!$vThumb['skip'] && $thumbnail && $thumbnail['error'] === UPLOAD_ERR_OK) {
@@ -402,7 +412,7 @@ switch ($action) {
             $newThumbPath = 'uploads/thumbnails/' . $newThumbName;
         }
 
-        $stmt = $db->prepare("UPDATE `videos` SET `video_title` = :video_title, `artist_id` = :artist_id, `album_id` = :album_id, `year_id` = :year_id, `genre_id` = :genre_id, `language_id` = :language_id, `description` = :description, `video_path` = :video_path, `thumbnail_path` = :thumbnail_path, `status` = :status, `updated_at` = NOW() WHERE `id` = :id");
+        $stmt = $db->prepare("UPDATE `videos` SET `video_title` = :video_title, `artist_id` = :artist_id, `album_id` = :album_id, `year_id` = :year_id, `genre_id` = :genre_id, `language_id` = :language_id, `description` = :description, `video_path` = :video_path, `thumbnail_path` = :thumbnail_path, `duration` = :duration, `status` = :status, `updated_at` = NOW() WHERE `id` = :id");
         $stmt->execute([
             ':video_title'    => $title,
             ':artist_id'      => $artistId,
@@ -413,9 +423,13 @@ switch ($action) {
             ':description'    => $description,
             ':video_path'     => $newVideoPath,
             ':thumbnail_path' => $newThumbPath,
+            ':duration'       => $duration,
             ':status'         => $status,
             ':id'             => $id,
         ]);
+
+        $logAction = ($status !== $existing['status']) ? 'status_changed' : 'updated';
+        logAdminActivity($db, $logAction, 'video', $title, $id);
 
         $stmt = $db->prepare($joinSql . " WHERE v.`id` = :id");
         $stmt->execute([':id' => $id]);
@@ -446,6 +460,8 @@ switch ($action) {
 
         $stmt = $db->prepare("DELETE FROM `videos` WHERE `id` = :id");
         $stmt->execute([':id' => $id]);
+
+        logAdminActivity($db, 'deleted', 'video', $row['video_title'], $id);
 
         if ($row['video_path']) {
             deleteFileIfExists(dirname(__DIR__, 2) . '/' . $row['video_path']);

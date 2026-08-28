@@ -18,6 +18,8 @@ CREATE TABLE
         `name` VARCHAR(255) NOT NULL,
         `email` VARCHAR(255) NOT NULL,
         `password` VARCHAR(255) NOT NULL,
+        `profile_image` VARCHAR(500) DEFAULT NULL,
+        `address` VARCHAR(500) DEFAULT NULL,
         `email_verified_at` TIMESTAMP NULL DEFAULT NULL,
         `remember_token` VARCHAR(100) DEFAULT NULL,
         `created_at` TIMESTAMP NULL DEFAULT NULL,
@@ -188,6 +190,7 @@ CREATE TABLE
         `description` TEXT DEFAULT NULL,
         `music_file` VARCHAR(500) DEFAULT NULL,
         `cover_image` VARCHAR(500) DEFAULT NULL,
+        `duration` INT UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds',
         `status` ENUM ('active', 'draft', 'inactive') NOT NULL DEFAULT 'active',
         `created_at` TIMESTAMP NULL DEFAULT NULL,
         `updated_at` TIMESTAMP NULL DEFAULT NULL,
@@ -214,6 +217,7 @@ CREATE TABLE
         `description` TEXT DEFAULT NULL,
         `video_path` VARCHAR(500) DEFAULT NULL,
         `thumbnail_path` VARCHAR(500) DEFAULT NULL,
+        `duration` INT UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds',
         `status` ENUM ('active', 'draft', 'inactive') NOT NULL DEFAULT 'active',
         `created_at` TIMESTAMP NULL DEFAULT NULL,
         `updated_at` TIMESTAMP NULL DEFAULT NULL,
@@ -320,3 +324,32 @@ VALUES
         NOW (),
         NOW ()
     );
+
+-- -------------------------------------------
+-- Admin Activity Logs Table
+-- Tracks all admin panel actions for Recent Activity
+-- -------------------------------------------
+CREATE TABLE
+    IF NOT EXISTS `admin_activity_logs` (
+        `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `admin_id` BIGINT UNSIGNED NOT NULL,
+        `admin_name` VARCHAR(255) NOT NULL,
+        `action` VARCHAR(50) NOT NULL,
+        `module` VARCHAR(50) NOT NULL,
+        `item_name` VARCHAR(500) NOT NULL DEFAULT '',
+        `item_id` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        KEY `admin_activity_logs_admin_id_index` (`admin_id`),
+        KEY `admin_activity_logs_created_at_index` (`created_at`)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- -------------------------------------------
+-- ALTER TABLE: Add duration column to existing tables
+-- Run these if tables already exist without duration column
+-- -------------------------------------------
+ALTER TABLE `music`
+ADD COLUMN `duration` INT UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds' AFTER `cover_image`;
+
+ALTER TABLE `videos`
+ADD COLUMN `duration` INT UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds' AFTER `thumbnail_path`;
