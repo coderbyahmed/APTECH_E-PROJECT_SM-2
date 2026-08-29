@@ -33,7 +33,7 @@ $db = getDb();
 
 // --- Upload Config ---
 $uploadDir    = dirname(__DIR__, 2) . '/uploads/profile-img/';
-$uploadDirWeb = '/Aptech_E_Project_02/sound_management/uploads/profile-img/';
+$uploadDirWeb = baseUrl() . '/uploads/profile-img/';
 $allowedImageMimes = ['image/jpeg', 'image/png', 'image/webp'];
 $allowedImageExts  = ['jpg', 'jpeg', 'png', 'webp'];
 $maxImageSize = 2 * 1024 * 1024; // 2MB

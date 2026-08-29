@@ -7,7 +7,7 @@ $adminName = isset($_SESSION['admin_name']) ? $_SESSION['admin_name'] : 'Admin';
 $adminInitial = strtoupper(mb_substr($adminName, 0, 1));
 $adminProfileImage = isset($_SESSION['admin_profile_image']) ? $_SESSION['admin_profile_image'] : null;
 
-$baseUrl = '/Aptech_E_Project_02/sound_management';
+$baseUrl = baseUrl();
 $logoutUrl = $baseUrl . '/frontend/admin/authentication/logout.php';
 
 // Normalize profile image path to always be absolute

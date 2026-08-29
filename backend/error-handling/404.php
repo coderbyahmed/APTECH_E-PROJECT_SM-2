@@ -40,7 +40,7 @@
     <div class="error-footer"></div>
     <script>
         function goBack() {
-            if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/Aptech_E_Project_02/sound_management/frontend/admin/authentication/login.php'; }
+            if (window.history.length > 1) { window.history.back(); } else { window.location.href = 'frontend/admin/authentication/login.php'; }
         }
     </script>
 </body>

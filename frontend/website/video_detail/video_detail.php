@@ -1,5 +1,6 @@
 <?php
-$baseUrl = '/Aptech_E_Project_02/sound_management';
+require_once __DIR__ . '/../../../backend/includes/session.php';
+$baseUrl = baseUrl();
 $websiteBase = $baseUrl . '/frontend/website';
 $cssBase = $websiteBase . '/css/video_detail';
 $jsBase = $websiteBase . '/js/video_detail';
@@ -238,7 +239,7 @@ function wgStarHtml($rating) {
 function wgReviewAvatarHtml($userImage, $userName, $idx) {
     $initials = htmlspecialchars(wgUserInitials($userName));
     if ($userImage) {
-        $baseUrl = '/Aptech_E_Project_02/sound_management';
+        $baseUrl = baseUrl();
         $src = $baseUrl . '/' . ltrim($userImage, '/');
         return '<div class="wg-review-card__avatar"><img src="' . htmlspecialchars($src) . '" alt="" class="wg-review-card__avatar-img" loading="lazy" onerror="this.style.display=\'none\';this.parentNode.textContent=\'' . $initials . '\'"></div>';
     }
@@ -267,7 +268,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/notifications/notification.css">
     <link rel="stylesheet" href="<?php echo $websiteBase; ?>/css/components/loaders/button-spinner.css">
 </head>
-<body class="wg-page--details wg-page--video-details" data-video-id="<?php echo (int)$video['id']; ?>" data-handler-url="/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php" data-user-logged-in="<?php echo isUserLoggedIn() ? '1' : '0'; ?>">
+<body class="wg-page--details wg-page--video-details" data-video-id="<?php echo (int)$video['id']; ?>" data-handler-url="<?php echo baseUrl(); ?>/backend/handlers/review-handler.php" data-user-logged-in="<?php echo isUserLoggedIn() ? '1' : '0'; ?>">
 
 <?php include __DIR__ . '/../components/layout/navbar/navbar.php'; ?>
 
@@ -460,7 +461,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
                 <div class="wg-drawer__review">
                     <div class="wg-drawer__review-row">
                         <?php if ($rc['user_image']): ?>
-                            <div class="wg-drawer__review-avatar"><img src="<?php echo htmlspecialchars('/Aptech_E_Project_02/sound_management/' . ltrim($rc['user_image'], '/')); ?>" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='<?php echo htmlspecialchars(wgUserInitials($rc['user_name'])); ?>'"></div>
+                            <div class="wg-drawer__review-avatar"><img src="<?php echo htmlspecialchars(baseUrl() . '/' . ltrim($rc['user_image'], '/')); ?>" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='<?php echo htmlspecialchars(wgUserInitials($rc['user_name'])); ?>'"></div>
                         <?php else: ?>
                             <div class="wg-drawer__review-avatar"><?php echo htmlspecialchars(wgUserInitials($rc['user_name'])); ?></div>
                         <?php endif; ?>

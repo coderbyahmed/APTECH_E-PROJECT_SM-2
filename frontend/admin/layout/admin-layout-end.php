@@ -5,7 +5,7 @@
  * This file closes everything opened by admin-layout.php.
  */
 
-$baseUrl = '/Aptech_E_Project_02/sound_management';
+$baseUrl = baseUrl();
 $jsBase  = $baseUrl . '/frontend/admin/js';
 $cssBase = $baseUrl . '/frontend/admin/css';
 $jsFs    = dirname(__DIR__, 1) . '/js';
@@ -42,6 +42,7 @@ $jsFs    = dirname(__DIR__, 1) . '/js';
     <?php include __DIR__ . '/../components/modals/my-profile-modal.php'; ?>
 
     <!-- Admin JS -->
+    <script>window.APP_BASE_URL = '<?php echo baseUrl(); ?>';</script>
     <script src="<?php echo $jsBase; ?>/components/layouts/sidebar-collapse.js?v=<?php echo filemtime($jsFs . '/components/layouts/sidebar-collapse.js'); ?>"></script>
     <script src="<?php echo $jsBase; ?>/components/layouts/admin-navbar.js?v=<?php echo filemtime($jsFs . '/components/layouts/admin-navbar.js'); ?>"></script>
     <script src="<?php echo $jsBase; ?>/components/notifications/notification.js?v=<?php echo filemtime($jsFs . '/components/notifications/notification.js'); ?>"></script>

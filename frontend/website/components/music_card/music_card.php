@@ -1,4 +1,7 @@
 <?php
+if (!function_exists('baseUrl')) {
+    require_once dirname(__DIR__, 5) . '/backend/includes/session.php';
+}
 if (!isset($mc_title))
     $mc_title = 'Untitled';
 if (!isset($mc_artist))
@@ -20,11 +23,11 @@ if (!isset($mc_cover_image))
 if (!isset($mc_duration))
     $mc_duration = '';
 if (!isset($websiteBase))
-    $websiteBase = '/Aptech_E_Project_02/sound_management/frontend/website';
+    $websiteBase = baseUrl() . '/frontend/website';
 $detailHref = $websiteBase . '/music_details/music_details.php?id=' . (int) $mc_id;
 $coverUrl = '';
 if ($mc_cover_image) {
-    $coverUrl = '/Aptech_E_Project_02/sound_management/' . ltrim($mc_cover_image, '/');
+    $coverUrl = baseUrl() . '/' . ltrim($mc_cover_image, '/');
 }
 ?>
 <a href="<?php echo $detailHref; ?>" class="wg-card wg-card--music wg-card--link">

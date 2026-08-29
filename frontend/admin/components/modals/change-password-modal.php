@@ -6,7 +6,7 @@
  */
 
 $cpCsrf = csrfToken();
-$cpEndpoint = '/Aptech_E_Project_02/sound_management/backend/handlers/change-password.php';
+$cpEndpoint = baseUrl() . '/backend/handlers/change-password.php';
 ?>
 <div class="sg-modal" id="changePasswordModal" aria-hidden="true">
     <div class="sg-modal__overlay" data-sg-close></div>

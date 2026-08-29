@@ -75,7 +75,7 @@ if ($contactEmail !== '' && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL)) {
 $logoPath = null;
 $removeLogo = isset($_POST['remove_logo']) && $_POST['remove_logo'] === '1';
 $uploadDir    = dirname(__DIR__, 2) . '/uploads/logos/';
-$uploadDirWeb = '/Aptech_E_Project_02/sound_management/uploads/logos/';
+$uploadDirWeb = baseUrl() . '/uploads/logos/';
 
 if ($removeLogo && empty($_FILES['site_logo']['name'])) {
     // Remove existing logo

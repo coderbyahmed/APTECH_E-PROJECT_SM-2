@@ -6,7 +6,7 @@
 (function () {
     'use strict';
 
-    var HANDLER_URL = '/Aptech_E_Project_02/sound_management/backend/handlers/website-settings-handler.php';
+    var HANDLER_URL = (window.APP_BASE_URL || '') + '/backend/handlers/website-settings-handler.php';
 
     var MODALS = {
         site: 'wiSiteModal',

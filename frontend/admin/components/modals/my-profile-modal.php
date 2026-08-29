@@ -6,8 +6,8 @@
  */
 
 $mpCsrf    = csrfToken();
-$mpEndpoint = '/Aptech_E_Project_02/sound_management/backend/handlers/admin-profile-handler.php';
-$baseUrl    = '/Aptech_E_Project_02/sound_management';
+$mpEndpoint = baseUrl() . '/backend/handlers/admin-profile-handler.php';
+$baseUrl    = baseUrl();
 ?>
 <div class="sg-modal" id="myProfileModal" aria-hidden="true">
     <div class="sg-modal__overlay" data-mp-close></div>

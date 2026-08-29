@@ -163,7 +163,7 @@
             formData.append('password', passwordInput.value);
 
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/Aptech_E_Project_02/sound_management/backend/handlers/user-login-handler.php', true);
+            xhr.open('POST', (window.APP_BASE_URL || '') + '/backend/handlers/user-login-handler.php', true);
             xhr.responseType = 'json';
 
             xhr.onload = function () {

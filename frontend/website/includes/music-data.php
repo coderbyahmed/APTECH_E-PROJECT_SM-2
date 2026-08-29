@@ -4,9 +4,10 @@
  * Fetches music records from database with JOINs
  */
 
+require_once dirname(__DIR__, 3) . '/backend/includes/session.php';
 require_once dirname(__DIR__, 3) . '/backend/includes/db.php';
 
-$musicBaseUrl = '/Aptech_E_Project_02/sound_management';
+$musicBaseUrl = baseUrl();
 
 function wgGetAllMusic($limit = 0, $status = 'active') {
     $db = getDb();

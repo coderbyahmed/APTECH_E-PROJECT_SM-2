@@ -86,7 +86,7 @@ switch ($action) {
 
         $profileImage = $admin['profile_image'];
         $uploadDir    = dirname(__DIR__, 2) . '/uploads/admin-profile-image/';
-        $uploadDirWeb = '/Aptech_E_Project_02/sound_management/uploads/admin-profile-image/';
+        $uploadDirWeb = baseUrl() . '/uploads/admin-profile-image/';
 
         // --- Handle profile image upload ---
         if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {

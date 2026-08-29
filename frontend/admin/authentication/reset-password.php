@@ -4,6 +4,8 @@ require_once __DIR__ . '/../../../backend/includes/auth.php';
 
 requireGuest();
 
+$baseUrl = baseUrl();
+
 $errors = [];
 
 // Check OTP was verified
@@ -56,9 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/Aptech_E_Project_02/sound_management/frontend/admin/css/authentication/reset-password.css">
-    <link rel="stylesheet" href="/Aptech_E_Project_02/sound_management/frontend/admin/css/components/notifications/notification.css">
-    <link rel="stylesheet" href="/Aptech_E_Project_02/sound_management/frontend/admin/css/components/loaders/button-spinner.css">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/frontend/admin/css/authentication/reset-password.css">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/frontend/admin/css/components/notifications/notification.css">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/frontend/admin/css/components/loaders/button-spinner.css">
 </head>
 <body>
     <div class="confirm-wrapper">
@@ -199,8 +201,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     });
     </script>
 
-    <script src="/Aptech_E_Project_02/sound_management/frontend/admin/js/components/notifications/notification.js"></script>
-    <script src="/Aptech_E_Project_02/sound_management/frontend/admin/js/components/loaders/button-spinner.js"></script>
+    <script src="<?php echo $baseUrl; ?>/frontend/admin/js/components/notifications/notification.js"></script>
+    <script src="<?php echo $baseUrl; ?>/frontend/admin/js/components/loaders/button-spinner.js"></script>
     <?php include __DIR__ . '/../components/notifications/notification.php'; ?>
 </body>
 </html>

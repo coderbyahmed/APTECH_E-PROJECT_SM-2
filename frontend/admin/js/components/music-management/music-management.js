@@ -5,8 +5,8 @@
  */
 (function () {
     'use strict';
-    var ENDPOINT = '/Aptech_E_Project_02/sound_management/backend/handlers/music-handler.php';
-    var BASE_URL = '/Aptech_E_Project_02/sound_management';
+    var ENDPOINT = (window.APP_BASE_URL || '') + '/backend/handlers/music-handler.php';
+    var BASE_URL = window.APP_BASE_URL || '';
     var STORAGE_KEY = 'mm_audio_state';
     function resolvePath(p) { return p ? BASE_URL + '/' + p.replace(/^\//, '') : ''; }
     function getCsrfToken() { var el = document.querySelector('input[name="csrf_token"]'); return el ? el.value : ''; }

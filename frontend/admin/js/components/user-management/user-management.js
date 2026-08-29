@@ -10,7 +10,7 @@
     var currentUser = null;
     var currentPage = 1;
     var totalPages = 1;
-    var handlerUrl = '/Aptech_E_Project_02/sound_management/backend/handlers/user-handler.php';
+    var handlerUrl = (window.APP_BASE_URL || '') + '/backend/handlers/user-handler.php';
 
     function getCsrfToken() {
         var grid = document.getElementById('umCardGrid');

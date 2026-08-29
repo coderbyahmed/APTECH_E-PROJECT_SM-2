@@ -14,7 +14,7 @@ if (!isset($pageTitle)) {
     $pageTitle = 'Admin Panel';
 }
 
-$baseUrl = '/Aptech_E_Project_02/sound_management';
+$baseUrl = baseUrl();
 $cssBase = $baseUrl . '/frontend/admin/css';
 $jsBase  = $baseUrl . '/frontend/admin/js';
 

@@ -6,7 +6,7 @@
  */
 
 $ceCsrf = csrfToken();
-$ceEndpoint = '/Aptech_E_Project_02/sound_management/backend/handlers/change-email.php';
+$ceEndpoint = baseUrl() . '/backend/handlers/change-email.php';
 ?>
 <div class="sg-modal" id="changeEmailModal" aria-hidden="true">
     <div class="sg-modal__overlay" data-sg-close></div>

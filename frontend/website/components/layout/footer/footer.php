@@ -1,6 +1,7 @@
 <?php
+require_once dirname(__DIR__, 5) . '/backend/includes/session.php';
 if (!isset($baseUrl)) {
-    $baseUrl = '/Aptech_E_Project_02/sound_management';
+    $baseUrl = baseUrl();
 }
 if (!isset($websiteBase)) {
     $websiteBase = $baseUrl . '/frontend/website';
@@ -82,3 +83,4 @@ $footerVideosHref = $websiteBase . '/video/video.php';
         </div>
     </div>
 </footer>
+<script>window.APP_BASE_URL = '<?php echo baseUrl(); ?>';</script>

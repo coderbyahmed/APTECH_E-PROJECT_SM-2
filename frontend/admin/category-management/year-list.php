@@ -26,7 +26,7 @@ include __DIR__ . '/../layout/admin-layout.php';
 
     <div class="cm-header">
         <div class="cm-header__left">
-            <a href="/Aptech_E_Project_02/sound_management/frontend/admin/category-management/index.php" class="cm-back-link">
+            <a href="<?php echo baseUrl(); ?>/frontend/admin/category-management/index.php" class="cm-back-link">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
                     <line x1="19" y1="12" x2="5" y2="12"/>
                     <polyline points="12 19 5 12 12 5"/>

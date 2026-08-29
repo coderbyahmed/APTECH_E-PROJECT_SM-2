@@ -1,4 +1,7 @@
 <?php
+if (!function_exists('baseUrl')) {
+    require_once dirname(__DIR__, 5) . '/backend/includes/session.php';
+}
 if (!isset($vc_title))
     $vc_title = 'Untitled';
 if (!isset($vc_artist))
@@ -20,11 +23,11 @@ if (!isset($vc_id))
 if (!isset($vc_thumbnail))
     $vc_thumbnail = '';
 if (!isset($websiteBase))
-    $websiteBase = '/Aptech_E_Project_02/sound_management/frontend/website';
+    $websiteBase = baseUrl() . '/frontend/website';
 $detailHref = $websiteBase . '/video_detail/video_detail.php?id=' . (int)$vc_id;
 $thumbUrl = '';
 if ($vc_thumbnail) {
-    $thumbUrl = '/Aptech_E_Project_02/sound_management/' . ltrim($vc_thumbnail, '/');
+    $thumbUrl = baseUrl() . '/' . ltrim($vc_thumbnail, '/');
 }
 ?>
 <a href="<?php echo $detailHref; ?>" class="wg-card wg-card--video wg-card--link">

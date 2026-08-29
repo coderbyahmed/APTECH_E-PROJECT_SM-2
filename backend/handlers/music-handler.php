@@ -40,8 +40,8 @@ $db = getDb();
 $uploadDir     = dirname(__DIR__, 2) . '/uploads/';
 $musicDir      = $uploadDir . 'music/';
 $coversDir     = $uploadDir . 'covers/';
-$musicDirWeb   = '/Aptech_E_Project_02/sound_management/uploads/music/';
-$coversDirWeb  = '/Aptech_E_Project_02/sound_management/uploads/covers/';
+$musicDirWeb   = baseUrl() . '/uploads/music/';
+$coversDirWeb  = baseUrl() . '/uploads/covers/';
 
 $allowedAudioMimes = [
     'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/wave', 'audio/x-wav',

@@ -8,7 +8,7 @@ if (!isset($activeItem)) {
     $activeItem = '';
 }
 
-$baseUrl = '/Aptech_E_Project_02/sound_management';
+$baseUrl = baseUrl();
 $dashboardUrl = $baseUrl . '/frontend/admin/dashboard/index.php';
 $musicManagementUrl = $baseUrl . '/frontend/admin/music-management/index.php';
 $videoManagementUrl = $baseUrl . '/frontend/admin/video-management/index.php';

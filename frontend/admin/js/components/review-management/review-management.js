@@ -10,7 +10,7 @@
     var currentPage = 1;
     var totalPages = 1;
     var selectedRating = 5;
-    var handlerUrl = '/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php';
+    var handlerUrl = (window.APP_BASE_URL || '') + '/backend/handlers/review-handler.php';
     var csrfToken = '';
 
     var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

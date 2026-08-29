@@ -3,7 +3,7 @@
 
     var body = document.body;
     var videoId = parseInt(body.getAttribute('data-video-id'), 10) || 0;
-    var handlerUrl = body.getAttribute('data-handler-url') || '/Aptech_E_Project_02/sound_management/backend/handlers/review-handler.php';
+    var handlerUrl = body.getAttribute('data-handler-url') || ((window.APP_BASE_URL || '') + '/backend/handlers/review-handler.php');
     var isLoggedIn = body.getAttribute('data-user-logged-in') === '1';
 
     /* ============================================
@@ -108,7 +108,7 @@
         var avatarHtml = '';
         var initials = userInitials(review.user_name);
         if (review.user_image) {
-            var src = '/Aptech_E_Project_02/sound_management/' + review.user_image.replace(/^\//, '');
+            var src = (window.APP_BASE_URL || '') + '/' + review.user_image.replace(/^\//, '');
             avatarHtml = '<div class="wg-review-card__avatar"><img src="' + src + '" alt="" class="wg-review-card__avatar-img" loading="lazy" onerror="this.style.display=\'none\';this.parentNode.textContent=\'' + initials + '\'"></div>';
         } else {
             avatarHtml = '<div class="wg-review-card__avatar">' + initials + '</div>';
@@ -135,7 +135,7 @@
     function buildDrawerReviewHtml(review) {
         var avatarHtml = '';
         if (review.user_image) {
-            var src = '/Aptech_E_Project_02/sound_management/' + review.user_image.replace(/^\//, '');
+            var src = (window.APP_BASE_URL || '') + '/' + review.user_image.replace(/^\//, '');
             avatarHtml = '<div class="wg-drawer__review-avatar"><img src="' + src + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent=\'' + userInitials(review.user_name) + '\'"></div>';
         } else {
             avatarHtml = '<div class="wg-drawer__review-avatar">' + userInitials(review.user_name) + '</div>';

@@ -6,7 +6,7 @@
 (function () {
     'use strict';
 
-    var HANDLER_URL = '/Aptech_E_Project_02/sound_management/backend/handlers/contact-handler.php';
+    var HANDLER_URL = (window.APP_BASE_URL || '') + '/backend/handlers/contact-handler.php';
     var PAGE_SIZE = 8;
     var currentCard = null;
     var currentPage = 1;
@@ -138,7 +138,7 @@
                 article.innerHTML =
                     '<div class="cm-message-card__header">' +
                         '<div class="cm-avatar cm-avatar--card cm-avatar--' + (rec.avatar_color || 'violet') + '">' +
-                            (rec.profile_image ? '<img src="/Aptech_E_Project_02/sound_management/' + escapeHtml(rec.profile_image) + '" alt="" class="cm-avatar__img" width="48" height="48">' : (rec.initials || '?')) +
+                            (rec.profile_image ? '<img src="' + (window.APP_BASE_URL || '') + '/' + escapeHtml(rec.profile_image) + '" alt="" class="cm-avatar__img" width="48" height="48">' : (rec.initials || '?')) +
                         '</div>' +
                         '<div class="cm-message-card__user">' +
                             '<h3 class="cm-message-card__user-name">' + escapeHtml(rec.full_name || '') + '</h3>' +
@@ -274,7 +274,7 @@
                     if (value('data-profile-image')) {
                         if (avatarText) avatarText.style.display = 'none';
                         if (avatarImg) {
-                            avatarImg.src = '/Aptech_E_Project_02/sound_management/' + value('data-profile-image');
+                            avatarImg.src = (window.APP_BASE_URL || '') + '/' + value('data-profile-image');
                             avatarImg.alt = value('data-first') + ' ' + value('data-last');
                             avatarImg.style.display = '';
                         }

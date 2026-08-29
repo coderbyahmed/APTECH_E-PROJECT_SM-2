@@ -23,7 +23,7 @@
         language: 'cmAddLanguageBtn'
     };
 
-    var ENDPOINT = '/Aptech_E_Project_02/sound_management/backend/handlers/category-handler.php';
+    var ENDPOINT = (window.APP_BASE_URL || '') + '/backend/handlers/category-handler.php';
 
     function getCsrfToken() {
         var el = document.querySelector('input[name="csrf_token"]');

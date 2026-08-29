@@ -10,7 +10,7 @@ requireAuth();
 
 $pageTitle = 'Category Management';
 $activeItem = 'category-management';
-$cmBaseUrl = '/Aptech_E_Project_02/sound_management/frontend/admin/category-management';
+$cmBaseUrl = baseUrl() . '/frontend/admin/category-management';
 $cmCsrf    = csrfToken();
 
 include __DIR__ . '/../layout/admin-layout.php';

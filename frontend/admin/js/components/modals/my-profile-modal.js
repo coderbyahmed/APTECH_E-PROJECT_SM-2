@@ -8,7 +8,7 @@
     var modal = document.getElementById('myProfileModal');
     if (!modal) return;
 
-    var HANDLER_URL = '/Aptech_E_Project_02/sound_management/backend/handlers/admin-profile-handler.php';
+    var HANDLER_URL = (window.APP_BASE_URL || '') + '/backend/handlers/admin-profile-handler.php';
     var trigger     = document.getElementById('myProfileTrigger');
     var editForm    = document.getElementById('mpEditForm');
     var saveBtn     = document.getElementById('mpSaveBtn');
@@ -92,7 +92,7 @@
     function normalizeImagePath(path) {
         if (!path) return '';
         if (path.charAt(0) === '/') return path;
-        return '/Aptech_E_Project_02/sound_management/' + path.replace(/^\//, '');
+        return (window.APP_BASE_URL || '') + '/' + path.replace(/^\//, '');
     }
 
     /* ------------------------------------------

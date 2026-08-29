@@ -164,7 +164,7 @@
         formData.append('subject', fields.subject.el.value.trim());
         formData.append('message', fields.message.el.value.trim());
 
-        fetch('/Aptech_E_Project_02/sound_management/backend/handlers/contact-handler.php', {
+        fetch((window.APP_BASE_URL || '') + '/backend/handlers/contact-handler.php', {
             method: 'POST',
             body: formData
         })

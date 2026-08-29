@@ -30,7 +30,7 @@ function isAdminLoggedIn() {
  */
 function requireAuth() {
     if (!isAdminLoggedIn()) {
-        header('Location: /Aptech_E_Project_02/sound_management/frontend/admin/authentication/login.php');
+        header('Location: ' . baseUrl() . '/frontend/admin/authentication/login.php');
         exit;
     }
 }
@@ -40,7 +40,7 @@ function requireAuth() {
  */
 function requireGuest() {
     if (isAdminLoggedIn()) {
-        header('Location: /Aptech_E_Project_02/sound_management/frontend/admin/dashboard/index.php');
+        header('Location: ' . baseUrl() . '/frontend/admin/dashboard/index.php');
         exit;
     }
 }
@@ -95,9 +95,33 @@ function destroySession() {
 
 /**
  * Get the base URL path
+ * Reads from APP_URL in .env, falls back to auto-detection.
  */
 function baseUrl() {
-    return '/Aptech_E_Project_02/sound_management';
+    static $baseUrl = null;
+    if ($baseUrl !== null) {
+        return $baseUrl;
+    }
+
+    // Try to get from .env APP_URL first
+    require_once __DIR__ . '/../helpers/env.php';
+    $appUrl = env('APP_URL', '');
+
+    if ($appUrl) {
+        // Extract just the path portion from APP_URL (e.g., "http://localhost/project" -> "/project")
+        $parsed = parse_url($appUrl);
+        if ($parsed && isset($parsed['path'])) {
+            $baseUrl = rtrim($parsed['path'], '/');
+        } else {
+            $baseUrl = '';
+        }
+    } else {
+        // Auto-detect: use the directory depth from document root
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '/index.php';
+        $baseUrl = '';
+    }
+
+    return $baseUrl;
 }
 
 /**

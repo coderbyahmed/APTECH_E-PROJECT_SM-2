@@ -10,7 +10,7 @@
     var cancelViewBtn = document.getElementById('wgProfileCancelViewBtn');
     var cancelEditBtn = document.getElementById('wgProfileCancelEditBtn');
     var form = document.getElementById('wgProfileForm');
-    var handlerUrl = '/Aptech_E_Project_02/sound_management/backend/handlers/user-profile-handler.php';
+    var handlerUrl = (window.APP_BASE_URL || '') + '/backend/handlers/user-profile-handler.php';
 
     if (!overlay || !modal) return;
 
@@ -82,7 +82,7 @@
         var avatar = document.getElementById('wgProfileViewAvatar');
         if (avatar) {
             if (u.profile_image) {
-                var baseUrl = '/Aptech_E_Project_02/sound_management';
+                var baseUrl = window.APP_BASE_URL || '';
                 var imgSrc = u.profile_image.indexOf('/') === 0 ? u.profile_image : '/' + u.profile_image;
                 avatar.innerHTML = '<img src="' + baseUrl + imgSrc + '?v=' + Date.now() + '" alt="' + (u.full_name || 'User') + '" class="wg-profile-avatar__img">';
             } else {
@@ -101,7 +101,7 @@
 
         var editAvatarWrap = document.getElementById('wgProfileEditAvatarWrap');
         if (editAvatarWrap && currentData.profile_image) {
-            var baseUrl = '/Aptech_E_Project_02/sound_management';
+            var baseUrl = window.APP_BASE_URL || '';
             var imgSrc = currentData.profile_image.indexOf('/') === 0 ? currentData.profile_image : '/' + currentData.profile_image;
             editAvatarWrap.innerHTML = '<img src="' + baseUrl + imgSrc + '?v=' + Date.now() + '" alt="Profile" class="wg-profile-avatar__img" id="wgProfileEditAvatarImg"><div class="wg-profile-avatar__overlay" id="wgProfileChangeImageBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
         } else if (editAvatarWrap) {
@@ -272,7 +272,7 @@
         var nameEls = document.querySelectorAll('.wg-user-menu__name');
         nameEls.forEach(function (el) { el.textContent = data.full_name; });
 
-        var baseUrl = '/Aptech_E_Project_02/sound_management';
+        var baseUrl = window.APP_BASE_URL || '';
         var bust = '?v=' + Date.now();
         var imgs = document.querySelectorAll('.wg-user-menu__avatar');
         imgs.forEach(function (img) {

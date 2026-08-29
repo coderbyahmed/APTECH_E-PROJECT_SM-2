@@ -7,7 +7,7 @@ require_once __DIR__ . '/../helpers/env.php';
 
 return [
     'app_name'  => env('APP_NAME', 'SOUND Group'),
-    'app_url'   => env('APP_URL', 'http://localhost/Aptech_E_Project_02/sound_management'),
+    'app_url'   => env('APP_URL', ''),
     'app_debug' => env('APP_DEBUG', 'true') === 'true',
 
     // Mail / SMTP

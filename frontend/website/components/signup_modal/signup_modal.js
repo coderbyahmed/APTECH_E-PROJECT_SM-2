@@ -255,7 +255,7 @@
             setSubmitting(true);
 
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/Aptech_E_Project_02/sound_management/backend/handlers/signup-handler.php', true);
+            xhr.open('POST', (window.APP_BASE_URL || '') + '/backend/handlers/signup-handler.php', true);
             xhr.responseType = 'json';
 
             xhr.onload = function () {

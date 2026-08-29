@@ -1,5 +1,6 @@
 <?php
-$baseUrl = '/Aptech_E_Project_02/sound_management';
+require_once __DIR__ . '/../../../backend/includes/session.php';
+$baseUrl = baseUrl();
 $websiteBase = $baseUrl . '/frontend/website';
 $cssBase = $websiteBase . '/css/search';
 $jsBase = $websiteBase . '/js/search';

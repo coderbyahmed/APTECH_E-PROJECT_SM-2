@@ -4,6 +4,8 @@ require_once __DIR__ . '/../../../backend/includes/auth.php';
 
 requireGuest();
 
+$baseUrl = baseUrl();
+
 $errors = [];
 
 $otpRequestId = getSession('otp_request_id');
@@ -63,9 +65,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/Aptech_E_Project_02/sound_management/frontend/admin/css/authentication/verify-otp.css">
-    <link rel="stylesheet" href="/Aptech_E_Project_02/sound_management/frontend/admin/css/components/notifications/notification.css">
-    <link rel="stylesheet" href="/Aptech_E_Project_02/sound_management/frontend/admin/css/components/loaders/button-spinner.css">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/frontend/admin/css/authentication/verify-otp.css">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/frontend/admin/css/components/notifications/notification.css">
+    <link rel="stylesheet" href="<?php echo $baseUrl; ?>/frontend/admin/css/components/loaders/button-spinner.css">
 </head>
 <body>
     <div class="otp-wrapper">
@@ -139,13 +141,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="resend-section">
                     <span class="resend-text">Didn't receive the code?</span>
-                    <form class="resend-form" method="POST" action="/Aptech_E_Project_02/sound_management/frontend/admin/authentication/resend-otp.php">
+                    <form class="resend-form" method="POST" action="<?php echo $baseUrl; ?>/frontend/admin/authentication/resend-otp.php">
                         <button type="submit" class="resend-btn" id="resendBtn" disabled>Resend OTP</button>
                     </form>
                 </div>
 
                 <div class="back-to-login">
-                    <form method="POST" action="/Aptech_E_Project_02/sound_management/frontend/admin/authentication/cancel-otp.php" style="display:inline">
+                    <form method="POST" action="<?php echo $baseUrl; ?>/frontend/admin/authentication/cancel-otp.php" style="display:inline">
                         <button type="submit" class="back-to-login-btn">Back to Login</button>
                     </form>
                 </div>
@@ -258,8 +260,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     })();
     </script>
 
-    <script src="/Aptech_E_Project_02/sound_management/frontend/admin/js/components/notifications/notification.js"></script>
-    <script src="/Aptech_E_Project_02/sound_management/frontend/admin/js/components/loaders/button-spinner.js"></script>
+    <script src="<?php echo $baseUrl; ?>/frontend/admin/js/components/notifications/notification.js"></script>
+    <script src="<?php echo $baseUrl; ?>/frontend/admin/js/components/loaders/button-spinner.js"></script>
     <?php include __DIR__ . '/../components/notifications/notification.php'; ?>
 </body>
 </html>
