@@ -92,7 +92,7 @@ $wsWebsiteName = htmlspecialchars($ws['website_name']);
                 $mc_language = $m['language_name'] ?: '';
                 $mc_placeholder = $placeholderCounter;
                 $mc_cover_image = $m['cover_image'] ?: '';
-                $mc_duration = formatDuration($m['duration'] ?? null);
+                $mc_duration = $m['duration'] ?? '';
                 $placeholderCounter = ($placeholderCounter % 5) + 1;
                 echo '<div class="wg-search-card-wrap" data-type="music" '
                     . 'data-title="' . htmlspecialchars($mc_title, ENT_QUOTES) . '" '
@@ -110,7 +110,7 @@ $wsWebsiteName = htmlspecialchars($ws['website_name']);
                 $vc_year = $v['year_name'] ?: '';
                 $vc_genre = $v['genre_name'] ?: '';
                 $vc_language = $v['language_name'] ?: '';
-                $vc_duration = formatDuration($v['duration'] ?? null);
+                $vc_duration = $v['duration'] ?? '';
                 $vc_placeholder = $placeholderCounter;
                 $vc_thumbnail = $v['thumbnail_path'] ?: '';
                 $placeholderCounter = ($placeholderCounter % 5) + 1;

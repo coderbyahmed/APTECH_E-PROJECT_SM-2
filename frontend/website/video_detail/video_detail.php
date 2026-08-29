@@ -295,7 +295,8 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
                         src="<?php echo htmlspecialchars($videoSrcUrl); ?>"></video>
                     <?php if ($videoIsPlayable): ?>
                     <div class="wg-details__cover-play" id="videoPlayToggle">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <svg class="wg-video-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                        <svg class="wg-video-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="28" height="28" style="display:none;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
                     </div>
                     <?php else: ?>
                     <div class="wg-details__unavailable-overlay" id="videoUnavailable">
@@ -310,7 +311,8 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
                         </svg>
                     </div>
                     <div class="wg-details__cover-play" id="videoPlayToggle">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <svg class="wg-video-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                        <svg class="wg-video-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="28" height="28" style="display:none;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
                     </div>
                 <?php endif; ?>
             </div>
@@ -507,7 +509,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
                         $vc_year = $card['year_name'] ?: '';
                         $vc_genre = $card['genre_name'] ?: '';
                         $vc_language = $card['language_name'] ?: '';
-                        $vc_duration = formatDuration($card['duration'] ?? null);
+                        $vc_duration = $card['duration'] ?? '';
                         $vc_placeholder = ($card['id'] % 5) + 1;
                         $vc_thumbnail = $card['thumbnail_path'] ?: '';
                         include __DIR__ . '/../components/video_card/video_card.php';

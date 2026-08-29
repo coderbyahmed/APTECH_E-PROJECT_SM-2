@@ -126,7 +126,7 @@ function buildVideoRecord($row) {
         'description'    => $row['description'] ?? '',
         'video_path'     => $row['video_path'] ?? '',
         'thumbnail_path' => $row['thumbnail_path'] ?? '',
-        'duration'       => isset($row['duration']) ? (int) $row['duration'] : null,
+        'duration'       => $row['duration'] ?? '',
         'status'         => $row['status'],
         'created_at'     => $row['created_at'] ?? '',
         'updated_at'     => $row['updated_at'] ?? '',

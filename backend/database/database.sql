@@ -190,7 +190,7 @@ CREATE TABLE
         `description` TEXT DEFAULT NULL,
         `music_file` VARCHAR(500) DEFAULT NULL,
         `cover_image` VARCHAR(500) DEFAULT NULL,
-        `duration` INT UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds',
+        `duration` VARCHAR(10) DEFAULT NULL,
         `status` ENUM ('active', 'draft', 'inactive') NOT NULL DEFAULT 'active',
         `created_at` TIMESTAMP NULL DEFAULT NULL,
         `updated_at` TIMESTAMP NULL DEFAULT NULL,
@@ -217,7 +217,7 @@ CREATE TABLE
         `description` TEXT DEFAULT NULL,
         `video_path` VARCHAR(500) DEFAULT NULL,
         `thumbnail_path` VARCHAR(500) DEFAULT NULL,
-        `duration` INT UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds',
+        `duration` VARCHAR(10) DEFAULT NULL,
         `status` ENUM ('active', 'draft', 'inactive') NOT NULL DEFAULT 'active',
         `created_at` TIMESTAMP NULL DEFAULT NULL,
         `updated_at` TIMESTAMP NULL DEFAULT NULL,
@@ -348,8 +348,6 @@ CREATE TABLE
 -- ALTER TABLE: Add duration column to existing tables
 -- Run these if tables already exist without duration column
 -- -------------------------------------------
-ALTER TABLE `music`
-ADD COLUMN `duration` INT UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds' AFTER `cover_image`;
+ALTER TABLE `music` MODIFY COLUMN `duration` VARCHAR(10) DEFAULT NULL;
 
-ALTER TABLE `videos`
-ADD COLUMN `duration` INT UNSIGNED DEFAULT NULL COMMENT 'Duration in seconds' AFTER `thumbnail_path`;
+ALTER TABLE `videos` MODIFY COLUMN `duration` VARCHAR(10) DEFAULT NULL;

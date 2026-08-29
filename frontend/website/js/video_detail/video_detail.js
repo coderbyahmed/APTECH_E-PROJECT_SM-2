@@ -402,25 +402,32 @@
     var unavailableOverlay = document.getElementById('videoUnavailable');
 
     if (videoPlayer && playToggle) {
+        var iconOn = playToggle.querySelector('.wg-video-icon-on');
+        var iconOff = playToggle.querySelector('.wg-video-icon-off');
+
         playToggle.addEventListener('click', function () {
             if (!requireAuth('play video')) return;
             var p = videoPlayer.play();
             if (p && typeof p.catch === 'function') {
                 p.catch(function () {});
             }
-            playToggle.style.display = 'none';
         });
 
         videoPlayer.addEventListener('playing', function () {
-            if (playToggle) playToggle.style.display = 'none';
+            if (iconOn) iconOn.style.display = '';
+            if (iconOff) iconOff.style.display = 'none';
         });
 
         videoPlayer.addEventListener('pause', function () {
-            if (playToggle && !videoPlayer.ended) playToggle.style.display = '';
+            if (!videoPlayer.ended) {
+                if (iconOn) iconOn.style.display = 'none';
+                if (iconOff) iconOff.style.display = '';
+            }
         });
 
         videoPlayer.addEventListener('ended', function () {
-            if (playToggle) playToggle.style.display = '';
+            if (iconOn) iconOn.style.display = '';
+            if (iconOff) iconOff.style.display = 'none';
         });
     }
 

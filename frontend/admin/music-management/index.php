@@ -184,6 +184,11 @@ include __DIR__ . '/../layout/admin-layout.php';
                         <textarea class="sg-form-input mm-form-input mm-form-textarea" id="mm-add-description" placeholder="Enter a brief description of the music" rows="3"></textarea>
                     </div>
 
+                    <div class="sg-form-group">
+                        <label class="sg-form-label" for="mm-add-duration">Duration</label>
+                        <input type="text" class="sg-form-input mm-form-input" id="mm-add-duration" placeholder="e.g., 3:45" maxlength="10">
+                    </div>
+
                     <div class="mm-form__grid mm-form__grid--2col">
                         <div class="sg-form-group">
                             <label class="sg-form-label">Music File</label>
@@ -194,8 +199,8 @@ include __DIR__ . '/../layout/admin-layout.php';
                                     <circle cx="18" cy="16" r="3"/>
                                 </svg>
                                 <span class="mm-upload-area__text">Drop music file here or <span class="mm-upload-area__browse">browse</span></span>
-                                <span class="mm-upload-area__hint">MP3, WAV, FLAC, AAC (Max 50MB)</span>
-                                <input type="file" class="mm-upload-area__input" accept=".mp3,.wav,.flac,.aac" id="mm-add-music-file">
+                                <span class="mm-upload-area__hint">MP3, WAV, FLAC, AAC, M4A, OGG, WMA, MPEG & more (Max 50MB)</span>
+                                <input type="file" class="mm-upload-area__input" accept=".mp3,.wav,.flac,.aac,.m4a,.ogg,.wma,.mpeg,.mp2,.opus,.aiff,.ape" id="mm-add-music-file">
                             </div>
                             <div class="mm-upload-preview" id="mm-music-preview" style="display:none;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
@@ -329,6 +334,11 @@ include __DIR__ . '/../layout/admin-layout.php';
                             <textarea class="sg-form-input mm-form-input mm-form-textarea" id="mm-edit-description" placeholder="Enter a brief description of the music" rows="3"></textarea>
                     </div>
 
+                    <div class="sg-form-group">
+                        <label class="sg-form-label" for="mm-edit-duration">Duration</label>
+                        <input type="text" class="sg-form-input mm-form-input" id="mm-edit-duration" placeholder="e.g., 3:45" maxlength="10">
+                    </div>
+
                     <div class="mm-form__grid mm-form__grid--2col">
                         <div class="sg-form-group">
                             <label class="sg-form-label">Music File</label>
@@ -339,8 +349,8 @@ include __DIR__ . '/../layout/admin-layout.php';
                                     <circle cx="18" cy="16" r="3"/>
                                 </svg>
                                 <span class="mm-upload-area__text">Drop music file here or <span class="mm-upload-area__browse">browse</span></span>
-                                <span class="mm-upload-area__hint">MP3, WAV, FLAC, AAC (Max 50MB)</span>
-                                <input type="file" class="mm-upload-area__input" accept=".mp3,.wav,.flac,.aac" id="mm-edit-music-file">
+                                <span class="mm-upload-area__hint">MP3, WAV, FLAC, AAC, M4A, OGG, WMA, MPEG & more (Max 50MB)</span>
+                                <input type="file" class="mm-upload-area__input" accept=".mp3,.wav,.flac,.aac,.m4a,.ogg,.wma,.mpeg,.mp2,.opus,.aiff,.ape" id="mm-edit-music-file">
                             </div>
                             <div class="mm-upload-preview" id="mm-edit-music-preview">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">

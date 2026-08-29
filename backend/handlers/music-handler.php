@@ -46,9 +46,11 @@ $coversDirWeb  = '/Aptech_E_Project_02/sound_management/uploads/covers/';
 $allowedAudioMimes = [
     'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/wave', 'audio/x-wav',
     'audio/flac', 'audio/x-flac', 'audio/aac', 'audio/x-aac', 'audio/mp4',
-    'audio/ogg', 'audio/webm',
+    'audio/ogg', 'audio/webm', 'audio/x-m4a', 'audio/m4a',
+    'audio/x-ms-wma', 'audio/x-mpeg', 'audio/mp2',
+    'audio/opus', 'audio/aiff', 'audio/x-aiff', 'audio/x-ape',
 ];
-$allowedAudioExts = ['mp3', 'wav', 'flac', 'aac', 'ogg', 'webm', 'm4a'];
+$allowedAudioExts = ['mp3', 'wav', 'flac', 'aac', 'ogg', 'webm', 'm4a', 'wma', 'mpeg', 'mp2', 'opus', 'aiff', 'ape'];
 $allowedImageMimes = ['image/jpeg', 'image/png', 'image/webp'];
 $allowedImageExts = ['jpg', 'jpeg', 'png', 'webp'];
 
@@ -121,7 +123,7 @@ function buildMusicRecord($row) {
         'description'  => $row['description'] ?? '',
         'music_file'   => $row['music_file'] ?? '',
         'cover_image'  => $row['cover_image'] ?? '',
-        'duration'     => isset($row['duration']) ? (int) $row['duration'] : null,
+        'duration'     => $row['duration'] ?? '',
         'status'       => $row['status'],
         'created_at'   => $row['created_at'] ?? '',
         'updated_at'   => $row['updated_at'] ?? '',
@@ -242,6 +244,11 @@ switch ($action) {
         $savedMusicFile = 'uploads/music/' . $newMusicName;
 
         $duration = getMediaDuration($musicDir . $newMusicName);
+
+        $postDuration = isset($_POST['duration']) ? trim($_POST['duration']) : '';
+        if ($postDuration !== '') {
+            $duration = $postDuration;
+        }
 
         if ($coverImage && $coverImage['error'] !== UPLOAD_ERR_NO_FILE) {
             $newCoverName = generateUniqueFilename($coverImage['name'], 'cover');
@@ -384,6 +391,9 @@ switch ($action) {
         $newCoverImage = $existing['cover_image'];
         $duration = $existing['duration'];
 
+        $postDuration = isset($_POST['duration']) ? trim($_POST['duration']) : '';
+        $hasPostDuration = ($postDuration !== '');
+
         if (!$vMusic['skip'] && $musicFile && $musicFile['error'] === UPLOAD_ERR_OK) {
             $newMusicName = generateUniqueFilename($musicFile['name'], 'music');
             if (!saveUploadedFile($musicFile, $musicDir, $newMusicName)) {
@@ -393,7 +403,13 @@ switch ($action) {
             $oldMusicPath = dirname(__DIR__, 2) . '/' . $existing['music_file'];
             if ($existing['music_file']) deleteFileIfExists($oldMusicPath);
             $newMusicFile = 'uploads/music/' . $newMusicName;
-            $duration = getMediaDuration($musicDir . $newMusicName);
+            if (!$hasPostDuration) {
+                $duration = getMediaDuration($musicDir . $newMusicName);
+            }
+        }
+
+        if ($hasPostDuration) {
+            $duration = $postDuration;
         }
 
         if (!$vCover['skip'] && $coverImage && $coverImage['error'] === UPLOAD_ERR_OK) {

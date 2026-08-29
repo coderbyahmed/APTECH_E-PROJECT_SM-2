@@ -248,6 +248,7 @@
             fd.append('year_id',y); fd.append('genre_id',document.getElementById('mm-add-genre').value||'0');
             fd.append('language_id',document.getElementById('mm-add-language').value||'0');
             fd.append('description',document.getElementById('mm-add-description').value.trim());
+            var dur=document.getElementById('mm-add-duration').value; fd.append('duration',dur);
             fd.append('status',document.getElementById('mm-add-status').value); fd.append('music_file',mf);
             var cf=document.getElementById('mm-add-cover-image').files[0]; if(cf)fd.append('cover_image',cf);
             sb.disabled=true;
@@ -266,6 +267,7 @@
             fd.append('year_id',y); fd.append('genre_id',document.getElementById('mm-edit-genre').value||'0');
             fd.append('language_id',document.getElementById('mm-edit-language').value||'0');
             fd.append('description',document.getElementById('mm-edit-description').value.trim());
+            var dur=document.getElementById('mm-edit-duration').value; fd.append('duration',dur);
             fd.append('status',document.getElementById('mm-edit-status').value);
             var mf=document.getElementById('mm-edit-music-file').files[0]; if(mf)fd.append('music_file',mf);
             var cf=document.getElementById('mm-edit-cover-image').files[0]; if(cf)fd.append('cover_image',cf);
@@ -287,6 +289,7 @@
         selectById(document.getElementById('mm-edit-genre'),m.genre_id);
         selectById(document.getElementById('mm-edit-language'),m.language_id);
         document.getElementById('mm-edit-description').value=m.description||'';
+        document.getElementById('mm-edit-duration').value=m.duration!=null?m.duration:'';
         document.getElementById('mm-edit-status').value=m.status;
         var mu=document.getElementById('mm-edit-music-upload'),mp=document.getElementById('mm-edit-music-preview'),mn=document.getElementById('mm-edit-music-name'),mfi=document.getElementById('mm-edit-music-file');
         if(m.music_file){if(mu)mu.style.display='none';if(mp)mp.style.display='';if(mn)mn.textContent=m.music_file.split('/').pop();}else{if(mu)mu.style.display='';if(mp)mp.style.display='none';}

@@ -100,13 +100,12 @@
     align-items: center;
     justify-content: center;
     background: rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    transition: opacity 0.3s;
     cursor: pointer;
+    z-index: 2;
 }
 
 .wg-details__cover:hover .wg-details__cover-play {
-    opacity: 1;
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .wg-details__cover-play svg {

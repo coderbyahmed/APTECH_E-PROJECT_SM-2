@@ -274,7 +274,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
                         <input type="range" class="wg-player__volume-slider" id="wgPlayerVolume" min="0" max="100" value="80">
                     </div>
                     <?php if ($trackAudioUrl): ?>
-                    <a class="wg-player__download" id="wgPlayerDownload" href="<?php echo htmlspecialchars($trackAudioUrl); ?>" download aria-label="Download">
+                    <a class="wg-player__download" id="wgPlayerDownload" href="<?php echo $baseUrl; ?>/backend/handlers/music-download-handler.php?id=<?php echo (int)$track['id']; ?>" aria-label="Download">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </a>
                     <?php endif; ?>
@@ -433,7 +433,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
                         $mc_language = $ac['language_name'] ?: '';
                         $mc_placeholder = $artistPlaceholder;
                         $mc_cover_image = $ac['cover_image'] ?: '';
-                        $mc_duration = formatDuration($ac['duration'] ?? null);
+                        $mc_duration = $ac['duration'] ?? '';
                         $artistPlaceholder = ($artistPlaceholder % 5) + 1;
                     ?>
                     <div class="wg-carousel__item">
