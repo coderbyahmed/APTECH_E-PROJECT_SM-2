@@ -108,6 +108,11 @@
     background: rgba(0, 0, 0, 0.5);
 }
 
+.wg-details__cover-play.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
 .wg-details__cover-play svg {
     color: #fff;
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));

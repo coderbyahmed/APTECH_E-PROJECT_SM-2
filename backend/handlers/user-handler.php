@@ -324,11 +324,14 @@ switch ($action) {
             exit;
         }
 
-        // Delete profile image
+        // Delete profile image (only from expected directory)
         if ($row['profile_image']) {
-            $imgPath = dirname(__DIR__, 2) . '/' . $row['profile_image'];
-            if (file_exists($imgPath)) {
-                unlink($imgPath);
+            $profileImg = $row['profile_image'];
+            if (strpos($profileImg, 'uploads/profile-img/') === 0) {
+                $imgPath = dirname(__DIR__, 2) . '/' . $profileImg;
+                if (file_exists($imgPath)) {
+                    @unlink($imgPath);
+                }
             }
         }
 

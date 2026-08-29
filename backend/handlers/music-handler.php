@@ -469,17 +469,24 @@ switch ($action) {
             exit;
         }
 
+        // Delete associated files BEFORE database record
+        if ($row['music_file']) {
+            $musicFile = $row['music_file'];
+            if (strpos($musicFile, 'uploads/music/') === 0) {
+                deleteFileIfExists(dirname(__DIR__, 2) . '/' . $musicFile);
+            }
+        }
+        if ($row['cover_image']) {
+            $coverImg = $row['cover_image'];
+            if (strpos($coverImg, 'uploads/covers/') === 0) {
+                deleteFileIfExists(dirname(__DIR__, 2) . '/' . $coverImg);
+            }
+        }
+
         $stmt = $db->prepare("DELETE FROM `music` WHERE `id` = :id");
         $stmt->execute([':id' => $id]);
 
         logAdminActivity($db, 'deleted', 'music', $row['song_title'], $id);
-
-        if ($row['music_file']) {
-            deleteFileIfExists(dirname(__DIR__, 2) . '/' . $row['music_file']);
-        }
-        if ($row['cover_image']) {
-            deleteFileIfExists(dirname(__DIR__, 2) . '/' . $row['cover_image']);
-        }
 
         echo json_encode([
             'success' => true,

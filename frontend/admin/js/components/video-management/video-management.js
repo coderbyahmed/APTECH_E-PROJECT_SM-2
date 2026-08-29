@@ -223,6 +223,7 @@
                 fd.append('year_id', y); fd.append('genre_id', document.getElementById('vm-add-genre').value || '0');
                 fd.append('language_id', document.getElementById('vm-add-language').value || '0');
                 fd.append('description', document.getElementById('vm-add-description').value.trim());
+                fd.append('duration', document.getElementById('vm-add-duration').value.trim());
                 fd.append('status', document.getElementById('vm-add-status').value); fd.append('video_file', vf);
                 var tf = document.getElementById('vm-add-thumb-image').files[0]; if (tf) fd.append('thumbnail', tf);
                 sb.disabled = true;
@@ -243,6 +244,7 @@
                 fd.append('year_id', y); fd.append('genre_id', document.getElementById('vm-edit-genre').value || '0');
                 fd.append('language_id', document.getElementById('vm-edit-language').value || '0');
                 fd.append('description', document.getElementById('vm-edit-description').value.trim());
+                fd.append('duration', document.getElementById('vm-edit-duration').value.trim());
                 fd.append('status', document.getElementById('vm-edit-status').value);
                 var vf = document.getElementById('vm-edit-video-file').files[0]; if (vf) fd.append('video_file', vf);
                 var tf = document.getElementById('vm-edit-thumb-image').files[0]; if (tf) fd.append('thumbnail', tf);
@@ -265,6 +267,7 @@
         selectById(document.getElementById('vm-edit-genre'), v.genre_id);
         selectById(document.getElementById('vm-edit-language'), v.language_id);
         document.getElementById('vm-edit-description').value = v.description || '';
+        document.getElementById('vm-edit-duration').value = v.duration || '';
         document.getElementById('vm-edit-status').value = v.status;
         var vu = document.getElementById('vm-edit-video-upload'), vp = document.getElementById('vm-edit-video-preview'), vn = document.getElementById('vm-edit-video-name-file'), vfi = document.getElementById('vm-edit-video-file');
         if (v.video_path) { if (vu) vu.style.display = 'none'; if (vp) vp.style.display = ''; if (vn) vn.textContent = v.video_path.split('/').pop(); } else { if (vu) vu.style.display = ''; if (vp) vp.style.display = 'none'; }

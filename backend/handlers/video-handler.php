@@ -248,6 +248,11 @@ switch ($action) {
 
         $duration = getMediaDuration($videosDir . $newVideoName);
 
+        $postDuration = isset($_POST['duration']) ? trim($_POST['duration']) : '';
+        if ($postDuration !== '') {
+            $duration = $postDuration;
+        }
+
         if ($thumbnail && $thumbnail['error'] !== UPLOAD_ERR_NO_FILE) {
             $newThumbName = generateUniqueFilename($thumbnail['name'], 'thumb');
             if (!saveUploadedFile($thumbnail, $thumbnailsDir, $newThumbName)) {
@@ -389,6 +394,9 @@ switch ($action) {
         $newThumbPath = $existing['thumbnail_path'];
         $duration = $existing['duration'];
 
+        $postDuration = isset($_POST['duration']) ? trim($_POST['duration']) : '';
+        $hasPostDuration = ($postDuration !== '');
+
         if (!$vVideo['skip'] && $videoFile && $videoFile['error'] === UPLOAD_ERR_OK) {
             $newVideoName = generateUniqueFilename($videoFile['name'], 'video');
             if (!saveUploadedFile($videoFile, $videosDir, $newVideoName)) {
@@ -398,7 +406,13 @@ switch ($action) {
             $oldVideoPath = dirname(__DIR__, 2) . '/' . $existing['video_path'];
             if ($existing['video_path']) deleteFileIfExists($oldVideoPath);
             $newVideoPath = 'uploads/videos/' . $newVideoName;
-            $duration = getMediaDuration($videosDir . $newVideoName);
+            if (!$hasPostDuration) {
+                $duration = getMediaDuration($videosDir . $newVideoName);
+            }
+        }
+
+        if ($hasPostDuration) {
+            $duration = $postDuration;
         }
 
         if (!$vThumb['skip'] && $thumbnail && $thumbnail['error'] === UPLOAD_ERR_OK) {
@@ -458,17 +472,24 @@ switch ($action) {
             exit;
         }
 
+        // Delete associated files BEFORE database record
+        if ($row['video_path']) {
+            $videoPath = $row['video_path'];
+            if (strpos($videoPath, 'uploads/videos/') === 0) {
+                deleteFileIfExists(dirname(__DIR__, 2) . '/' . $videoPath);
+            }
+        }
+        if ($row['thumbnail_path']) {
+            $thumbPath = $row['thumbnail_path'];
+            if (strpos($thumbPath, 'uploads/thumbnails/') === 0) {
+                deleteFileIfExists(dirname(__DIR__, 2) . '/' . $thumbPath);
+            }
+        }
+
         $stmt = $db->prepare("DELETE FROM `videos` WHERE `id` = :id");
         $stmt->execute([':id' => $id]);
 
         logAdminActivity($db, 'deleted', 'video', $row['video_title'], $id);
-
-        if ($row['video_path']) {
-            deleteFileIfExists(dirname(__DIR__, 2) . '/' . $row['video_path']);
-        }
-        if ($row['thumbnail_path']) {
-            deleteFileIfExists(dirname(__DIR__, 2) . '/' . $row['thumbnail_path']);
-        }
 
         echo json_encode([
             'success' => true,

@@ -224,49 +224,49 @@ function getFlacDuration($filePath) {
 /**
  * Extract duration from MP4/M4V/M4A by parsing the moov atom.
  */
+function mp4ReadAtom(&$handle, $start, $end, &$duration) {
+    $pos = $start;
+    while ($pos < $end - 8) {
+        fseek($handle, $pos);
+        $header = fread($handle, 8);
+        if (strlen($header) < 8) break;
+
+        $size = unpack('N', substr($header, 0, 4))[1];
+        $type = substr($header, 4, 4);
+
+        if ($size < 8) break;
+
+        if ($type === 'moov' || $type === 'trak') {
+            mp4ReadAtom($handle, $pos + 8, $pos + $size, $duration);
+        } elseif ($type === 'mvhd') {
+            $version = unpack('C', fread($handle, 1))[1];
+            fread($handle, 3);
+            if ($version === 0) {
+                fread($handle, 4);
+                $timescale = unpack('N', fread($handle, 4))[1];
+                $dur       = unpack('N', fread($handle, 4))[1];
+            } else {
+                fread($handle, 8);
+                $timescale = unpack('N', fread($handle, 4))[1];
+                $dur       = unpack('N', fread($handle, 4))[1];
+            }
+            if ($timescale > 0) {
+                $duration = (int) ($dur / $timescale);
+            }
+            return true;
+        }
+
+        $pos += $size;
+    }
+    return false;
+}
+
 function getMp4Duration($filePath) {
     $handle = @fopen($filePath, 'rb');
     if (!$handle) return null;
 
     $fileSize = filesize($filePath);
     $duration = null;
-
-    function mp4ReadAtom(&$handle, $start, $end, &$duration) {
-        $pos = $start;
-        while ($pos < $end - 8) {
-            fseek($handle, $pos);
-            $header = fread($handle, 8);
-            if (strlen($header) < 8) break;
-
-            $size = unpack('N', substr($header, 0, 4))[1];
-            $type = substr($header, 4, 4);
-
-            if ($size < 8) break;
-
-            if ($type === 'moov' || $type === 'trak') {
-                mp4ReadAtom($handle, $pos + 8, $pos + $size, $duration);
-            } elseif ($type === 'mvhd') {
-                $version = unpack('C', fread($handle, 1))[1];
-                fread($handle, 3);
-                if ($version === 0) {
-                    fread($handle, 4);
-                    $timescale = unpack('N', fread($handle, 4))[1];
-                    $dur       = unpack('N', fread($handle, 4))[1];
-                } else {
-                    fread($handle, 8);
-                    $timescale = unpack('N', fread($handle, 4))[1];
-                    $dur       = unpack('N', fread($handle, 4))[1]; // high 32 bits ignored
-                }
-                if ($timescale > 0) {
-                    $duration = (int) ($dur / $timescale);
-                }
-                return true;
-            }
-
-            $pos += $size;
-        }
-        return false;
-    }
 
     mp4ReadAtom($handle, 0, $fileSize, $duration);
     fclose($handle);

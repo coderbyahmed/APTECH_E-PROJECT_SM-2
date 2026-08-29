@@ -414,20 +414,17 @@
         });
 
         videoPlayer.addEventListener('playing', function () {
-            if (iconOn) iconOn.style.display = '';
-            if (iconOff) iconOff.style.display = 'none';
+            if (playToggle) playToggle.classList.add('is-hidden');
         });
 
         videoPlayer.addEventListener('pause', function () {
             if (!videoPlayer.ended) {
-                if (iconOn) iconOn.style.display = 'none';
-                if (iconOff) iconOff.style.display = '';
+                if (playToggle) playToggle.classList.remove('is-hidden');
             }
         });
 
         videoPlayer.addEventListener('ended', function () {
-            if (iconOn) iconOn.style.display = '';
-            if (iconOff) iconOff.style.display = 'none';
+            if (playToggle) playToggle.classList.remove('is-hidden');
         });
     }
 

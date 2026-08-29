@@ -53,6 +53,7 @@ foreach ($videoRecords as $row) {
         'description'    => $row['description'] ?? '',
         'video_path'     => $row['video_path'] ?? '',
         'thumbnail_path' => $row['thumbnail_path'] ?? '',
+        'duration'       => $row['duration'] ?? '',
         'status'         => $row['status'],
         'created_at'     => $row['created_at'] ?? '',
         'updated_at'     => $row['updated_at'] ?? '',
@@ -176,6 +177,10 @@ include __DIR__ . '/../layout/admin-layout.php';
                             <select class="sg-form-input vm-form-input" id="vm-add-language">
                                 <option value="">Select language</option>
                             </select>
+                        </div>
+                        <div class="sg-form-group">
+                            <label class="sg-form-label" for="vm-add-duration">Duration</label>
+                            <input type="text" class="sg-form-input vm-form-input" id="vm-add-duration" placeholder="e.g., 3:45" maxlength="10">
                         </div>
                     </div>
 
@@ -319,6 +324,10 @@ include __DIR__ . '/../layout/admin-layout.php';
                             <select class="sg-form-input vm-form-input" id="vm-edit-language">
                                 <option value="">Select language</option>
                             </select>
+                        </div>
+                        <div class="sg-form-group">
+                            <label class="sg-form-label" for="vm-edit-duration">Duration</label>
+                            <input type="text" class="sg-form-input vm-form-input" id="vm-edit-duration" placeholder="e.g., 3:45" maxlength="10">
                         </div>
                     </div>
 
