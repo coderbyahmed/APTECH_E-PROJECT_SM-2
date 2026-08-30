@@ -3,10 +3,43 @@
  * SOUND Group — Session Management
  */
 
+// ── Production Error Handling ──
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
+// Global exception handler — show custom 500 page, never expose stack traces
+if (!set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    error_log("PHP Error [$errno]: $errstr in $errfile on line $errline");
+    return true;
+})) {
+    // Handler already set — do not override
+}
+
+register_shutdown_function(function () {
+    $error = error_get_last();
+    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+        http_response_code(500);
+        $errorPage = __DIR__ . '/../error-handling/500.php';
+        if (file_exists($errorPage)) {
+            include $errorPage;
+        } else {
+            echo '<h1>500 Internal Server Error</h1>';
+        }
+        exit;
+    }
+});
+
+// ── Session Configuration ──
 if (session_status() === PHP_SESSION_NONE) {
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (!empty($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443)
+                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+
     session_set_cookie_params([
         'lifetime' => 7200,
         'path'     => '/',
+        'secure'   => $isSecure,
         'httponly'  => true,
         'samesite' => 'Lax',
     ]);

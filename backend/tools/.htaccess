@@ -1,0 +1,2 @@
+# Block direct web access to tools (ffmpeg/ffprobe binaries)
+Require all denied

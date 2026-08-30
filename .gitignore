@@ -1,5 +1,36 @@
+# Dependencies
 /vendor/
+/node_modules/
+
+# Environment
 .env
+
+# PHP settings (configure on hosting)
+php.ini
+
+# Composer lock (generate on production via composer install)
 composer.lock
+
+# FFmpeg binaries (platform-specific, deploy separately)
 backend/tools/ffmpeg.exe
 backend/tools/ffprobe.exe
+
+# User uploads (deploy separately or sync from production)
+/uploads/
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+error_log
+
+

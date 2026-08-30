@@ -1,0 +1,2 @@
+# Remove backend root .htaccess - protection is handled by subdirectory .htaccess files
+# Handlers must remain accessible via AJAX

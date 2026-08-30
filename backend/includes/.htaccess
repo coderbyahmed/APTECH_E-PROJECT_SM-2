@@ -1,0 +1,2 @@
+# Block direct web access to backend includes
+Require all denied

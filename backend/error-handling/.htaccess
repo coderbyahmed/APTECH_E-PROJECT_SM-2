@@ -1,0 +1,2 @@
+# Block direct web access to error pages (they should only be included, not accessed directly)
+Require all denied
