@@ -97,12 +97,14 @@ function wgGetVideosByArtist($artistName, $excludeId = 0, $limit = 6) {
 
 function wgResolveVideoUrl($videoPath, $baseUrl) {
     if (!$videoPath) return '';
+    if (strpos($videoPath, 'http') === 0) return $videoPath;
     $path = ltrim($videoPath, '/');
     return $baseUrl . '/' . $path;
 }
 
 function wgResolveThumbnailUrl($thumbnailPath, $baseUrl) {
     if (!$thumbnailPath) return '';
+    if (strpos($thumbnailPath, 'http') === 0) return $thumbnailPath;
     $path = ltrim($thumbnailPath, '/');
     return $baseUrl . '/' . $path;
 }

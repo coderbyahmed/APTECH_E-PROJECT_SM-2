@@ -11,7 +11,7 @@ $baseUrl = baseUrl();
 $logoutUrl = $baseUrl . '/frontend/admin/authentication/logout.php';
 
 // Normalize profile image path to always be absolute
-if ($adminProfileImage && strpos($adminProfileImage, '/') !== 0) {
+if ($adminProfileImage && strpos($adminProfileImage, 'http') !== 0 && strpos($adminProfileImage, '/') !== 0) {
     $adminProfileImage = $baseUrl . '/' . ltrim($adminProfileImage, '/');
 }
 

@@ -27,7 +27,9 @@ if (!isset($websiteBase))
 $detailHref = $websiteBase . '/video_detail/video_detail.php?id=' . (int)$vc_id;
 $thumbUrl = '';
 if ($vc_thumbnail) {
-    $thumbUrl = baseUrl() . '/' . ltrim($vc_thumbnail, '/');
+    $thumbUrl = (strpos($vc_thumbnail, 'http') === 0)
+        ? $vc_thumbnail
+        : baseUrl() . '/' . ltrim($vc_thumbnail, '/');
 }
 ?>
 <a href="<?php echo $detailHref; ?>" class="wg-card wg-card--video wg-card--link">

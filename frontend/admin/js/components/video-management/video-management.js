@@ -6,14 +6,14 @@
     'use strict';
     var ENDPOINT = (window.APP_BASE_URL || '') + '/backend/handlers/video-handler.php';
     var BASE_URL = window.APP_BASE_URL || '';
-    function resolvePath(p) { return p ? BASE_URL + '/' + p.replace(/^\//, '') : ''; }
+    function resolvePath(p) { return p && p.indexOf('http') === 0 ? p : (p ? BASE_URL + '/' + p.replace(/^\//, '') : ''); }
     function getCsrfToken() { var el = document.querySelector('input[name="csrf_token"]'); return el ? el.value : ''; }
     function escapeHtml(str) { if (!str) return ''; var d = document.createElement('div'); d.appendChild(document.createTextNode(str)); return d.innerHTML; }
     function openModal(id) { var m = document.getElementById(id); if (m) { m.classList.add('is-open'); document.body.style.overflow = 'hidden'; } }
     function closeModal(id) { var m = document.getElementById(id); if (m) { m.classList.remove('is-open'); document.body.style.overflow = ''; } }
     function postToHandler(fd, onSuccess) {
-        var ctrl = new AbortController(); var tid = setTimeout(function () { ctrl.abort(); }, 60000);
-        fetch(ENDPOINT, { method: 'POST', body: fd, signal: ctrl.signal })
+        var ctrl = new AbortController(); var tid = setTimeout(function () { ctrl.abort(); }, 300000);
+        return fetch(ENDPOINT, { method: 'POST', body: fd, signal: ctrl.signal })
             .then(function (res) { clearTimeout(tid); return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
             .then(function (r) { if (!r.ok || !r.data.success) { if (r.data.redirect) { window.location.href = r.data.redirect; return; } showError(r.data.error || 'Something went wrong.'); return; } onSuccess(r.data); })
             .catch(function () { clearTimeout(tid); showError('Server could not be reached.'); });
@@ -23,7 +23,7 @@
         items.forEach(function (i) { var o = document.createElement('option'); o.value = i.id; o.textContent = i.name; el.appendChild(o); });
     }
     function selectById(el, id) { if (!el || !id) return; el.value = String(id); }
-    var videoData = [], cmData = {};
+    var videoData = [], cmData = {}, isSubmitting = false;
     function getVideoById(id) { for (var i = 0; i < videoData.length; i++) { if (videoData[i].id === id) return videoData[i]; } return null; }
 
     /* --- Preview Modal (Thumbnail → Video Player) --- */
@@ -192,9 +192,12 @@
     }
 
     function bindModalClose() {
-        document.querySelectorAll('[data-vm-close]').forEach(function (b) { b.addEventListener('click', function () { var t = b.getAttribute('data-vm-close'); if (t === 'preview') closePreviewModal(); else if (t === 'add') closeModal('vmAddModal'); else if (t === 'edit') closeModal('vmEditModal'); else if (t === 'view') closeModal('vmViewModal'); else if (t === 'delete') closeModal('vmDeleteModal'); }); });
-        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closePreviewModal(); closeModal('vmAddModal'); closeModal('vmEditModal'); closeModal('vmViewModal'); closeModal('vmDeleteModal'); } });
-        document.querySelectorAll('.sg-modal').forEach(function (m) { var o = m.querySelector('.sg-modal__overlay'); if (o) { o.addEventListener('click', function () { if (m.id === 'vmPreviewModal') closePreviewModal(); else { m.classList.remove('is-open'); document.body.style.overflow = ''; } }); } });
+        document.querySelectorAll('[data-vm-close]').forEach(function (b) { b.addEventListener('click', function () { isSubmitting = false; var t = b.getAttribute('data-vm-close'); if (t === 'preview') closePreviewModal(); else if (t === 'add') closeModal('vmAddModal'); else if (t === 'edit') closeModal('vmEditModal'); else if (t === 'view') closeModal('vmViewModal'); else if (t === 'delete') closeModal('vmDeleteModal'); }); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && e.target.closest('#vmAddModal, #vmEditModal')) { e.preventDefault(); e.stopPropagation(); return; }
+            if (e.key === 'Escape') { isSubmitting = false; closePreviewModal(); closeModal('vmAddModal'); closeModal('vmEditModal'); closeModal('vmViewModal'); closeModal('vmDeleteModal'); }
+        });
+        document.querySelectorAll('.sg-modal').forEach(function (m) { var o = m.querySelector('.sg-modal__overlay'); if (o) { o.addEventListener('click', function () { isSubmitting = false; if (m.id === 'vmPreviewModal') closePreviewModal(); else { m.classList.remove('is-open'); document.body.style.overflow = ''; } }); } });
     }
     function setupFilePreview(inputId, uploadId, previewId, nameId, removeId, imgId) {
         var inp = document.getElementById(inputId), up = document.getElementById(uploadId), pv = document.getElementById(previewId);
@@ -215,6 +218,7 @@
         var sb = document.getElementById('vmSaveVideoBtn');
         if (sb) {
             sb.addEventListener('click', function () {
+                if (isSubmitting) return;
                 var t = document.getElementById('vm-add-title').value.trim(), a = document.getElementById('vm-add-artist').value, y = document.getElementById('vm-add-year').value;
                 if (!t) { showError('Video title is required.'); return; } if (!a) { showError('Please select an artist.'); return; } if (!y) { showError('Please select a year.'); return; }
                 var vf = document.getElementById('vm-add-video-file').files[0]; if (!vf) { showError('Please upload a video file.'); return; }
@@ -226,9 +230,14 @@
                 fd.append('duration', document.getElementById('vm-add-duration').value.trim());
                 fd.append('status', document.getElementById('vm-add-status').value); fd.append('video_file', vf);
                 var tf = document.getElementById('vm-add-thumb-image').files[0]; if (tf) fd.append('thumbnail', tf);
+                isSubmitting = true;
                 sb.disabled = true;
-                postToHandler(fd, function (data) { videoData.unshift(data.record); renderTable(videoData); closeModal('vmAddModal'); resetAddForm(); showSuccess(data.message || 'Video added successfully.'); });
-                sb.disabled = false;
+                if (typeof startButtonLoading === 'function') { startButtonLoading(sb, 'Saving Video...'); }
+                postToHandler(fd, function (data) { videoData.unshift(data.record); renderTable(videoData); closeModal('vmAddModal'); resetAddForm(); showSuccess(data.message || 'Video added successfully.'); }).finally(function () {
+                    isSubmitting = false;
+                    sb.disabled = false;
+                    if (typeof stopButtonLoading === 'function') { stopButtonLoading(sb); }
+                });
             });
         }
     }
@@ -236,6 +245,7 @@
         var ub = document.getElementById('vmUpdateVideoBtn');
         if (ub) {
             ub.addEventListener('click', function () {
+                if (isSubmitting) return;
                 var id = document.getElementById('vm-edit-id').value, t = document.getElementById('vm-edit-title').value.trim();
                 var a = document.getElementById('vm-edit-artist').value, y = document.getElementById('vm-edit-year').value;
                 if (!id) return; if (!t) { showError('Video title is required.'); return; } if (!a) { showError('Please select an artist.'); return; } if (!y) { showError('Please select a year.'); return; }
@@ -248,9 +258,14 @@
                 fd.append('status', document.getElementById('vm-edit-status').value);
                 var vf = document.getElementById('vm-edit-video-file').files[0]; if (vf) fd.append('video_file', vf);
                 var tf = document.getElementById('vm-edit-thumb-image').files[0]; if (tf) fd.append('thumbnail', tf);
+                isSubmitting = true;
                 ub.disabled = true;
-                postToHandler(fd, function (data) { for (var i = 0; i < videoData.length; i++) { if (videoData[i].id === data.record.id) { videoData[i] = data.record; break; } } renderTable(videoData); closeModal('vmEditModal'); showSuccess(data.message || 'Video updated successfully.'); });
-                ub.disabled = false;
+                if (typeof startButtonLoading === 'function') { startButtonLoading(ub, 'Updating Video...'); }
+                postToHandler(fd, function (data) { for (var i = 0; i < videoData.length; i++) { if (videoData[i].id === data.record.id) { videoData[i] = data.record; break; } } renderTable(videoData); closeModal('vmEditModal'); showSuccess(data.message || 'Video updated successfully.'); }).finally(function () {
+                    isSubmitting = false;
+                    ub.disabled = false;
+                    if (typeof stopButtonLoading === 'function') { stopButtonLoading(ub); }
+                });
             });
         }
         setupFilePreview('vm-edit-video-file', 'vm-edit-video-upload', 'vm-edit-video-preview', 'vm-edit-video-name-file', 'vm-edit-video-replace', null);
@@ -282,11 +297,17 @@
         var cb = document.getElementById('vmConfirmDeleteBtn');
         if (cb) {
             cb.addEventListener('click', function () {
+                if (isSubmitting) return;
                 var id = document.getElementById('vm-delete-id').value; if (!id) return;
+                isSubmitting = true;
                 cb.disabled = true;
+                if (typeof startButtonLoading === 'function') { startButtonLoading(cb, 'Deleting...'); }
                 var fd = new FormData(); fd.append('action', 'delete'); fd.append('csrf_token', getCsrfToken()); fd.append('id', id);
-                postToHandler(fd, function (data) { videoData = videoData.filter(function (v) { return v.id !== parseInt(id); }); renderTable(videoData); closeModal('vmDeleteModal'); showSuccess(data.message || 'Video deleted successfully.'); });
-                cb.disabled = false;
+                postToHandler(fd, function (data) { videoData = videoData.filter(function (v) { return v.id !== parseInt(id); }); renderTable(videoData); closeModal('vmDeleteModal'); showSuccess(data.message || 'Video deleted successfully.'); }).finally(function () {
+                    isSubmitting = false;
+                    cb.disabled = false;
+                    if (typeof stopButtonLoading === 'function') { stopButtonLoading(cb); }
+                });
             });
         }
     }

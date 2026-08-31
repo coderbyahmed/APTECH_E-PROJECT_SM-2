@@ -203,7 +203,7 @@
         var avatarHtml = '';
         var initials = userInitials(review.user_name);
         if (review.user_image) {
-            var src = (window.APP_BASE_URL || '') + '/' + review.user_image.replace(/^\//, '');
+            var src = (review.user_image.indexOf('http') === 0) ? review.user_image : (window.APP_BASE_URL || '') + '/' + review.user_image.replace(/^\//, '');
             avatarHtml = '<div class="wg-review-card__avatar"><img src="' + src + '" alt="" class="wg-review-card__avatar-img" loading="lazy" onerror="this.style.display=\'none\';this.parentNode.textContent=\'' + initials + '\'"></div>';
         } else {
             avatarHtml = '<div class="wg-review-card__avatar">' + initials + '</div>';
@@ -230,7 +230,7 @@
     function buildDrawerReviewHtml(review) {
         var avatarHtml = '';
         if (review.user_image) {
-            var src = (window.APP_BASE_URL || '') + '/' + review.user_image.replace(/^\//, '');
+            var src = (review.user_image.indexOf('http') === 0) ? review.user_image : (window.APP_BASE_URL || '') + '/' + review.user_image.replace(/^\//, '');
             avatarHtml = '<div class="wg-drawer__review-avatar"><img src="' + src + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent=\'' + userInitials(review.user_name) + '\'"></div>';
         } else {
             avatarHtml = '<div class="wg-drawer__review-avatar">' + userInitials(review.user_name) + '</div>';

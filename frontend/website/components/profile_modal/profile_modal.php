@@ -28,7 +28,7 @@
                 <!-- Avatar -->
                 <div class="wg-profile-avatar" id="wgProfileViewAvatar">
                     <?php if ($siteUserImage): ?>
-                        <img src="<?php echo $baseUrl . '/' . htmlspecialchars($siteUserImage); ?>" alt="<?php echo htmlspecialchars($siteUserName); ?>" class="wg-profile-avatar__img">
+                        <img src="<?php echo (strpos($siteUserImage, 'http') === 0) ? htmlspecialchars($siteUserImage) : $baseUrl . '/' . htmlspecialchars(ltrim($siteUserImage, '/')); ?>" alt="<?php echo htmlspecialchars($siteUserName); ?>" class="wg-profile-avatar__img">
                     <?php else: ?>
                         <span class="wg-profile-avatar__initial" style="background-color:<?php echo $siteUserAvatarColor; ?>;"><?php echo $siteUserInitial; ?></span>
                     <?php endif; ?>
@@ -46,11 +46,11 @@
                     </div>
                     <div class="wg-profile-info__row">
                         <span class="wg-profile-info__label">Phone Number</span>
-                        <span class="wg-profile-info__value" id="wgProfileViewPhone">—</span>
+                        <span class="wg-profile-info__value" id="wgProfileViewPhone"><?php echo htmlspecialchars($siteUserPhone ?: '—'); ?></span>
                     </div>
                     <div class="wg-profile-info__row">
                         <span class="wg-profile-info__label">Address</span>
-                        <span class="wg-profile-info__value" id="wgProfileViewAddress">—</span>
+                        <span class="wg-profile-info__value" id="wgProfileViewAddress"><?php echo htmlspecialchars($siteUserAddress ?: '—'); ?></span>
                     </div>
                 </div>
 
@@ -75,7 +75,7 @@
                 <div class="wg-profile-avatar wg-profile-avatar--edit">
                     <div class="wg-profile-avatar__wrap" id="wgProfileEditAvatarWrap">
                         <?php if ($siteUserImage): ?>
-                            <img src="<?php echo $baseUrl . '/' . htmlspecialchars($siteUserImage); ?>" alt="Profile" class="wg-profile-avatar__img" id="wgProfileEditAvatarImg">
+                            <img src="<?php echo (strpos($siteUserImage, 'http') === 0) ? htmlspecialchars($siteUserImage) : $baseUrl . '/' . htmlspecialchars(ltrim($siteUserImage, '/')); ?>" alt="Profile" class="wg-profile-avatar__img" id="wgProfileEditAvatarImg">
                         <?php else: ?>
                             <span class="wg-profile-avatar__initial" style="background-color:<?php echo $siteUserAvatarColor; ?>;" id="wgProfileEditAvatarInitial"><?php echo $siteUserInitial; ?></span>
                         <?php endif; ?>

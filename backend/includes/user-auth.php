@@ -74,6 +74,8 @@ function loginUser($user) {
     $_SESSION['user_db_id']        = $user['id'];
     $_SESSION['user_name']         = $user['full_name'];
     $_SESSION['user_email']        = $user['email'];
+    $_SESSION['user_phone']        = $user['phone'] ?? '';
+    $_SESSION['user_address']      = $user['address'] ?? '';
     $_SESSION['user_profile_image'] = $user['profile_image'];
 
     // Update last_login
@@ -94,7 +96,8 @@ function logoutUser() {
 
     // Clear user session keys
     unset($_SESSION['user_id'], $_SESSION['user_db_id'], $_SESSION['user_name'],
-          $_SESSION['user_email'], $_SESSION['user_profile_image']);
+          $_SESSION['user_email'], $_SESSION['user_phone'], $_SESSION['user_address'],
+          $_SESSION['user_profile_image']);
 }
 
 /**

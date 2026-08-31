@@ -100,12 +100,14 @@ function wgGetMusicByArtist($artistName, $excludeId = 0, $limit = 6) {
 
 function wgResolveCoverUrl($coverImage, $baseUrl) {
     if (!$coverImage) return '';
+    if (strpos($coverImage, 'http') === 0) return $coverImage;
     $path = ltrim($coverImage, '/');
     return $baseUrl . '/' . $path;
 }
 
 function wgResolveMusicUrl($musicFile, $baseUrl) {
     if (!$musicFile) return '';
+    if (strpos($musicFile, 'http') === 0) return $musicFile;
     $path = ltrim($musicFile, '/');
     return $baseUrl . '/' . $path;
 }

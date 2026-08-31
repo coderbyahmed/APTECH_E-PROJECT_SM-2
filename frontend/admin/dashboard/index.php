@@ -356,7 +356,7 @@ include __DIR__ . '/../layout/admin-layout.php';
                 <tr>
                     <td>
                         <?php if ($music['cover_image']): ?>
-                        <img src="<?php echo htmlspecialchars($baseUrl . '/' . $music['cover_image']); ?>" alt="Cover" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
+                        <img src="<?php echo htmlspecialchars(strpos($music['cover_image'], 'http') === 0 ? $music['cover_image'] : $baseUrl . '/' . $music['cover_image']); ?>" alt="Cover" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
                         <?php else: ?>
                         <div class="db-table-cover db-table-cover--purple">🎵</div>
                         <?php endif; ?>
@@ -405,7 +405,7 @@ include __DIR__ . '/../layout/admin-layout.php';
                 <tr>
                     <td>
                         <?php if ($video['thumbnail_path']): ?>
-                        <img src="<?php echo htmlspecialchars($baseUrl . '/' . $video['thumbnail_path']); ?>" alt="Thumbnail" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
+                        <img src="<?php echo htmlspecialchars(strpos($video['thumbnail_path'], 'http') === 0 ? $video['thumbnail_path'] : $baseUrl . '/' . $video['thumbnail_path']); ?>" alt="Thumbnail" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
                         <?php else: ?>
                         <div class="db-table-cover db-table-cover--pink">🎬</div>
                         <?php endif; ?>
@@ -456,7 +456,7 @@ include __DIR__ . '/../layout/admin-layout.php';
             <div class="db-user-item">
                 <?php if ($user['profile_image']): ?>
                 <div class="db-user-item__avatar" style="padding:0;">
-                    <img src="<?php echo htmlspecialchars($baseUrl . '/' . $user['profile_image']); ?>" alt="Profile" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                    <img src="<?php echo htmlspecialchars(strpos($user['profile_image'], 'http') === 0 ? $user['profile_image'] : $baseUrl . '/' . ltrim($user['profile_image'], '/')); ?>" alt="Profile" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
                 </div>
                 <?php else: ?>
                 <div class="db-user-item__avatar" style="background:linear-gradient(135deg,<?php echo $colors[$colorIdx]; ?>)"><?php echo $initials; ?></div>

@@ -200,7 +200,7 @@ $initialPages = max(1, ceil($totalMessages / $perPage));
                      data-status="<?php echo $m['status']; ?>"
                      data-text="<?php echo htmlspecialchars($m['message']); ?>">
                 <div class="cm-message-card__header">
-                    <div class="cm-avatar cm-avatar--card cm-avatar--<?php echo $m['avatar_color']; ?>"><?php if (!empty($m['profile_image'])): ?><img src="<?php echo baseUrl(); ?>/<?php echo htmlspecialchars($m['profile_image']); ?>" alt="" class="cm-avatar__img" width="48" height="48"><?php else: ?><?php echo $m['initials']; ?><?php endif; ?></div>
+                    <div class="cm-avatar cm-avatar--card cm-avatar--<?php echo $m['avatar_color']; ?>"><?php if (!empty($m['profile_image'])): ?><img src="<?php echo htmlspecialchars(strpos($m['profile_image'], 'http') === 0 ? $m['profile_image'] : baseUrl() . '/' . ltrim($m['profile_image'], '/')); ?>" alt="" class="cm-avatar__img" width="48" height="48"><?php else: ?><?php echo $m['initials']; ?><?php endif; ?></div>
                     <div class="cm-message-card__user">
                         <h3 class="cm-message-card__user-name"><?php echo htmlspecialchars($m['full_name']); ?></h3>
                         <span class="cm-message-card__user-email"><?php echo htmlspecialchars($m['email']); ?></span>

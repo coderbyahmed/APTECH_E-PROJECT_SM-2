@@ -77,7 +77,7 @@ include __DIR__ . '/../layout/admin-layout.php';
                         $regDate = umFormatTimestamp($user['created_at']);
                         $loginDate = umFormatTimestamp($user['last_login']);
                         $logoutDate = umFormatTimestamp($user['last_logout']);
-                        $imgPath = $user['profile_image'] ? ($baseUrl . '/' . ltrim($user['profile_image'], '/')) : '';
+                        $imgPath = $user['profile_image'] ? (strpos($user['profile_image'], 'http') === 0 ? $user['profile_image'] : $baseUrl . '/' . ltrim($user['profile_image'], '/')) : '';
                     ?>
                     <div class="um-user-card"
                          data-user-id="<?php echo htmlspecialchars($user['user_id']); ?>"

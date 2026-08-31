@@ -27,7 +27,9 @@ if (!isset($websiteBase))
 $detailHref = $websiteBase . '/music_details/music_details.php?id=' . (int) $mc_id;
 $coverUrl = '';
 if ($mc_cover_image) {
-    $coverUrl = baseUrl() . '/' . ltrim($mc_cover_image, '/');
+    $coverUrl = (strpos($mc_cover_image, 'http') === 0)
+        ? $mc_cover_image
+        : baseUrl() . '/' . ltrim($mc_cover_image, '/');
 }
 ?>
 <a href="<?php echo $detailHref; ?>" class="wg-card wg-card--music wg-card--link">

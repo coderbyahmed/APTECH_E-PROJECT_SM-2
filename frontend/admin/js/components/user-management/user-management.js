@@ -352,7 +352,7 @@
                         currentUser.setAttribute('data-status', rec.status);
 
                         if (rec.profile_image) {
-                            currentUser.setAttribute('data-image', getBaseUrl() + '/' + rec.profile_image.replace(/^\//, ''));
+                            currentUser.setAttribute('data-image', rec.profile_image.indexOf('http') === 0 ? rec.profile_image : getBaseUrl() + '/' + rec.profile_image.replace(/^\//, ''));
                         }
 
                         // Update card display
@@ -371,7 +371,7 @@
                         var avatar = currentUser.querySelector('.um-avatar');
                         if (avatar) {
                             if (rec.profile_image) {
-                                var imgUrl = getBaseUrl() + '/' + rec.profile_image.replace(/^\//, '');
+                                var imgUrl = rec.profile_image.indexOf('http') === 0 ? rec.profile_image : getBaseUrl() + '/' + rec.profile_image.replace(/^\//, '');
                                 avatar.innerHTML = '<img src="' + imgUrl + '" alt="' + (rec.full_name || 'User') + '">';
                                 avatar.className = 'um-avatar um-avatar--card';
                             } else {

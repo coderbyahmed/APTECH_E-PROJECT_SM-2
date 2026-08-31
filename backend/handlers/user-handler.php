@@ -13,6 +13,7 @@ require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/activity-log.php';
+require_once __DIR__ . '/../helpers/cloudinary.php';
 
 header('Content-Type: application/json');
 
@@ -42,8 +43,7 @@ $action = trim($_POST['action'] ?? '');
 $db = getDb();
 
 // --- Upload Config ---
-$uploadDir    = dirname(__DIR__, 2) . '/uploads/profile-img/';
-$uploadDirWeb = baseUrl() . '/uploads/profile-img/';
+$tmpDir = sys_get_temp_dir();
 $allowedImageMimes = ['image/jpeg', 'image/png', 'image/webp'];
 $allowedImageExts  = ['jpg', 'jpeg', 'png', 'webp'];
 $maxImageSize = 2 * 1024 * 1024;
@@ -249,23 +249,39 @@ switch ($action) {
             $safeExt = preg_replace('/[^a-z0-9]/', '', $ext);
             $filename = 'profile_' . bin2hex(random_bytes(8)) . '_' . time() . '.' . $safeExt;
 
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-
-            if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
-                // Delete old image
-                if ($existing['profile_image']) {
-                    $oldPath = dirname(__DIR__, 2) . '/' . $existing['profile_image'];
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
-                    }
+            $cloudinary = getCloudinary();
+            if ($cloudinary->isConfigured()) {
+                try {
+                    $tmpPath = $tmpDir . '/' . $filename;
+                    move_uploaded_file($file['tmp_name'], $tmpPath);
+                    $result = $cloudinary->upload($tmpPath, 'sound_management/userProfile', $filename, [
+                        'resource_type' => 'image',
+                        'transformation' => 'c_fill,w_400,h_400',
+                    ]);
+                    @unlink($tmpPath);
+                    $profileImage = $result['url'];
+                } catch (Exception $e) {
+                    if (file_exists($tmpPath)) @unlink($tmpPath);
+                    http_response_code(500);
+                    echo json_encode(['success' => false, 'error' => 'Failed to upload profile image to cloud storage. Please try again.']);
+                    exit;
                 }
-                $profileImage = 'uploads/profile-img/' . $filename;
             } else {
                 http_response_code(500);
-                echo json_encode(['success' => false, 'error' => 'Failed to save profile image.']);
+                echo json_encode(['success' => false, 'error' => 'Cloud storage is not configured. Please contact administrator.']);
                 exit;
+            }
+
+            // Delete old image
+            if ($existing['profile_image']) {
+                if (CloudinaryHelper::isCloudinaryUrl($existing['profile_image'])) {
+                    $cloudinary->deleteByUrl($existing['profile_image']);
+                } else {
+                    $oldPath = dirname(__DIR__, 2) . '/' . $existing['profile_image'];
+                    if (file_exists($oldPath)) {
+                        @unlink($oldPath);
+                    }
+                }
             }
         }
 
@@ -324,10 +340,13 @@ switch ($action) {
             exit;
         }
 
-        // Delete profile image (only from expected directory)
+        // Delete profile image
         if ($row['profile_image']) {
             $profileImg = $row['profile_image'];
-            if (strpos($profileImg, 'uploads/profile-img/') === 0) {
+            if (CloudinaryHelper::isCloudinaryUrl($profileImg)) {
+                $cloudinary = getCloudinary();
+                $cloudinary->deleteByUrl($profileImg);
+            } elseif (strpos($profileImg, 'uploads/profile-img/') === 0) {
                 $imgPath = dirname(__DIR__, 2) . '/' . $profileImg;
                 if (file_exists($imgPath)) {
                     @unlink($imgPath);

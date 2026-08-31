@@ -41,6 +41,12 @@ if (!$relativePath) {
     exit;
 }
 
+// Cloudinary URL — redirect directly to the CDN
+if (strpos($relativePath, 'http') === 0 && strpos($relativePath, 'cloudinary.com') !== false) {
+    header('Location: ' . $relativePath);
+    exit;
+}
+
 $projectRoot = dirname(__DIR__, 2);
 $sourceFile = $projectRoot . '/' . ltrim($relativePath, '/');
 

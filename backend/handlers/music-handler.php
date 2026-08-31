@@ -9,11 +9,14 @@
  * Handles file uploads for music files and cover images.
  */
 
+set_time_limit(300);
+
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/activity-log.php';
 require_once __DIR__ . '/../helpers/media-duration.php';
+require_once __DIR__ . '/../helpers/cloudinary.php';
 
 header('Content-Type: application/json');
 
@@ -37,11 +40,7 @@ $action = trim($_POST['action'] ?? '');
 
 $db = getDb();
 
-$uploadDir     = dirname(__DIR__, 2) . '/uploads/';
-$musicDir      = $uploadDir . 'music/';
-$coversDir     = $uploadDir . 'covers/';
-$musicDirWeb   = baseUrl() . '/uploads/music/';
-$coversDirWeb  = baseUrl() . '/uploads/covers/';
+$tmpDir = sys_get_temp_dir();
 
 $allowedAudioMimes = [
     'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/wave', 'audio/x-wav',
@@ -233,17 +232,40 @@ switch ($action) {
             exit;
         }
 
+        $stmt = $db->prepare("SELECT `id` FROM `music` WHERE `song_title` = :title AND `artist_id` = :artist AND `created_at` >= DATE_SUB(NOW(), INTERVAL 10 SECOND) LIMIT 1");
+        $stmt->execute([':title' => $title, ':artist' => $artistId]);
+        if ($stmt->fetch()) {
+            echo json_encode(['success' => false, 'error' => 'A music record with this title and artist was just created. Please wait a moment before trying again.']);
+            exit;
+        }
+
         $savedMusicFile  = '';
         $savedCoverImage = '';
 
+        $cloudinary = getCloudinary();
+        $useCloudinary = $cloudinary->isConfigured();
+
         $newMusicName = generateUniqueFilename($musicFile['name'], 'music');
-        if (!saveUploadedFile($musicFile, $musicDir, $newMusicName)) {
-            echo json_encode(['success' => false, 'error' => 'Failed to save music file. Please try again.']);
+        if ($useCloudinary) {
+            try {
+                $tmpMusicPath = $tmpDir . '/' . $newMusicName;
+                move_uploaded_file($musicFile['tmp_name'], $tmpMusicPath);
+                $result = $cloudinary->upload($tmpMusicPath, 'sound_management/music', $newMusicName, [
+                    'resource_type' => 'video',
+                ]);
+                @unlink($tmpMusicPath);
+                $savedMusicFile = $result['url'];
+            } catch (Exception $e) {
+                if (file_exists($tmpMusicPath)) @unlink($tmpMusicPath);
+                echo json_encode(['success' => false, 'error' => 'Failed to upload music to cloud storage. Please try again.']);
+                exit;
+            }
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Cloud storage is not configured. Please contact administrator.']);
             exit;
         }
-        $savedMusicFile = 'uploads/music/' . $newMusicName;
 
-        $duration = getMediaDuration($musicDir . $newMusicName);
+        $duration = getMediaDuration($tmpMusicPath);
 
         $postDuration = isset($_POST['duration']) ? trim($_POST['duration']) : '';
         if ($postDuration !== '') {
@@ -252,12 +274,22 @@ switch ($action) {
 
         if ($coverImage && $coverImage['error'] !== UPLOAD_ERR_NO_FILE) {
             $newCoverName = generateUniqueFilename($coverImage['name'], 'cover');
-            if (!saveUploadedFile($coverImage, $coversDir, $newCoverName)) {
-                if ($savedMusicFile) deleteFileIfExists(dirname(__DIR__, 2) . '/' . $savedMusicFile);
-                echo json_encode(['success' => false, 'error' => 'Failed to save cover image. Please try again.']);
-                exit;
+            if ($useCloudinary) {
+                try {
+                    $tmpCoverPath = $tmpDir . '/' . $newCoverName;
+                    move_uploaded_file($coverImage['tmp_name'], $tmpCoverPath);
+                    $result = $cloudinary->upload($tmpCoverPath, 'sound_management/covers', $newCoverName, [
+                        'resource_type' => 'image',
+                        'transformation' => 'c_fill,w_800,h_800',
+                    ]);
+                    @unlink($tmpCoverPath);
+                    $savedCoverImage = $result['url'];
+                } catch (Exception $e) {
+                    if (file_exists($tmpCoverPath)) @unlink($tmpCoverPath);
+                    echo json_encode(['success' => false, 'error' => 'Failed to upload cover to cloud storage. Please try again.']);
+                    exit;
+                }
             }
-            $savedCoverImage = 'uploads/covers/' . $newCoverName;
         }
 
         $stmt = $db->prepare("INSERT INTO `music` (`song_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `music_file`, `cover_image`, `duration`, `status`, `created_at`, `updated_at`) VALUES (:song_title, :artist_id, :album_id, :year_id, :genre_id, :language_id, :description, :music_file, :cover_image, :duration, :status, NOW(), NOW())");
@@ -394,17 +426,40 @@ switch ($action) {
         $postDuration = isset($_POST['duration']) ? trim($_POST['duration']) : '';
         $hasPostDuration = ($postDuration !== '');
 
+        $cloudinary = getCloudinary();
+        $useCloudinary = $cloudinary->isConfigured();
+
         if (!$vMusic['skip'] && $musicFile && $musicFile['error'] === UPLOAD_ERR_OK) {
             $newMusicName = generateUniqueFilename($musicFile['name'], 'music');
-            if (!saveUploadedFile($musicFile, $musicDir, $newMusicName)) {
-                echo json_encode(['success' => false, 'error' => 'Failed to save music file. Please try again.']);
+            if ($useCloudinary) {
+                try {
+                    $tmpMusicPath = $tmpDir . '/' . $newMusicName;
+                    move_uploaded_file($musicFile['tmp_name'], $tmpMusicPath);
+                    $result = $cloudinary->upload($tmpMusicPath, 'sound_management/music', $newMusicName, [
+                        'resource_type' => 'video',
+                    ]);
+                    @unlink($tmpMusicPath);
+                    $newMusicFile = $result['url'];
+                } catch (Exception $e) {
+                    if (file_exists($tmpMusicPath)) @unlink($tmpMusicPath);
+                    echo json_encode(['success' => false, 'error' => 'Failed to upload music to cloud storage. Please try again.']);
+                    exit;
+                }
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Cloud storage is not configured. Please contact administrator.']);
                 exit;
             }
-            $oldMusicPath = dirname(__DIR__, 2) . '/' . $existing['music_file'];
-            if ($existing['music_file']) deleteFileIfExists($oldMusicPath);
-            $newMusicFile = 'uploads/music/' . $newMusicName;
+            // Delete old file
+            if ($existing['music_file']) {
+                if (CloudinaryHelper::isCloudinaryUrl($existing['music_file'])) {
+                    $cloudinary->deleteByUrl($existing['music_file']);
+                } else {
+                    $oldPath = dirname(__DIR__, 2) . '/' . $existing['music_file'];
+                    deleteFileIfExists($oldPath);
+                }
+            }
             if (!$hasPostDuration) {
-                $duration = getMediaDuration($musicDir . $newMusicName);
+                $duration = getMediaDuration($tmpMusicPath);
             }
         }
 
@@ -414,13 +469,34 @@ switch ($action) {
 
         if (!$vCover['skip'] && $coverImage && $coverImage['error'] === UPLOAD_ERR_OK) {
             $newCoverName = generateUniqueFilename($coverImage['name'], 'cover');
-            if (!saveUploadedFile($coverImage, $coversDir, $newCoverName)) {
-                echo json_encode(['success' => false, 'error' => 'Failed to save cover image. Please try again.']);
+            if ($useCloudinary) {
+                try {
+                    $tmpCoverPath = $tmpDir . '/' . $newCoverName;
+                    move_uploaded_file($coverImage['tmp_name'], $tmpCoverPath);
+                    $result = $cloudinary->upload($tmpCoverPath, 'sound_management/covers', $newCoverName, [
+                        'resource_type' => 'image',
+                        'transformation' => 'c_fill,w_800,h_800',
+                    ]);
+                    @unlink($tmpCoverPath);
+                    $newCoverImage = $result['url'];
+                } catch (Exception $e) {
+                    if (file_exists($tmpCoverPath)) @unlink($tmpCoverPath);
+                    echo json_encode(['success' => false, 'error' => 'Failed to upload cover to cloud storage. Please try again.']);
+                    exit;
+                }
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Cloud storage is not configured. Please contact administrator.']);
                 exit;
             }
-            $oldCoverPath = dirname(__DIR__, 2) . '/' . $existing['cover_image'];
-            if ($existing['cover_image']) deleteFileIfExists($oldCoverPath);
-            $newCoverImage = 'uploads/covers/' . $newCoverName;
+            // Delete old file
+            if ($existing['cover_image']) {
+                if (CloudinaryHelper::isCloudinaryUrl($existing['cover_image'])) {
+                    $cloudinary->deleteByUrl($existing['cover_image']);
+                } else {
+                    $oldPath = dirname(__DIR__, 2) . '/' . $existing['cover_image'];
+                    deleteFileIfExists($oldPath);
+                }
+            }
         }
 
         $stmt = $db->prepare("UPDATE `music` SET `song_title` = :song_title, `artist_id` = :artist_id, `album_id` = :album_id, `year_id` = :year_id, `genre_id` = :genre_id, `language_id` = :language_id, `description` = :description, `music_file` = :music_file, `cover_image` = :cover_image, `duration` = :duration, `status` = :status, `updated_at` = NOW() WHERE `id` = :id");
@@ -470,16 +546,25 @@ switch ($action) {
         }
 
         // Delete associated files BEFORE database record
+        $cloudinary = getCloudinary();
         if ($row['music_file']) {
-            $musicFile = $row['music_file'];
-            if (strpos($musicFile, 'uploads/music/') === 0) {
-                deleteFileIfExists(dirname(__DIR__, 2) . '/' . $musicFile);
+            if (CloudinaryHelper::isCloudinaryUrl($row['music_file'])) {
+                $cloudinary->deleteByUrl($row['music_file']);
+            } else {
+                $musicFile = $row['music_file'];
+                if (strpos($musicFile, 'uploads/music/') === 0) {
+                    deleteFileIfExists(dirname(__DIR__, 2) . '/' . $musicFile);
+                }
             }
         }
         if ($row['cover_image']) {
-            $coverImg = $row['cover_image'];
-            if (strpos($coverImg, 'uploads/covers/') === 0) {
-                deleteFileIfExists(dirname(__DIR__, 2) . '/' . $coverImg);
+            if (CloudinaryHelper::isCloudinaryUrl($row['cover_image'])) {
+                $cloudinary->deleteByUrl($row['cover_image']);
+            } else {
+                $coverImg = $row['cover_image'];
+                if (strpos($coverImg, 'uploads/covers/') === 0) {
+                    deleteFileIfExists(dirname(__DIR__, 2) . '/' . $coverImg);
+                }
             }
         }
 

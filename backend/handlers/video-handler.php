@@ -14,8 +14,11 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/activity-log.php';
 require_once __DIR__ . '/../helpers/media-duration.php';
+require_once __DIR__ . '/../helpers/cloudinary.php';
 
 header('Content-Type: application/json');
+
+if (function_exists('set_time_limit')) { @set_time_limit(300); }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -45,9 +48,7 @@ $action = trim($_POST['action'] ?? '');
 
 $db = getDb();
 
-$uploadDir      = dirname(__DIR__, 2) . '/uploads/';
-$videosDir      = $uploadDir . 'videos/';
-$thumbnailsDir  = $uploadDir . 'thumbnails/';
+$tmpDir = sys_get_temp_dir();
 
 $allowedVideoMimes = [
     'video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo',
@@ -239,14 +240,37 @@ switch ($action) {
         $savedVideoPath   = '';
         $savedThumbPath   = '';
 
-        $newVideoName = generateUniqueFilename($videoFile['name'], 'video');
-        if (!saveUploadedFile($videoFile, $videosDir, $newVideoName)) {
-            echo json_encode(['success' => false, 'error' => 'Failed to save video file. Please try again.']);
+        $cloudinary = getCloudinary();
+        $useCloudinary = $cloudinary->isConfigured();
+
+        $dupCheck = $db->prepare("SELECT `id` FROM `videos` WHERE `video_title` = :t AND `artist_id` = :a AND `created_at` > DATE_SUB(NOW(), INTERVAL 10 SECOND)");
+        $dupCheck->execute([':t' => $title, ':a' => $artistId]);
+        if ($dupCheck->fetch()) {
+            echo json_encode(['success' => false, 'error' => 'A video with this title by the same artist was just added. Please wait a moment before trying again.']);
             exit;
         }
-        $savedVideoPath = 'uploads/videos/' . $newVideoName;
 
-        $duration = getMediaDuration($videosDir . $newVideoName);
+        $newVideoName = generateUniqueFilename($videoFile['name'], 'video');
+        if ($useCloudinary) {
+            try {
+                $tmpVideoPath = $tmpDir . '/' . $newVideoName;
+                move_uploaded_file($videoFile['tmp_name'], $tmpVideoPath);
+                $result = $cloudinary->upload($tmpVideoPath, 'sound_management/videos', $newVideoName, [
+                    'resource_type' => 'video',
+                ]);
+                @unlink($tmpVideoPath);
+                $savedVideoPath = $result['url'];
+            } catch (Exception $e) {
+                if (file_exists($tmpVideoPath)) @unlink($tmpVideoPath);
+                echo json_encode(['success' => false, 'error' => 'Failed to upload video to cloud storage. Please try again.']);
+                exit;
+            }
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Cloud storage is not configured. Please contact administrator.']);
+            exit;
+        }
+
+        $duration = getMediaDuration($tmpVideoPath);
 
         $postDuration = isset($_POST['duration']) ? trim($_POST['duration']) : '';
         if ($postDuration !== '') {
@@ -255,12 +279,22 @@ switch ($action) {
 
         if ($thumbnail && $thumbnail['error'] !== UPLOAD_ERR_NO_FILE) {
             $newThumbName = generateUniqueFilename($thumbnail['name'], 'thumb');
-            if (!saveUploadedFile($thumbnail, $thumbnailsDir, $newThumbName)) {
-                if ($savedVideoPath) deleteFileIfExists(dirname(__DIR__, 2) . '/' . $savedVideoPath);
-                echo json_encode(['success' => false, 'error' => 'Failed to save thumbnail. Please try again.']);
-                exit;
+            if ($useCloudinary) {
+                try {
+                    $tmpThumbPath = $tmpDir . '/' . $newThumbName;
+                    move_uploaded_file($thumbnail['tmp_name'], $tmpThumbPath);
+                    $result = $cloudinary->upload($tmpThumbPath, 'sound_management/thumbnails', $newThumbName, [
+                        'resource_type' => 'image',
+                        'transformation' => 'c_fill,w_800,h_450',
+                    ]);
+                    @unlink($tmpThumbPath);
+                    $savedThumbPath = $result['url'];
+                } catch (Exception $e) {
+                    if (file_exists($tmpThumbPath)) @unlink($tmpThumbPath);
+                    echo json_encode(['success' => false, 'error' => 'Failed to upload thumbnail to cloud storage. Please try again.']);
+                    exit;
+                }
             }
-            $savedThumbPath = 'uploads/thumbnails/' . $newThumbName;
         }
 
         $stmt = $db->prepare("INSERT INTO `videos` (`video_title`, `artist_id`, `album_id`, `year_id`, `genre_id`, `language_id`, `description`, `video_path`, `thumbnail_path`, `duration`, `status`, `created_at`, `updated_at`) VALUES (:video_title, :artist_id, :album_id, :year_id, :genre_id, :language_id, :description, :video_path, :thumbnail_path, :duration, :status, NOW(), NOW())");
@@ -397,17 +431,40 @@ switch ($action) {
         $postDuration = isset($_POST['duration']) ? trim($_POST['duration']) : '';
         $hasPostDuration = ($postDuration !== '');
 
+        $cloudinary = getCloudinary();
+        $useCloudinary = $cloudinary->isConfigured();
+
         if (!$vVideo['skip'] && $videoFile && $videoFile['error'] === UPLOAD_ERR_OK) {
             $newVideoName = generateUniqueFilename($videoFile['name'], 'video');
-            if (!saveUploadedFile($videoFile, $videosDir, $newVideoName)) {
-                echo json_encode(['success' => false, 'error' => 'Failed to save video file. Please try again.']);
+            if ($useCloudinary) {
+                try {
+                    $tmpVideoPath = $tmpDir . '/' . $newVideoName;
+                    move_uploaded_file($videoFile['tmp_name'], $tmpVideoPath);
+                    $result = $cloudinary->upload($tmpVideoPath, 'sound_management/videos', $newVideoName, [
+                        'resource_type' => 'video',
+                    ]);
+                    @unlink($tmpVideoPath);
+                    $newVideoPath = $result['url'];
+                } catch (Exception $e) {
+                    if (file_exists($tmpVideoPath)) @unlink($tmpVideoPath);
+                    echo json_encode(['success' => false, 'error' => 'Failed to upload video to cloud storage. Please try again.']);
+                    exit;
+                }
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Cloud storage is not configured. Please contact administrator.']);
                 exit;
             }
-            $oldVideoPath = dirname(__DIR__, 2) . '/' . $existing['video_path'];
-            if ($existing['video_path']) deleteFileIfExists($oldVideoPath);
-            $newVideoPath = 'uploads/videos/' . $newVideoName;
+            // Delete old file
+            if ($existing['video_path']) {
+                if (CloudinaryHelper::isCloudinaryUrl($existing['video_path'])) {
+                    $cloudinary->deleteByUrl($existing['video_path']);
+                } else {
+                    $oldPath = dirname(__DIR__, 2) . '/' . $existing['video_path'];
+                    deleteFileIfExists($oldPath);
+                }
+            }
             if (!$hasPostDuration) {
-                $duration = getMediaDuration($videosDir . $newVideoName);
+                $duration = getMediaDuration($tmpVideoPath);
             }
         }
 
@@ -417,13 +474,34 @@ switch ($action) {
 
         if (!$vThumb['skip'] && $thumbnail && $thumbnail['error'] === UPLOAD_ERR_OK) {
             $newThumbName = generateUniqueFilename($thumbnail['name'], 'thumb');
-            if (!saveUploadedFile($thumbnail, $thumbnailsDir, $newThumbName)) {
-                echo json_encode(['success' => false, 'error' => 'Failed to save thumbnail. Please try again.']);
+            if ($useCloudinary) {
+                try {
+                    $tmpThumbPath = $tmpDir . '/' . $newThumbName;
+                    move_uploaded_file($thumbnail['tmp_name'], $tmpThumbPath);
+                    $result = $cloudinary->upload($tmpThumbPath, 'sound_management/thumbnails', $newThumbName, [
+                        'resource_type' => 'image',
+                        'transformation' => 'c_fill,w_800,h_450',
+                    ]);
+                    @unlink($tmpThumbPath);
+                    $newThumbPath = $result['url'];
+                } catch (Exception $e) {
+                    if (file_exists($tmpThumbPath)) @unlink($tmpThumbPath);
+                    echo json_encode(['success' => false, 'error' => 'Failed to upload thumbnail to cloud storage. Please try again.']);
+                    exit;
+                }
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Cloud storage is not configured. Please contact administrator.']);
                 exit;
             }
-            $oldThumbPath = dirname(__DIR__, 2) . '/' . $existing['thumbnail_path'];
-            if ($existing['thumbnail_path']) deleteFileIfExists($oldThumbPath);
-            $newThumbPath = 'uploads/thumbnails/' . $newThumbName;
+            // Delete old file
+            if ($existing['thumbnail_path']) {
+                if (CloudinaryHelper::isCloudinaryUrl($existing['thumbnail_path'])) {
+                    $cloudinary->deleteByUrl($existing['thumbnail_path']);
+                } else {
+                    $oldPath = dirname(__DIR__, 2) . '/' . $existing['thumbnail_path'];
+                    deleteFileIfExists($oldPath);
+                }
+            }
         }
 
         $stmt = $db->prepare("UPDATE `videos` SET `video_title` = :video_title, `artist_id` = :artist_id, `album_id` = :album_id, `year_id` = :year_id, `genre_id` = :genre_id, `language_id` = :language_id, `description` = :description, `video_path` = :video_path, `thumbnail_path` = :thumbnail_path, `duration` = :duration, `status` = :status, `updated_at` = NOW() WHERE `id` = :id");
@@ -473,16 +551,25 @@ switch ($action) {
         }
 
         // Delete associated files BEFORE database record
+        $cloudinary = getCloudinary();
         if ($row['video_path']) {
-            $videoPath = $row['video_path'];
-            if (strpos($videoPath, 'uploads/videos/') === 0) {
-                deleteFileIfExists(dirname(__DIR__, 2) . '/' . $videoPath);
+            if (CloudinaryHelper::isCloudinaryUrl($row['video_path'])) {
+                $cloudinary->deleteByUrl($row['video_path']);
+            } else {
+                $videoPath = $row['video_path'];
+                if (strpos($videoPath, 'uploads/videos/') === 0) {
+                    deleteFileIfExists(dirname(__DIR__, 2) . '/' . $videoPath);
+                }
             }
         }
         if ($row['thumbnail_path']) {
-            $thumbPath = $row['thumbnail_path'];
-            if (strpos($thumbPath, 'uploads/thumbnails/') === 0) {
-                deleteFileIfExists(dirname(__DIR__, 2) . '/' . $thumbPath);
+            if (CloudinaryHelper::isCloudinaryUrl($row['thumbnail_path'])) {
+                $cloudinary->deleteByUrl($row['thumbnail_path']);
+            } else {
+                $thumbPath = $row['thumbnail_path'];
+                if (strpos($thumbPath, 'uploads/thumbnails/') === 0) {
+                    deleteFileIfExists(dirname(__DIR__, 2) . '/' . $thumbPath);
+                }
             }
         }
 

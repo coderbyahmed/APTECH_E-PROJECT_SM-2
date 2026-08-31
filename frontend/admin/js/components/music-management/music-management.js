@@ -8,14 +8,14 @@
     var ENDPOINT = (window.APP_BASE_URL || '') + '/backend/handlers/music-handler.php';
     var BASE_URL = window.APP_BASE_URL || '';
     var STORAGE_KEY = 'mm_audio_state';
-    function resolvePath(p) { return p ? BASE_URL + '/' + p.replace(/^\//, '') : ''; }
+    function resolvePath(p) { return p && p.indexOf('http') === 0 ? p : (p ? BASE_URL + '/' + p.replace(/^\//, '') : ''); }
     function getCsrfToken() { var el = document.querySelector('input[name="csrf_token"]'); return el ? el.value : ''; }
     function escapeHtml(str) { if (!str) return ''; var d = document.createElement('div'); d.appendChild(document.createTextNode(str)); return d.innerHTML; }
     function openModal(id) { var m = document.getElementById(id); if (m) { m.classList.add('is-open'); document.body.style.overflow = 'hidden'; } }
     function closeModal(id) { var m = document.getElementById(id); if (m) { m.classList.remove('is-open'); document.body.style.overflow = ''; } }
     function postToHandler(fd, onSuccess) {
-        var ctrl = new AbortController(); var tid = setTimeout(function () { ctrl.abort(); }, 30000);
-        fetch(ENDPOINT, { method: 'POST', body: fd, signal: ctrl.signal })
+        var ctrl = new AbortController(); var tid = setTimeout(function () { ctrl.abort(); }, 300000);
+        return fetch(ENDPOINT, { method: 'POST', body: fd, signal: ctrl.signal })
             .then(function (res) { clearTimeout(tid); return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
             .then(function (r) { if (!r.ok || !r.data.success) { if (r.data.redirect) { window.location.href = r.data.redirect; return; } showError(r.data.error || 'Something went wrong.'); return; } onSuccess(r.data); })
             .catch(function () { clearTimeout(tid); showError('Server could not be reached.'); });
@@ -25,7 +25,7 @@
         items.forEach(function (i) { var o = document.createElement('option'); o.value = i.id; o.textContent = i.name; el.appendChild(o); });
     }
     function selectById(el, id) { if (!el || !id) return; el.value = String(id); }
-    var musicData = [], cmData = {}, inlinePlayingId = null, mmInlineAudio = null;
+    var musicData = [], cmData = {}, inlinePlayingId = null, mmInlineAudio = null, isSubmitting = false;
     function getMusicById(id) { for (var i = 0; i < musicData.length; i++) { if (musicData[i].id === id) return musicData[i]; } return null; }
 
     /* --- localStorage persistence helpers --- */
@@ -218,9 +218,10 @@
         updateInlineIcons();
     }
     function bindModalClose() {
-        document.querySelectorAll('[data-mm-close]').forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-mm-close');if(t==='add')closeModal('mmAddModal');else if(t==='edit')closeModal('mmEditModal');else if(t==='view')closeModal('mmViewModal');else if(t==='delete')closeModal('mmDeleteModal');});});
-        document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal('mmAddModal');closeModal('mmEditModal');closeModal('mmViewModal');closeModal('mmDeleteModal');}});
-        document.querySelectorAll('.sg-modal').forEach(function(m){var o=m.querySelector('.sg-modal__overlay');if(o){o.addEventListener('click',function(){m.classList.remove('is-open');document.body.style.overflow='';});}});
+        document.querySelectorAll('[data-mm-close]').forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-mm-close');if(t==='add'){closeModal('mmAddModal');resetAddForm();}else if(t==='edit'){closeModal('mmEditModal');}else if(t==='view'){closeModal('mmViewModal');}else if(t==='delete'){closeModal('mmDeleteModal');}isSubmitting=false;});});
+        document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal('mmAddModal');closeModal('mmEditModal');closeModal('mmViewModal');closeModal('mmDeleteModal');isSubmitting=false;}});
+        document.querySelectorAll('.sg-modal').forEach(function(m){var o=m.querySelector('.sg-modal__overlay');if(o){o.addEventListener('click',function(){m.classList.remove('is-open');document.body.style.overflow='';isSubmitting=false;});}});
+        document.addEventListener('keydown',function(e){if(e.key==='Enter'&&document.querySelector('#mmAddModal.is-open,#mmEditModal.is-open,#mmDeleteModal.is-open')){var tag=document.activeElement?document.activeElement.tagName:'';if(tag!=='TEXTAREA'){e.preventDefault();}}});
     }
     function setupFilePreview(inputId, uploadId, previewId, nameId, removeId, imgId) {
         var inp = document.getElementById(inputId), up = document.getElementById(uploadId), pv = document.getElementById(previewId);
@@ -240,6 +241,7 @@
         setupFilePreview('mm-add-cover-image','mm-cover-upload','mm-cover-preview','mm-cover-file-name','mm-cover-file-remove','mm-cover-preview-img');
         var sb = document.getElementById('mmSaveMusicBtn');
         if (sb) { sb.addEventListener('click', function () {
+            if (isSubmitting) return;
             var t=document.getElementById('mm-add-title').value.trim(), a=document.getElementById('mm-add-artist').value, y=document.getElementById('mm-add-year').value;
             if(!t){showError('Song title is required.');return;} if(!a){showError('Please select an artist.');return;} if(!y){showError('Please select a year.');return;}
             var mf=document.getElementById('mm-add-music-file').files[0]; if(!mf){showError('Please upload a music file.');return;}
@@ -251,14 +253,20 @@
             var dur=document.getElementById('mm-add-duration').value; fd.append('duration',dur);
             fd.append('status',document.getElementById('mm-add-status').value); fd.append('music_file',mf);
             var cf=document.getElementById('mm-add-cover-image').files[0]; if(cf)fd.append('cover_image',cf);
+            isSubmitting=true;
             sb.disabled=true;
-            postToHandler(fd, function(data){musicData.unshift(data.record);renderTable(musicData);closeModal('mmAddModal');resetAddForm();showSuccess(data.message||'Music added successfully.');});
-            sb.disabled=false;
+            if(typeof startButtonLoading==='function'){startButtonLoading(sb,'Saving Music...');}
+            postToHandler(fd, function(data){musicData.unshift(data.record);renderTable(musicData);closeModal('mmAddModal');resetAddForm();showSuccess(data.message||'Music added successfully.');}).finally(function(){
+                isSubmitting=false;
+                sb.disabled=false;
+                if(typeof stopButtonLoading==='function'){stopButtonLoading(sb);}
+            });
         }); }
     }
     function bindEditModal() {
         var ub = document.getElementById('mmUpdateMusicBtn');
         if (ub) { ub.addEventListener('click', function () {
+            if (isSubmitting) return;
             var id=document.getElementById('mm-edit-id').value, t=document.getElementById('mm-edit-title').value.trim();
             var a=document.getElementById('mm-edit-artist').value, y=document.getElementById('mm-edit-year').value;
             if(!id)return; if(!t){showError('Song title is required.');return;} if(!a){showError('Please select an artist.');return;} if(!y){showError('Please select a year.');return;}
@@ -271,9 +279,14 @@
             fd.append('status',document.getElementById('mm-edit-status').value);
             var mf=document.getElementById('mm-edit-music-file').files[0]; if(mf)fd.append('music_file',mf);
             var cf=document.getElementById('mm-edit-cover-image').files[0]; if(cf)fd.append('cover_image',cf);
+            isSubmitting=true;
             ub.disabled=true;
-            postToHandler(fd, function(data){for(var i=0;i<musicData.length;i++){if(musicData[i].id===data.record.id){musicData[i]=data.record;break;}} renderTable(musicData);closeModal('mmEditModal');showSuccess(data.message||'Music updated successfully.');});
-            ub.disabled=false;
+            if(typeof startButtonLoading==='function'){startButtonLoading(ub,'Updating Music...');}
+            postToHandler(fd, function(data){for(var i=0;i<musicData.length;i++){if(musicData[i].id===data.record.id){musicData[i]=data.record;break;}} renderTable(musicData);closeModal('mmEditModal');showSuccess(data.message||'Music updated successfully.');}).finally(function(){
+                isSubmitting=false;
+                ub.disabled=false;
+                if(typeof stopButtonLoading==='function'){stopButtonLoading(ub);}
+            });
         }); }
         setupFilePreview('mm-edit-music-file','mm-edit-music-upload','mm-edit-music-preview','mm-edit-music-name','mm-edit-music-replace',null);
         setupFilePreview('mm-edit-cover-image','mm-edit-cover-upload','mm-edit-cover-preview','mm-edit-cover-name','mm-edit-cover-replace','mm-edit-cover-img');
@@ -303,11 +316,17 @@
     function bindDeleteModal() {
         var cb = document.getElementById('mmConfirmDeleteBtn');
         if (cb) { cb.addEventListener('click', function () {
+            if (isSubmitting) return;
             var id=document.getElementById('mm-delete-id').value; if(!id)return;
+            isSubmitting=true;
             cb.disabled=true;
+            if(typeof startButtonLoading==='function'){startButtonLoading(cb,'Deleting...');}
             var fd=new FormData(); fd.append('action','delete'); fd.append('csrf_token',getCsrfToken()); fd.append('id',id);
-            postToHandler(fd, function(data){musicData=musicData.filter(function(m){return m.id!==parseInt(id);});renderTable(musicData);closeModal('mmDeleteModal');showSuccess(data.message||'Music deleted successfully.');});
-            cb.disabled=false;
+            postToHandler(fd, function(data){musicData=musicData.filter(function(m){return m.id!==parseInt(id);});renderTable(musicData);closeModal('mmDeleteModal');showSuccess(data.message||'Music deleted successfully.');}).finally(function(){
+                isSubmitting=false;
+                cb.disabled=false;
+                if(typeof stopButtonLoading==='function'){stopButtonLoading(cb);}
+            });
         }); }
     }
     function openDeleteModal(id) {

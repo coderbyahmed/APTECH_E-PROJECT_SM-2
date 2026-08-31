@@ -148,11 +148,15 @@ $artistName = $video['artist_name'] ?: '';
 
 $videoSrcUrl = '';
 if (!empty($video['video_path'])) {
-    $videoSrcUrl = $baseUrl . '/' . ltrim($video['video_path'], '/');
+    $videoSrcUrl = (strpos($video['video_path'], 'http') === 0)
+        ? $video['video_path']
+        : $baseUrl . '/' . ltrim($video['video_path'], '/');
 }
 $videoThumbUrl = '';
 if (!empty($video['thumbnail_path'])) {
-    $videoThumbUrl = $baseUrl . '/' . ltrim($video['thumbnail_path'], '/');
+    $videoThumbUrl = (strpos($video['thumbnail_path'], 'http') === 0)
+        ? $video['thumbnail_path']
+        : $baseUrl . '/' . ltrim($video['thumbnail_path'], '/');
 }
 $videoIsPlayable = ($videoSrcUrl !== '' && $video['status'] === 'active');
 
@@ -239,8 +243,7 @@ function wgStarHtml($rating) {
 function wgReviewAvatarHtml($userImage, $userName, $idx) {
     $initials = htmlspecialchars(wgUserInitials($userName));
     if ($userImage) {
-        $baseUrl = baseUrl();
-        $src = $baseUrl . '/' . ltrim($userImage, '/');
+        $src = (strpos($userImage, 'http') === 0) ? $userImage : baseUrl() . '/' . ltrim($userImage, '/');
         return '<div class="wg-review-card__avatar"><img src="' . htmlspecialchars($src) . '" alt="" class="wg-review-card__avatar-img" loading="lazy" onerror="this.style.display=\'none\';this.parentNode.textContent=\'' . $initials . '\'"></div>';
     }
     return '<div class="wg-review-card__avatar">' . $initials . '</div>';
@@ -461,7 +464,7 @@ function wgReviewAvatarHtml($userImage, $userName, $idx) {
                 <div class="wg-drawer__review">
                     <div class="wg-drawer__review-row">
                         <?php if ($rc['user_image']): ?>
-                            <div class="wg-drawer__review-avatar"><img src="<?php echo htmlspecialchars(baseUrl() . '/' . ltrim($rc['user_image'], '/')); ?>" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='<?php echo htmlspecialchars(wgUserInitials($rc['user_name'])); ?>'"></div>
+                            <div class="wg-drawer__review-avatar"><img src="<?php echo htmlspecialchars((strpos($rc['user_image'], 'http') === 0) ? $rc['user_image'] : baseUrl() . '/' . ltrim($rc['user_image'], '/')); ?>" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='<?php echo htmlspecialchars(wgUserInitials($rc['user_name'])); ?>'"></div>
                         <?php else: ?>
                             <div class="wg-drawer__review-avatar"><?php echo htmlspecialchars(wgUserInitials($rc['user_name'])); ?></div>
                         <?php endif; ?>

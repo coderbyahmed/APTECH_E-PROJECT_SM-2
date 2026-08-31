@@ -15,6 +15,7 @@
 require_once __DIR__ . '/../includes/session.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../helpers/cloudinary.php';
 
 header('Content-Type: application/json');
 
@@ -74,16 +75,20 @@ if ($contactEmail !== '' && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL)) {
    ----------------------------------------------------------- */
 $logoPath = null;
 $removeLogo = isset($_POST['remove_logo']) && $_POST['remove_logo'] === '1';
-$uploadDir    = dirname(__DIR__, 2) . '/uploads/logos/';
-$uploadDirWeb = baseUrl() . '/uploads/logos/';
+$tmpDir = sys_get_temp_dir();
 
 if ($removeLogo && empty($_FILES['site_logo']['name'])) {
     // Remove existing logo
     $oldRow = $db->query("SELECT site_logo FROM website_settings LIMIT 1")->fetch();
     if ($oldRow && !empty($oldRow['site_logo'])) {
-        $oldFile = dirname(__DIR__, 2) . '/' . ltrim($oldRow['site_logo'], '/');
-        if (file_exists($oldFile)) {
-            @unlink($oldFile);
+        $cloudinary = getCloudinary();
+        if (CloudinaryHelper::isCloudinaryUrl($oldRow['site_logo'])) {
+            $cloudinary->deleteByUrl($oldRow['site_logo']);
+        } else {
+            $oldFile = dirname(__DIR__, 2) . '/' . ltrim($oldRow['site_logo'], '/');
+            if (file_exists($oldFile)) {
+                @unlink($oldFile);
+            }
         }
     }
     $logoPath = '';
@@ -104,29 +109,41 @@ if ($removeLogo && empty($_FILES['site_logo']['name'])) {
         exit;
     }
 
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0755, true);
-    }
-
     $safeExt     = preg_replace('/[^a-z0-9]/', '', $ext);
     $newFilename = 'logo_' . bin2hex(random_bytes(8)) . '_' . time() . '.' . $safeExt;
-    $dest        = $uploadDir . $newFilename;
 
-    if (!move_uploaded_file($file['tmp_name'], $dest)) {
-        echo json_encode(['success' => false, 'error' => 'Failed to save logo file.']);
+    $cloudinary = getCloudinary();
+    if ($cloudinary->isConfigured()) {
+        try {
+            $tmpPath = $tmpDir . '/' . $newFilename;
+            move_uploaded_file($file['tmp_name'], $tmpPath);
+            $result = $cloudinary->upload($tmpPath, 'sound_management/logos', $newFilename, [
+                'resource_type' => $ext === 'svg' ? 'raw' : 'image',
+            ]);
+            @unlink($tmpPath);
+            $logoPath = $result['url'];
+        } catch (Exception $e) {
+            if (file_exists($tmpPath)) @unlink($tmpPath);
+            echo json_encode(['success' => false, 'error' => 'Failed to upload logo to cloud storage. Please try again.']);
+            exit;
+        }
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Cloud storage is not configured. Please contact administrator.']);
         exit;
     }
 
     // Remove old logo file if it exists
     $oldRow = $db->query("SELECT site_logo FROM website_settings LIMIT 1")->fetch();
     if ($oldRow && !empty($oldRow['site_logo'])) {
-        $oldFile = dirname(__DIR__, 2) . '/' . ltrim($oldRow['site_logo'], '/');
-        if (file_exists($oldFile)) {
-            @unlink($oldFile);
+        if (CloudinaryHelper::isCloudinaryUrl($oldRow['site_logo'])) {
+            $cloudinary->deleteByUrl($oldRow['site_logo']);
+        } else {
+            $oldFile = dirname(__DIR__, 2) . '/' . ltrim($oldRow['site_logo'], '/');
+            if (file_exists($oldFile)) {
+                @unlink($oldFile);
+            }
         }
     }
-
-    $logoPath = $uploadDirWeb . $newFilename;
 }
 
 /* -----------------------------------------------------------

@@ -19,6 +19,9 @@ require_once dirname(__DIR__, 5) . '/backend/includes/user-auth.php';
 $siteUserLoggedIn = isUserLoggedIn();
 $siteUserName = $siteUserLoggedIn ? getCurrentUserName() : '';
 $siteUserImage = $siteUserLoggedIn ? getCurrentUserProfileImage() : null;
+$siteUserEmail = $siteUserLoggedIn ? getCurrentUserEmail() : '';
+$siteUserPhone = $siteUserLoggedIn ? (isset($_SESSION['user_phone']) ? $_SESSION['user_phone'] : '') : '';
+$siteUserAddress = $siteUserLoggedIn ? (isset($_SESSION['user_address']) ? $_SESSION['user_address'] : '') : '';
 $siteUserInitial = $siteUserLoggedIn ? strtoupper(mb_substr($siteUserName, 0, 1)) : '';
 $siteUserInitialColor = ['#8b5cf6', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#ef4444'];
 $siteUserColorIndex = $siteUserLoggedIn ? (ord($siteUserName[0]) % count($siteUserInitialColor)) : 0;
@@ -81,7 +84,7 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
                 <div class="wg-user-menu" id="wgUserMenu">
                     <button class="wg-user-menu__trigger" type="button" aria-expanded="false" aria-label="User menu">
                         <?php if ($siteUserImage): ?>
-                            <img src="<?php echo $baseUrl . '/' . htmlspecialchars($siteUserImage); ?>"
+                            <img src="<?php echo strpos($siteUserImage, 'http') === 0 ? htmlspecialchars($siteUserImage) : $baseUrl . '/' . htmlspecialchars(ltrim($siteUserImage, '/')); ?>"
                                 alt="<?php echo htmlspecialchars($siteUserName); ?>" class="wg-user-menu__avatar">
                         <?php else: ?>
                             <span class="wg-user-menu__initial"
@@ -174,7 +177,7 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
                 <div class="wg-drawer__user">
                     <div class="wg-drawer__user-info">
                         <?php if ($siteUserImage): ?>
-                            <img src="<?php echo $baseUrl . '/' . htmlspecialchars($siteUserImage); ?>"
+                            <img src="<?php echo strpos($siteUserImage, 'http') === 0 ? htmlspecialchars($siteUserImage) : $baseUrl . '/' . htmlspecialchars(ltrim($siteUserImage, '/')); ?>"
                                 alt="<?php echo htmlspecialchars($siteUserName); ?>" class="wg-drawer__user-avatar">
                         <?php else: ?>
                             <span class="wg-drawer__user-initial"
@@ -307,8 +310,8 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
 
                     // Update navbar avatar images with cache-bust
                     if (u.profile_image) {
-                        var src = u.profile_image.indexOf('/') === 0 ? u.profile_image : '/' + u.profile_image;
-                        var newUrl = baseUrl + src + bust;
+                        var src = u.profile_image.indexOf('http') === 0 ? u.profile_image : (u.profile_image.indexOf('/') === 0 ? u.profile_image : '/' + u.profile_image);
+                        var newUrl = u.profile_image.indexOf('http') === 0 ? u.profile_image + bust : baseUrl + src + bust;
                         var imgs = document.querySelectorAll('.wg-user-menu__avatar, .wg-drawer__user-avatar');
                         imgs.forEach(function (img) { img.src = newUrl; });
                     }
@@ -319,6 +322,12 @@ $buttonSpinnerJs = $websiteBase . '/js/components/loaders/button-spinner.js';
                         var initial = (u.full_name || '?').charAt(0).toUpperCase();
                         initials.forEach(function (el) { el.textContent = initial; });
                     }
+
+                    // Update profile modal fields if visible
+                    var phoneEl = document.getElementById('wgProfileViewPhone');
+                    var addressEl = document.getElementById('wgProfileViewAddress');
+                    if (phoneEl) phoneEl.textContent = u.phone || '—';
+                    if (addressEl) addressEl.textContent = u.address || '—';
                 };
                 xhr.send(fd);
             }

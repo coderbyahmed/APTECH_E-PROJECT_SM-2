@@ -91,6 +91,7 @@
 
     function normalizeImagePath(path) {
         if (!path) return '';
+        if (path.indexOf('http') === 0) return path;
         if (path.charAt(0) === '/') return path;
         return (window.APP_BASE_URL || '') + '/' + path.replace(/^\//, '');
     }
