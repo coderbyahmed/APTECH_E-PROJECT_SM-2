@@ -249,6 +249,22 @@
                 if (nameInput) nameInput.focus();
                 return;
             }
+            if (nameVal.length < 3) {
+                showError('Name must contain at least 3 characters.');
+                if (nameInput) nameInput.focus();
+                return;
+            }
+            if (!/^[A-Za-z\s]+$/.test(nameVal)) {
+                showError('Name must contain only letters and spaces.');
+                if (nameInput) nameInput.focus();
+                return;
+            }
+
+            // Profile image is required — reject if no existing image and no new file selected
+            if ((!currentData || !currentData.profile_image) && (!imageInput || !imageInput.files || !imageInput.files.length)) {
+                showError('Profile image is required.');
+                return;
+            }
 
             startButtonLoading(saveBtn, 'Saving...');
 

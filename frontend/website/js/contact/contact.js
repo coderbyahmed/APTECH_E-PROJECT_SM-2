@@ -92,6 +92,12 @@
         if (!nameVal) {
             showFieldError('name', 'Please enter your full name.');
             if (!firstError) firstError = fields.name;
+        } else if (nameVal.length < 3) {
+            showFieldError('name', 'Full name must contain at least 3 characters.');
+            if (!firstError) firstError = fields.name;
+        } else if (!/^[A-Za-z\s]+$/.test(nameVal)) {
+            showFieldError('name', 'Full name must contain only letters and spaces.');
+            if (!firstError) firstError = fields.name;
         }
 
         var emailVal = fields.email.el ? fields.email.el.value.trim() : '';
@@ -103,6 +109,15 @@
             if (!firstError) firstError = fields.email;
         }
 
+        var phoneVal = fields.phone.el ? fields.phone.el.value.trim() : '';
+        if (!phoneVal) {
+            showFieldError('phone', 'Please enter your phone number.');
+            if (!firstError) firstError = fields.phone;
+        } else if (!/^(0\d{10}|\+92\d{10})$/.test(phoneVal)) {
+            showFieldError('phone', 'Please enter a valid Pakistani phone number, e.g. 03178497732 or +923178497732.');
+            if (!firstError) firstError = fields.phone;
+        }
+
         var inquiryVal = fields.inquiry.el ? fields.inquiry.el.value : '';
         if (!inquiryVal) {
             showFieldError('inquiry', 'Please select an inquiry type.');
@@ -112,6 +127,9 @@
         var subjectVal = fields.subject.el ? fields.subject.el.value.trim() : '';
         if (!subjectVal) {
             showFieldError('subject', 'Please enter a subject.');
+            if (!firstError) firstError = fields.subject;
+        } else if (!/^[A-Za-z\s]+$/.test(subjectVal)) {
+            showFieldError('subject', 'Subject must contain only letters and spaces.');
             if (!firstError) firstError = fields.subject;
         }
 
@@ -136,6 +154,19 @@
             });
         }
     });
+
+    // Strip invalid characters from phone field in real time
+    if (fields.phone.el) {
+        fields.phone.el.addEventListener('input', function () {
+            var v = this.value.replace(/[^\d+]/g, '');
+            if (v.charAt(0) === '+') {
+                v = '+' + v.substring(1).replace(/\+/g, '');
+            } else {
+                v = v.replace(/\+/g, '');
+            }
+            this.value = v.substring(0, 13);
+        });
+    }
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();

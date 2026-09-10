@@ -95,18 +95,43 @@ switch ($action) {
             echo json_encode(['success' => false, 'error' => 'Full name is required.']);
             exit;
         }
+        if (strlen($name) < 3) {
+            echo json_encode(['success' => false, 'error' => 'Full name must contain at least 3 characters.']);
+            exit;
+        }
+        if (!preg_match('/^[A-Za-z\s]+$/', $name)) {
+            echo json_encode(['success' => false, 'error' => 'Full name must contain only letters and spaces.']);
+            exit;
+        }
+
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             echo json_encode(['success' => false, 'error' => 'A valid email address is required.']);
             exit;
         }
+
+        if ($phone === '') {
+            echo json_encode(['success' => false, 'error' => 'Phone number is required.']);
+            exit;
+        }
+        if (!preg_match('/^(0\d{10}|\+92\d{10})$/', $phone)) {
+            echo json_encode(['success' => false, 'error' => 'Please enter a valid Pakistani phone number, e.g. 03178497732 or +923178497732.']);
+            exit;
+        }
+
         if ($inquiryType === '') {
             echo json_encode(['success' => false, 'error' => 'Inquiry type is required.']);
             exit;
         }
+
         if ($subject === '') {
             echo json_encode(['success' => false, 'error' => 'Subject is required.']);
             exit;
         }
+        if (!preg_match('/^[A-Za-z\s]+$/', $subject)) {
+            echo json_encode(['success' => false, 'error' => 'Subject must contain only letters and spaces.']);
+            exit;
+        }
+
         if ($message === '') {
             echo json_encode(['success' => false, 'error' => 'Message is required.']);
             exit;

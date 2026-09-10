@@ -154,6 +154,20 @@
         });
     }
 
+    // Strip invalid characters from phone field in real time
+    var phoneInput = document.getElementById('signupPhone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function () {
+            var v = this.value.replace(/[^\d+]/g, '');
+            if (v.charAt(0) === '+') {
+                v = '+' + v.substring(1).replace(/\+/g, '');
+            } else {
+                v = v.replace(/\+/g, '');
+            }
+            this.value = v.substring(0, 13);
+        });
+    }
+
     // Show/hide password toggles
     document.querySelectorAll('.wg-signup-form__toggle-pass').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -203,6 +217,12 @@
             if (!name.value.trim()) {
                 showFieldError('signupName', 'Full name is required.');
                 hasError = true;
+            } else if (name.value.trim().length < 3) {
+                showFieldError('signupName', 'Full name must contain at least 3 characters.');
+                hasError = true;
+            } else if (!/^[A-Za-z\s]+$/.test(name.value.trim())) {
+                showFieldError('signupName', 'Full name must contain only letters and spaces.');
+                hasError = true;
             }
             if (!email.value.trim()) {
                 showFieldError('signupEmail', 'Email address is required.');
@@ -214,12 +234,9 @@
             if (!phone.value.trim()) {
                 showFieldError('signupPhone', 'Phone number is required.');
                 hasError = true;
-            } else {
-                var digits = phone.value.replace(/\D/g, '');
-                if (digits.length !== 11) {
-                    showFieldError('signupPhone', 'Phone number must be exactly 11 digits.');
-                    hasError = true;
-                }
+            } else if (!/^(0\d{10}|\+92\d{10})$/.test(phone.value.trim())) {
+                showFieldError('signupPhone', 'Please enter a valid Pakistani phone number, e.g. 03178497732 or +923178497732.');
+                hasError = true;
             }
             if (!password.value) {
                 showFieldError('signupPassword', 'Password is required.');

@@ -108,7 +108,7 @@ $wsGithub       = htmlspecialchars(ensureProtocol($ws['github_url']));
                             <!-- Phone -->
                             <div class="wg-contact-form__field">
                                 <label class="wg-contact-form__label" for="contactPhone">Phone / WhatsApp Number <span
-                                        class="wg-contact-form__optional">(Optional)</span></label>
+                                        class="wg-contact-form__required">*</span></label>
                                 <div class="wg-contact-form__input-wrap">
                                     <span class="wg-contact-form__input-icon">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -118,7 +118,7 @@ $wsGithub       = htmlspecialchars(ensureProtocol($ws['github_url']));
                                         </svg>
                                     </span>
                                     <input type="tel" class="wg-contact-form__input" id="contactPhone" name="phone"
-                                        placeholder="Enter your phone number">
+                                        placeholder="e.g. 03178497732 or +923178497732" required maxlength="13" inputmode="tel" pattern="(0\d{10}|\+92\d{10})">
                                 </div>
                                 <span class="wg-contact-form__field-error" id="contactPhoneError"></span>
                             </div>

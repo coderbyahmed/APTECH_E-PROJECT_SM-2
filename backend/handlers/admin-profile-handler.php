@@ -68,6 +68,16 @@ switch ($action) {
             exit;
         }
 
+        if (strlen($name) < 3) {
+            echo json_encode(['success' => false, 'error' => 'Name must contain at least 3 characters.']);
+            exit;
+        }
+
+        if (!preg_match('/^[A-Za-z\s]+$/', $name)) {
+            echo json_encode(['success' => false, 'error' => 'Name must contain only letters and spaces.']);
+            exit;
+        }
+
         if (strlen($name) > 255) {
             echo json_encode(['success' => false, 'error' => 'Name must not exceed 255 characters.']);
             exit;
@@ -155,6 +165,12 @@ switch ($action) {
                     }
                 }
             }
+        }
+
+        // --- Profile image is required ---
+        if (empty($profileImage)) {
+            echo json_encode(['success' => false, 'error' => 'Profile image is required.']);
+            exit;
         }
 
         // --- Update database ---

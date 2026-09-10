@@ -78,6 +78,10 @@ if (!isset($_FILES['profile_image']) || $_FILES['profile_image']['error'] === UP
 // Full Name
 if ($fullName === '') {
     $errors['full_name'] = 'Full name is required.';
+} elseif (strlen($fullName) < 3) {
+    $errors['full_name'] = 'Full name must contain at least 3 characters.';
+} elseif (!preg_match('/^[A-Za-z\s]+$/', $fullName)) {
+    $errors['full_name'] = 'Full name must contain only letters and spaces.';
 } elseif (strlen($fullName) > 255) {
     $errors['full_name'] = 'Full name must not exceed 255 characters.';
 }
@@ -91,13 +95,13 @@ if ($email === '') {
     $errors['email'] = 'Email must not exceed 255 characters.';
 }
 
-// Phone (exactly 11 digits)
-$phoneDigits = preg_replace('/\D/', '', $phone);
+// Phone (Pakistani format: 0XXXXXXXXXX or +92XXXXXXXXXX)
 if ($phone === '') {
     $errors['phone'] = 'Phone number is required.';
-} elseif (!preg_match('/^\d{11}$/', $phoneDigits)) {
-    $errors['phone'] = 'Phone number must be exactly 11 digits.';
+} elseif (!preg_match('/^(0\d{10}|\+92\d{10})$/', $phone)) {
+    $errors['phone'] = 'Please enter a valid Pakistani phone number, e.g. 03178497732 or +923178497732.';
 }
+$phoneDigits = preg_replace('/\D/', '', $phone);
 
 // Address (optional but max 500 chars)
 if ($address !== '' && strlen($address) > 500) {
